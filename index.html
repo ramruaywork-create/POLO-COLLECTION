@@ -2,1528 +2,214 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>จัดโซนหยิบ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polo Catalog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f4f5f7; --surface:#ffffff; --surface2:#f0f2f5; --text:#1d2330; --muted:#6b7385; --line:#dfe3ea;
-  --accent:#2563eb; --accent-soft:#dbe6ff; --shelf:#ffffff; --grid:#e3e7ee; --hl:#f59e0b;
-  --pick:#e8f7ee; --pick-b:#86cfa0; --pick-t:#1d6b3b;
-  --reserve:#eaf0fd; --reserve-b:#8fa9ec; --reserve-t:#2747a0;
-  --deep:#f1eef6; --deep-b:#b3a6cc; --deep-t:#5b4a7a;
-  --t1:#4b5563; --t2:#4b5563; --t3:#4b5563; --t4:#4b5563; --aisle:#d9dce2; --floor:#ffffff; --shelf-bg:#f6f1de; --shelf-b:#b9ad7c; --A:#5aad78; --B:#dba54a; --C:#b4bac4; --bad:#dc2626;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#11141a; --surface:#1a1f28; --surface2:#222934; --text:#e6e9ef; --muted:#9aa3b5; --line:#2e3644;
-    --accent:#5b8cff; --accent-soft:#1f2c4d; --shelf:#232a35; --grid:#1d232d;
-    --pick:#14281c; --pick-b:#2f7a4a; --pick-t:#8fe0ad;
-    --reserve:#18223a; --reserve-b:#3d5aa8; --reserve-t:#a9bfff;
-    --deep:#221d2e; --deep-b:#5a4d78; --deep-t:#c9b9ec;
-    --C:#6b7385; --t1:#6b7385; --t2:#6b7385; --t3:#6b7385; --t4:#6b7385; --aisle:#2a303a; --floor:#161a21; --shelf-bg:#34322a; --shelf-b:#7d7350;
+  :root {
+    --bg: #1b1d22;
+    --bg2: #2a2d34;
+    --ink: #f3efe9;
+    --muted: #9aa0aa;
+    --accent: #e0442f;
+    --chip: rgba(255,255,255,.08);
   }
-}
-:root[data-theme="dark"]{
-  --bg:#11141a; --surface:#1a1f28; --surface2:#222934; --text:#e6e9ef; --muted:#9aa3b5; --line:#2e3644;
-  --accent:#5b8cff; --accent-soft:#1f2c4d; --shelf:#232a35; --grid:#1d232d;
-  --pick:#14281c; --pick-b:#2f7a4a; --pick-t:#8fe0ad;
-  --reserve:#18223a; --reserve-b:#3d5aa8; --reserve-t:#a9bfff;
-  --deep:#221d2e; --deep-b:#5a4d78; --deep-t:#c9b9ec;
-  --C:#6b7385; --t1:#6b7385; --t2:#6b7385; --t3:#6b7385; --t4:#6b7385; --aisle:#2a303a; --floor:#161a21; --shelf-bg:#34322a; --shelf-b:#7d7350;
-}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 'Kanit',system-ui,sans-serif;font-weight:300}
-button,input,select,textarea{font:inherit;color:inherit}
-b,strong,h1,h2,h3,summary{font-weight:500}
-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-header h1{font-size:19px;margin:0 8px 0 0;white-space:nowrap}
-.search{flex:1 1 220px;display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:0 10px}
-.search input{border:0;background:transparent;outline:0;padding:8px 0;width:100%}
-.seg{display:flex;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:3px}
-.seg button{border:0;background:transparent;padding:5px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
-.seg button.on{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:500}
-.btn{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:9px;cursor:pointer;white-space:nowrap;display:inline-block}
-.btn:hover{border-color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.danger{color:var(--bad)}
-.btn.sm{padding:2px 8px;font-size:13px}
-.btn.on{background:var(--accent-soft);border-color:var(--accent)}
-#result{padding:0 16px;display:flex;flex-wrap:wrap;gap:8px}
-#result:not(:empty){padding:10px 16px 0}
-.chip{display:inline-flex;gap:6px;align-items:center;border-radius:999px;padding:4px 12px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-size:14px}
-.chip.ok{border-color:var(--A)} .chip.warn{border-color:var(--B)} .chip.bad{border-color:var(--bad);color:var(--bad)}
-main{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:16px;padding:16px}
-@media (max-width:1000px){main{grid-template-columns:minmax(0,1fr)}}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
-.mapwrap{overflow:auto;padding:14px;max-height:calc(100vh - 150px)}
-#map{position:relative;background-color:var(--surface);border-radius:10px;touch-action:none;margin:0 auto}
-.edit #map{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:var(--cell) var(--cell)}
-.zone{position:absolute;border:2px dashed;border-radius:8px;pointer-events:none}
-.zone.pick{background:transparent;border-color:transparent} .zone.pick .zl{color:var(--pick-t)}
-.zone.reserve{background:var(--reserve);border-color:var(--reserve-b)} .zone.reserve .zl{color:var(--reserve-t)}
-.zone.deep{background:var(--deep);border-color:var(--deep-b)} .zone.deep .zl{color:var(--deep-t)}
-.zone .zl{position:absolute;left:8px;top:2px;font-size:12px;font-weight:500;white-space:nowrap}
-.zone.dim{opacity:.3}
-.area{position:absolute;pointer-events:none}
-.area.aisle{background:var(--aisle)}
-.area.aisle::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(255,255,255,.06) 14px 15px)}
-.area.floor{background:var(--floor);border-radius:8px;box-shadow:inset 0 0 0 1px var(--line)}
-.shelf{position:absolute;background:color-mix(in srgb,var(--c,transparent) 22%,var(--shelf-bg));color:var(--text);border:1px solid var(--shelf-b);border-radius:5px;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px 2px;cursor:pointer;user-select:none;transition:opacity .15s,box-shadow .15s,transform .15s;overflow:hidden}
-.shelf:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.15)}
-.shelf .fill{position:absolute;left:0;bottom:0;height:3px;width:var(--f);background:var(--c);border-radius:0 2px 0 0}
-.shelf.vert .fill{width:3px;height:var(--f);border-radius:0 2px 0 0}
-.shelf .code,.shelf .pct{position:relative;white-space:nowrap;line-height:1}
-.shelf .code{font-weight:600;font-size:var(--fs);letter-spacing:.2px}
-.shelf .pct{font-size:calc(var(--fs) - 2px);color:var(--muted);font-variant-numeric:tabular-nums}
-.shelf.vert{writing-mode:vertical-rl;padding:8px 0 8px 2px}
-.shelf.vert .code,.shelf.vert .pct{transform:rotate(180deg)}
-.shelf.empty{background:var(--surface);border-color:color-mix(in srgb,var(--shelf-b) 55%,transparent)}
-.shelf.empty .code{color:var(--muted);font-weight:500}
-.shelf.sel{box-shadow:0 0 0 3px var(--accent)}
-.shelf.hl{border-color:var(--hl);box-shadow:0 0 0 3px var(--hl);animation:pulse 1.4s infinite}
-.shelf.dim{opacity:.25}
-.shelf .badge{position:absolute;right:0;top:0;background:var(--hl);color:#111;font-size:11px;font-weight:600;padding:0 5px;border-radius:0 4px 0 6px;line-height:1.4}
-.edit .shelf{cursor:grab}
-#stage{position:relative}
-.tn{display:inline-grid;place-items:center;min-width:16px;height:16px;border-radius:4px;color:#fff;font-size:10px;font-weight:700;line-height:1;padding:0 3px;background:var(--tc);margin-right:3px;vertical-align:1px}
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(ellipse at 50% 35%, var(--bg2) 0%, var(--bg) 70%);
+    color: var(--ink);
+    font-family: "Kanit", system-ui, sans-serif;
+    display: flex; flex-direction: column; overflow: hidden;
+    user-select: none;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; gap: 12px;
+  }
+  .brand { font-weight: 600; letter-spacing: .25em; font-size: 15px; }
+  .brand span { color: var(--accent); font-weight: 300; letter-spacing: .15em; margin-left: 8px; }
+  .tools { display: flex; gap: 8px; }
+  button {
+    font: inherit; color: var(--ink); background: var(--chip); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: background .2s;
+  }
+  button:hover { background: rgba(255,255,255,.18); }
+  button:disabled { opacity: .3; cursor: default; }
 
-.shelf .code{display:inline-flex;align-items:center}
-.shelf.tdim,.s3.tdim .f,.s3.tdim .lbl{opacity:.15}
-.typebar{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;border-top:1px solid var(--line)}
-.typebar .tt{font-size:13px;color:var(--muted);align-self:center}
-.typebar button{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px 3px 5px;cursor:pointer;font-size:13px}
-.typebar button small{color:var(--muted)}
-.typebar button.on{border-color:var(--accent);background:var(--accent-soft)}
-.elev{display:block;margin:8px auto;max-width:100%}
-.v3 #map{position:absolute;left:50%;top:50%;transform-style:preserve-3d;background:var(--surface2);box-shadow:0 30px 60px rgba(0,0,0,.18)}
-.v3 #map .zone,.v3 #map .area{transform-style:flat}
-.s3{position:absolute;transform-style:preserve-3d;cursor:pointer}
-.s3 .f{position:absolute;background:var(--shelf-bg);border:1px solid var(--shelf-b);box-sizing:border-box}
-.s3 .top{inset:0;background:color-mix(in srgb,var(--shelf-bg) 85%,#fff)}
-.s3 .south{left:0;transform-origin:bottom;transform:rotateX(-90deg);display:flex;flex-direction:column-reverse;background:color-mix(in srgb,var(--shelf-bg) 85%,#000)}
-.s3 .west{left:0;top:0;transform-origin:left;transform:rotateY(-90deg);display:flex;flex-direction:row;background:color-mix(in srgb,var(--shelf-bg) 70%,#000)}
-.s3 .f i{flex:1;border-top:1px solid var(--shelf-b);background:linear-gradient(var(--dir),color-mix(in srgb,var(--c) 60%,var(--shelf-bg)) var(--f),transparent var(--f))}
-.s3 .west i{border-top:0;border-left:1px solid var(--shelf-b)}
-.s3 .lbl{position:absolute;left:50%;top:50%;transform-origin:0 0;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer}
-.s3 .lbl small{font-weight:400;color:var(--muted);margin-left:4px}
-.s3 .f{transition:background-color .15s,opacity .15s,border-color .15s}
-/* X-ray: ชี้ตู้ไหน ตู้ที่อยู่ด้านหน้าและบังตู้นั้นจะโปร่งใส */
-.s3.xray{pointer-events:none}
-.s3.xray .f{background-color:transparent;border-color:color-mix(in srgb,var(--muted) 60%,transparent);opacity:.22}
-.s3.xray .lbl{opacity:.3}
-.s3.focus .f{border-color:var(--accent);border-width:1.5px}
-.s3.focus .lbl{border-color:var(--accent);background:var(--accent);color:#fff;z-index:2} .s3.focus .lbl small{color:#fff}
-.s3.sel .top{background:color-mix(in srgb,var(--accent) 35%,var(--shelf-bg))} .s3.sel .lbl{border-color:var(--accent);color:var(--accent)}
-.s3.hl .top{background:var(--hl)} .s3.hl .lbl{background:var(--hl);color:#111;border-color:var(--hl)}
-.s3.dim .f,.s3.dim .lbl{opacity:.2}
-.s3.over .lbl{border-color:var(--bad)}
-.preview-banner{background:var(--accent);color:#fff;font-size:13px;padding:4px 12px;border-radius:8px;margin-bottom:8px;display:inline-block}
-@keyframes pulse{50%{box-shadow:0 0 0 6px transparent}}
-.legend{display:flex;flex-wrap:wrap;gap:14px;padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:14px;height:10px;border-radius:3px;display:inline-block}
-.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto}
-.tabs button{flex:1;border:0;background:transparent;padding:11px 8px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
-.tabs button.on{border-bottom-color:var(--accent);font-weight:500;color:var(--accent)}
-.tabs .xtra{display:none}.tabs.more .xtra{display:block}
-.tabs #moreBtn{flex:0 0 auto;color:var(--muted,#888)}
-.pbody{padding:14px 16px;max-height:calc(100vh - 200px);overflow:auto}
-@media (max-width:1000px){.pbody,.mapwrap{max-height:none}}
-h2{font-size:18px;margin:0 0 4px}
-h3{font-size:15px;margin:16px 0 8px}
-p{margin:6px 0}
-.muted{color:var(--muted)} .small{font-size:13px}
-.pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:999px;font-weight:500;white-space:nowrap}
-.pill.pick{background:var(--pick);color:var(--pick-t);border:1px solid var(--pick-b)}
-.pill.reserve{background:var(--reserve);color:var(--reserve-t);border:1px solid var(--reserve-b)}
-.pill.deep{background:var(--deep);color:var(--deep-t);border:1px solid var(--deep-b)}
-.pill.none{background:var(--surface2);color:var(--muted)}
-.pill.A{background:color-mix(in srgb,var(--A) 18%,transparent);color:var(--A)}
-.pill.B{background:color-mix(in srgb,var(--B) 18%,transparent);color:var(--B)}
-.pill.C{background:color-mix(in srgb,var(--C) 22%,transparent);color:var(--muted)}
-.pill.bad{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
-.level{border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0;background:var(--surface2)}
-.lv-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0}
-.bar i{display:block;height:100%;background:var(--A)}
-.bar i.over{background:var(--bad)}
-.item{display:flex;align-items:center;gap:8px;padding:3px 0}
-.item .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-input[type=number],input[type=text],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:4px 7px;min-width:0}
-input[type=number]{width:70px}
-textarea{width:100%;min-height:90px;font-family:ui-monospace,monospace;font-size:13px}
-.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
-.row>label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:2px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:left}
-th{font-weight:500;color:var(--muted);font-size:12px}
-td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
-tr.click{cursor:pointer} tr.click:hover{background:var(--surface2)}
-.tbl-in input{width:58px}
-.tbl-in input[type=text]{width:100%}
-.mx{overflow-x:auto;margin:8px 0}
-.mx table{font-size:12px;width:auto}
-.mx td,.mx th{padding:2px;border:0;text-align:center}
-.mx th.cl{text-align:left;padding-right:6px;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}
-.mx td.c{min-width:34px;height:26px;border-radius:5px;cursor:pointer;font-variant-numeric:tabular-nums}
-.mx td.A{background:color-mix(in srgb,var(--A) 30%,transparent)}
-.mx td.B{background:color-mix(in srgb,var(--B) 28%,transparent)}
-.mx td.C{background:color-mix(in srgb,var(--C) 20%,transparent);color:var(--muted)}
-.mx td.z{background:transparent;color:var(--muted);outline:1px dashed var(--line)}
-.mx td.on{outline:2px solid var(--accent)}
-.big{font-size:26px;font-weight:600;line-height:1.1}
-.box{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.stat{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
-.stat .big{font-size:20px}
-details{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0}
-details>summary{cursor:pointer}
-.plan-lv{font-size:13px;padding:3px 0;border-bottom:1px dashed var(--line)}
-.plan-lv:last-child{border:0}
-.empty-state{text-align:center;padding:40px 10px;color:var(--muted)}
-.warnbox{border:1px solid var(--bad);color:var(--bad);border-radius:10px;padding:8px 12px;margin:8px 0;font-size:14px}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
-.toast.show{opacity:1}
+  main {
+    flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
+    padding: 8px 64px; position: relative;
+  }
+  #stage { position: relative; }
+  #book { box-shadow: 0 30px 60px -20px rgba(0,0,0,.7); }
+  .page { background: #f4f1ec; overflow: hidden; }
+  .page img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  /* soft binding shadow on left edge to feel like paper */
+  .page::after {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 22px;
+    background: linear-gradient(90deg, rgba(0,0,0,.18), rgba(0,0,0,0));
+    pointer-events: none;
+  }
+  .nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 46px; height: 46px; border-radius: 50%; padding: 0; font-size: 22px; line-height: 1;
+  }
+  .nav.prev { left: 10px; } .nav.next { right: 10px; }
+
+  footer { padding: 6px 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  #counter { color: var(--muted); font-size: 14px; }
+  #thumbs { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; padding: 4px 2px 6px; }
+  #thumbs img {
+    height: 48px; border-radius: 4px; cursor: pointer; opacity: .45;
+    border: 2px solid transparent; transition: opacity .2s, border-color .2s, transform .2s;
+  }
+  #thumbs img:hover { opacity: .85; transform: translateY(-2px); }
+  #thumbs img.active { opacity: 1; border-color: var(--accent); }
+  .hint { color: var(--muted); font-size: 12px; opacity: .8; }
+
+  @media (max-width: 640px) {
+    main { padding: 8px 16px; }
+    .nav { display: none; }
+    header { padding: 10px 16px; }
+    .brand { font-size: 13px; }
+    #thumbs img { height: 36px; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>📦 จัดโซนหยิบ</h1>
-  <div class="search">🔍<input id="q" type="text" placeholder="ค้นหา เช่น  ดำ M  /  Basic ขาว  /  SKU"></div>
-  <button class="btn" id="viewBtn" title="สลับมุมมอง 2D / 3D">🧊 3D</button>
-  <button class="btn" id="themeBtn" title="สลับโหมดมืด/สว่าง">🌙</button>
-  <button class="btn" id="editBtn">✏️ แก้ไขผัง</button>
-</header>
-<div id="result"></div>
-<main>
-  <section class="card">
-    <div class="mapwrap"><div id="banner"></div><div id="stage"><div id="map"></div></div></div>
-    <div class="typebar" id="typebar"></div>
-    <div class="legend">
-      <span>สีทึบในตู้ = ใช้ไปกี่ %:</span>
-      <span><i style="background:var(--aisle)"></i>ทางเดิน</span>
-      <span><i style="background:var(--A)"></i>A ขายดี</span>
-      <span><i style="background:var(--B)"></i>B พอขายได้</span>
-      <span><i style="background:var(--C)"></i>C ขายช้า</span>
-      <span><i style="background:var(--bad)"></i>เกินความจุ</span>
-      <span id="editHint" hidden>โหมดแก้ไข: ลากชั้นวางเพื่อย้ายตำแหน่ง</span>
-    </div>
-  </section>
-  <aside class="card">
-    <div class="tabs" id="tabs">
-      <button data-tab="start">① นำเข้ายอดขาย</button>
-      <button data-tab="plan">② ผลจัดโซนหยิบ</button>
-      <button data-tab="detail">ชั้นวาง</button>
-      <button id="moreBtn" title="เครื่องมืออื่น ๆ">⋯</button>
-      <button class="xtra" data-tab="products">สินค้า/กฎ</button>
-      <button class="xtra" data-tab="cap">ความจุ</button>
-      <button class="xtra" data-tab="layout">ตั้งค่าผัง</button>
-    </div>
-    <div class="pbody" id="panel"></div>
-  </aside>
-</main>
-<div class="toast" id="toast"></div>
-
-<script>
-let CELL = 24;
-const KEY = 'wh2d-pick-v3';
-const ZT = { pick: 'โซนหยิบ', reserve: 'สต็อกสำรอง', deep: 'สต็อกเก็บลึก', none: 'นอกโซน' };
-const CLS_TXT = { A: 'A ขายดี', B: 'B พอขายได้', C: 'C ขายช้า' };
-const PERMS = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
-
-const $ = s => document.querySelector(s);
-const uid = () => Math.random().toString(36).slice(2, 9);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const num = v => Math.max(0, parseFloat(v) || 0);
-const int = v => Math.max(0, Math.floor(parseFloat(v) || 0));
-const fmt = n => Number(n).toLocaleString('th-TH');
-const byCode = (a, b) => a.code.localeCompare(b.code, undefined, { numeric: true });
-
-/* ================= ข้อมูลตัวอย่าง ================= */
-function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function genModel(R, { brand, model, code, colors, sizes, box, perBox, base, cw, sw }) {
-  return colors.flatMap((c, ci) => sizes.map((s, si) => {
-    const sales = Math.round(base * (cw ? cw[ci] : 1) * (sw ? sw[si] : 1) * (0.6 + R() * 0.8));
-    const stock = Math.round(sales * (0.8 + R() * 1.4) + 5 + R() * 25);
-    return { id: uid(), brand, model, color: c, size: s, sku: `${code}-${ci + 1}-${s}`, box, perBox, sales30: sales, stock };
-  }));
-}
-function seed() {
-  const R = rng(7);
-  // จำนวนกล่องต่อชั้น นับจากรูปชั้นวางจริง (cap = จำนวนกล่องแต่ละประเภทที่ใส่ได้)
-  const levelTypes = [
-    { id: 'S1', name: 'ช่องบนใหญ่ 2 ช่อง', w: 0, d: 0, h: 0, cap: { B1: 24 } },
-    { id: 'S2', name: 'ช่องล่าง 3 ช่อง', w: 0, d: 0, h: 0, cap: { B2: 18 } },
-    { id: 'S3', name: 'ชั้นแคบ', w: 0, d: 0, h: 0, cap: { B1: 2 } },
-    { id: 'S4', name: 'ชั้นยาว', w: 0, d: 0, h: 0, cap: { B1: 8 } },
-    { id: 'S5', name: 'ชั้นกล่องเหลี่ยม', w: 0, d: 0, h: 0, cap: { B2: 6 } },
-    { id: 'T3', name: 'บนหลังคา (ชั้นแคบ)', w: 0, d: 0, h: 0, roof: true, cap: { B1: 2 } },
-    { id: 'T5', name: 'บนหลังคา (กล่องเหลี่ยม)', w: 0, d: 0, h: 0, roof: true, cap: { B2: 9 } },
-  ];
-  const boxTypes = [
-    { id: 'B1', name: 'กล่องยาว', w: 40, d: 30, h: 15, slots: 2 },
-    { id: 'B2', name: 'กล่องเหลี่ยม', w: 35, d: 35, h: 30, slots: 1 },
-  ];
-  const shelfTypes = [
-    { name: 'แบบ 1 · กว้าง (บน 2 ช่อง + ล่าง 3 ช่อง)', levels: ['S2', 'S1'] },
-    { name: 'แบบ 2 · แคบ 4 ชั้น', levels: ['S3', 'S3', 'S3', 'S3', 'T3'] },
-    { name: 'แบบ 3 · ยาว 3 ชั้น', levels: ['S4', 'S4', 'S4'] },
-    { name: 'แบบ 4 · กล่องเหลี่ยม', levels: ['S5', 'T5'] },
-  ];
-  const products = [
-    ...genModel(R, { brand: 'BrandX', model: 'เสื้อยืด Basic', code: 'TB', box: 'B1', perBox: 10, base: 60,
-      colors: ['ดำ','ขาว','กรม','เทา','เทาท็อป','แดง','เลือดหมู','ฟ้า','น้ำเงิน','เขียวขี้ม้า','เขียวมิ้นท์','เหลือง','ส้ม','ชมพู','ม่วง','น้ำตาล','ครีม'],
-      cw: [1,.95,.8,.7,.5,.45,.35,.4,.3,.3,.2,.12,.08,.25,.1,.06,.2],
-      sizes: ['XS','S','M','L','XL','2XL','3XL','4XL','5XL'], sw: [.25,.7,1,1,.8,.5,.3,.12,.06] }),
-    ...genModel(R, { brand: 'BrandX', model: 'เสื้อโปโล', code: 'PL', box: 'B1', perBox: 8, base: 30,
-      colors: ['ดำ','ขาว','กรม','แดง','เขียว','ฟ้า'], cw: [1,.9,.7,.3,.15,.3],
-      sizes: ['S','M','L','XL','2XL','3XL'], sw: [.5,1,1,.7,.4,.2] }),
-    ...genModel(R, { brand: 'BrandY', model: 'กางเกงยีนส์', code: 'JN', box: 'B2', perBox: 8, base: 20,
-      colors: ['น้ำเงินเข้ม','ฟอกซีด','ดำ'], cw: [1,.6,.8],
-      sizes: ['28','29','30','31','32','33','34','36','38'], sw: [.3,.5,.8,1,1,.8,.6,.3,.15] }),
-  ];
-  const S = (code, x, y, w, h, types) => ({ id: uid(), code, x, y, w, h, levels: types.map(t => ({ t, items: [] })) });
-  // ผังตามโกดังจริง: 1 ช่อง ≈ ความลึกของชั้นวาง 1 ตัว
-  const shelves = [];
-  const row = (prefix, list, types) => list.forEach(([x, y, w, h], i) => shelves.push(S(prefix + (i + 1), x, y, w, h, types)));
-  row('A', [[1,0,4,1],[5,0,4,1],[9,0,4,1]], ['S3','S3','S3','S3','T3']);                 // แถวบน ชั้นสั้น
-  [[13,0],[20,0],[27,0],[34,0]].forEach(([x, y], i) => shelves.push(S('A' + (i + 4), x, y, 7, 1, ['S4','S4','S4']))); // แถวบน ชั้นยาว
-  shelves.push(S('H1', 0, 1, 1, 14, ['S2','S1']));                               // ชั้นแนวตั้งซ้าย
-  // เกาะ B (บนซ้าย)
-  shelves.push(S('B1', 4, 4, 1, 4, ['S3','S3','S3','S3','T3']));
-  [[5,5],[12,5],[5,6],[12,6]].forEach(([x, y], i) => shelves.push(S('B' + (i + 2), x, y, 7, 1, ['S4','S4','S4'])));
-  // เกาะ C (บนขวา)
-  shelves.push(S('C1', 22, 4, 1, 4, ['S3','S3','S3','S3','T3']));
-  [[24,5],[31,5],[24,6],[31,6]].forEach(([x, y], i) => shelves.push(S('C' + (i + 2), x, y, 7, 1, ['S4','S4','S4'])));
-  shelves.push(S('C6', 38, 4, 1, 4, ['S3','S3','S3','S3','T3']));
-  // เกาะ D (ล่างซ้าย) และ E (ล่างขวา)
-  [[5,11],[12,11]].forEach(([x, y], i) => shelves.push(S('D' + (i + 1), x, y, 7, 1, ['S4','S4','S4'])));
-  [[24,11],[31,11]].forEach(([x, y], i) => shelves.push(S('E' + (i + 1), x, y, 7, 1, ['S4','S4','S4'])));
-  // ชั้นแนวตั้งขวา
-  [0,4,8,12].forEach((y, i) => shelves.push(S('F' + (i + 1), 42, y, 1, 4, ['S5','T5'])));
-  // แถวล่าง
-  [15,22,29,36].forEach((x, i) => shelves.push(S('G' + (i + 1), x, 24, 7, 1, ['S4','S4','S4'])));
-  const db = {
-    map: { cols: 43, rows: 25 }, levelTypes, boxTypes, shelfTypes, products, shelves,
-    areas: [
-      { type: 'aisle', x: 2, y: 1, w: 40, h: 14 },
-      { type: 'aisle', x: 0, y: 15, w: 42, h: 8 },
-      { type: 'floor', x: 3, y: 3, w: 17, h: 5 },
-      { type: 'floor', x: 21, y: 3, w: 19, h: 5 },
-      { type: 'floor', x: 3, y: 10, w: 17, h: 5 },
-      { type: 'floor', x: 21, y: 10, w: 19, h: 5 },
-    ],
-    zones: [
-      { id: 'z1', name: 'โกดัง', type: 'pick', x: 0, y: 0, w: 43, h: 25 },
-    ],
-    rules: defaultRules(),
-    settings: { aPct: 80, bPct: 95, cover: 14, bPick: false, keepColor: true, sizeOrder: 'XS,S,M,L,XL,2XL,3XL,4XL,5XL' },
-  };
-  // วางของแบบ "ปัจจุบันที่ยังไม่เป็นระบบ" — ไล่ใส่ตามลำดับ SKU ทีละ 1–2 กล่อง โดยไม่สนว่าขายดีหรือไม่
-  DB = db;
-  const slots = db.shelves.slice().sort(byCode).flatMap(sh => sh.levels.map((L, li) => ({ sh, li, L, items: L.items, frac: 0 })));
-  fill(slots, [db.products.map(p => ({ p, boxes: Math.min(boxesOf(p), 1 + (p.stock % 2)) })).filter(e => e.boxes)]);
-  return db;
-}
-function load() { try { const s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
-// SKU ที่ดึงจาก Supabase มีเป็นหมื่นแถว เก็บลงเบราว์เซอร์เฉพาะตัวที่มีสต็อก/ยอดขาย/วางบนชั้น/แก้ค่าแล้ว (ที่เหลือดึงใหม่ทุกครั้งที่เปิด)
-function persistable() {
-  const placed = new Set();
-  DB.shelves.forEach(s => s.levels.forEach(L => L.items.forEach(i => placed.add(i.pid))));
-  const keep = p => p.src !== 'sb' || p.stock > 0 || p.sales30 > 0 || p.perBox !== PER_DEF || p.box !== 'B1' || !!p.cat || placed.has(p.id);
-  return { ...DB, products: DB.products.filter(keep) };
-}
-function save() { try { localStorage.setItem(KEY, JSON.stringify(persistable())); } catch (e) {} }
-
-/* ================= เชื่อม Supabase (ตาราง products) ================= */
-const SB = { url: 'https://dsekvvygczrvvwnnrkuy.supabase.co', key: 'sb_publishable_boz7aOGbmjTHyPwsKhJl0Q_W41e5RXl' };
-// sku_merchant รูปแบบ รุ่น-สี-ไซส์ เช่น YS001-เทา-YXL / WP-262JKACL71-EE-XS (สองท่อนท้ายคือสีและไซส์)
-function parseSku(s) {
-  const t = s.split('-').map(x => x.trim()).filter(Boolean);
-  if (t.length >= 3) return { model: t.slice(0, -2).join('-'), color: t[t.length - 2], size: t[t.length - 1] };
-  if (t.length === 2) return { model: t[0], color: '-', size: t[1] };
-  return { model: s, color: '-', size: '-' };
-}
-const sync = { busy: false, n: 0, at: null, err: null };
-async function syncCatalog(silent) {
-  if (sync.busy) return;
-  sync.busy = true; sync.err = null;
-  try {
-    const rows = [];
-    for (let off = 0; ; off += 1000) {
-      const r = await fetch(`${SB.url}/rest/v1/products?select=brand,sku_merchant&order=id&limit=1000&offset=${off}`, { headers: { apikey: SB.key } });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const part = await r.json(); rows.push(...part);
-      if (!silent) toast(`กำลังดึง SKU… ${fmt(rows.length)}`);
-      if (part.length < 1000) break;
-    }
-    const have = new Map(DB.products.map(p => [String(p.sku).toLowerCase(), p]));
-    let added = 0;
-    for (const r of rows) {
-      const sku = String(r.sku_merchant || '').trim(); if (!sku) continue;
-      const p = have.get(sku.toLowerCase());
-      if (p) { if (r.brand) p.brand = r.brand; continue; }
-      DB.products.push({ id: uid(), src: 'sb', brand: r.brand || '', ...parseSku(sku), sku, box: 'B1', perBox: PER_DEF, sales30: 0, stock: 0 });
-      added++;
-    }
-    // ดึงของจริงได้แล้ว → เอาสินค้าตัวอย่างออกเอง (ไม่ให้ปนบนชั้น)
-    if (rows.length > 100 && DB.products.some(isDemo)) {
-      const dead = new Set(DB.products.filter(isDemo).map(p => p.id));
-      DB.products = DB.products.filter(p => !dead.has(p.id));
-      DB.shelves.forEach(s => s.levels.forEach(L => L.items = L.items.filter(i => !dead.has(i.pid))));
-    }
-    sync.n = rows.length; sync.at = new Date();
-    toast(`ดึง SKU จาก Supabase ${fmt(rows.length)} รายการ (ใหม่ ${fmt(added)})`);
-  } catch (e) {
-    sync.err = String(e.message || e);
-    toast('ดึงข้อมูลจาก Supabase ไม่สำเร็จ: ' + sync.err);
-  }
-  sync.busy = false;
-  render();
-}
-
-/* ================= นำเข้ายอดขายจากไฟล์ (.xlsx อ่านเองในเบราว์เซอร์ ไม่ต้องใช้ไลบรารี) ================= */
-async function readXlsx(buf) {
-  const dv = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder();
-  let e = u8.length - 22;
-  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
-  if (e < 0) throw new Error('ไม่ใช่ไฟล์ xlsx');
-  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true);
-  const files = {};
-  for (let i = 0; i < n; i++) {
-    const nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true);
-    files[dec.decode(u8.subarray(p + 46, p + 46 + nl))] = { method: dv.getUint16(p + 10, true), csize: dv.getUint32(p + 20, true), lo: dv.getUint32(p + 42, true) };
-    p += 46 + nl + xl + cl;
-  }
-  const read = async name => {
-    const f = files[name]; if (!f) return null;
-    const s = f.lo + 30 + dv.getUint16(f.lo + 26, true) + dv.getUint16(f.lo + 28, true), data = u8.subarray(s, s + f.csize);
-    if (f.method === 0) return dec.decode(data);
-    return dec.decode(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
-  };
-  const xml = s => new DOMParser().parseFromString(s, 'application/xml');
-  const text = el => [...el.getElementsByTagName('t')].map(t => t.textContent).join('');
-  const sst = await read('xl/sharedStrings.xml'), ss = sst ? [...xml(sst).getElementsByTagName('si')].map(text) : [];
-  const sheet = Object.keys(files).filter(k => /^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort((a, b) => parseInt(a.match(/\d+/g).pop()) - parseInt(b.match(/\d+/g).pop()))[0];
-  if (!sheet) throw new Error('ไม่พบชีตในไฟล์');
-  const rows = [];
-  for (const r of xml(await read(sheet)).getElementsByTagName('row')) {
-    const row = []; let k = 0;
-    for (const c of r.getElementsByTagName('c')) {
-      const ref = (c.getAttribute('r') || '').replace(/\d+/g, '');
-      if (ref) k = ref.split('').reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0) - 1;
-      const t = c.getAttribute('t'), v = c.getElementsByTagName('v')[0];
-      row[k++] = t === 'inlineStr' ? text(c) : t === 's' && v ? ss[+v.textContent] : v ? v.textContent : '';
-    }
-    rows.push(row);
-  }
-  return rows;
-}
-// rows = แถว×คอลัมน์ ถ้ามีหัวตารางที่มีคำว่า SKU / จำนวน / สถานะ จะใช้คอลัมน์ตามนั้น ไม่งั้นถือว่า A=SKU, B=จำนวน
-// ออเดอร์ที่สถานะเป็นยกเลิก/คืน ไม่นับเป็นยอดขาย
-function parseSalesRows(rows) {
-  const CANCEL = /cancel|ยกเลิก|return|refund|คืนสินค้า|คืนเงิน/i;
-  let sk = 0, qc = 1, st = -1, start = 0;
-  const hi = rows.slice(0, 5).findIndex(r => r.some(c => /sku/i.test(c)));
-  if (hi >= 0) {
-    const h = Array.from(rows[hi], c => String(c ?? '')); start = hi + 1;
-    sk = h.findIndex(c => /sku.*merchant|merchant.*sku/i.test(c)); if (sk < 0) sk = h.findIndex(c => /sku/i.test(c));
-    qc = h.findIndex(c => /จำนวน|qty|quantity/i.test(c));
-    st = h.findIndex(c => /สถานะ|status/i.test(c));
-  }
-  const tot = new Map(); let used = 0, cancelled = 0, blank = 0, pcs = 0;
-  for (const r of rows.slice(start)) {
-    const sku = String(r[sk] ?? '').trim();
-    if (!sku) { if (r.some(c => String(c ?? '').trim())) blank++; continue; }
-    if (st >= 0 && CANCEL.test(String(r[st] ?? ''))) { cancelled++; continue; }
-    const raw = qc < 0 ? '' : String(r[qc] ?? '').trim(), q = raw === '' ? 1 : parseFloat(raw.replace(/,/g, ''));
-    if (isNaN(q) || q < 0) continue;
-    const k = sku.toLowerCase(); tot.set(k, (tot.get(k) || 0) + q); used++; pcs += q;
-  }
-  return { tot, used, cancelled, blank, pcs };
-}
-
-let DB = null;
-let CLS = {}, PLAN = null;
-const ui = { tf: null, view: '2d', sel: null, tab: 'start', q: '', zf: 'all', edit: false, focus: null, openModel: null, calc: { lt: 'L2', bt: 'B1' } };
-
-/* ================= คำนวณพื้นฐาน ================= */
-let pmap = null, pmapSrc = null, pmapN = -1;
-const prod = id => {
-  if (pmapSrc !== DB.products || pmapN !== DB.products.length) { pmap = new Map(DB.products.map(p => [p.id, p])); pmapSrc = DB.products; pmapN = DB.products.length; }
-  return pmap.get(id);
-};
-const shelf = id => DB.shelves.find(s => s.id === id);
-const ltype = id => DB.levelTypes.find(t => t.id === id) || { name: '?', w: 0, d: 0, h: 0 };
-const btype = id => DB.boxTypes.find(t => t.id === id) || { name: '?', w: 0, d: 0, h: 0 };
-const pname = p => `${p.model} ${p.color} ${p.size}`;
-// กฎข้อยกเว้นตามแบรนด์/รหัสรุ่น: ตัวต่อกล่อง (กล่องยาวมี 2 ช่อง จึงหารเป็นตัวต่อช่อง) และ "ไม่ขึ้นโซนหยิบ"
-const isDemo = p => p.src !== 'sb' && (p.brand === 'BrandX' || p.brand === 'BrandY') && /^(TB|PL|JN)-\d+-/.test(p.sku); // ข้อมูลตัวอย่างตอนเริ่มต้น
-const PER_DEF = 20; // กล่องยาว ~40 ตัว = 20 ตัวต่อช่อง
-const defaultRules = () => [
-  { id: uid(), brand: 'EGO', codes: 'TT001,TT002,TT003,TT004,TT005,TT006,TT007,TT008', perBox: 0, noPick: true },
-  { id: uid(), brand: 'CADENZA', codes: '', perBox: 0, noPick: true },
-];
-const ruleHit = (r, p) => {
-  const b = String(r.brand || '').trim().toUpperCase(), cs = String(r.codes || '').split(/[,\s]+/).filter(Boolean).map(c => c.toUpperCase());
-  if (!b && !cs.length) return false;
-  if (b && !String(p.brand || '').toUpperCase().includes(b)) return false;
-  const m = String(p.model || '').toUpperCase();
-  return !cs.length || cs.some(c => c.endsWith('*') ? m.startsWith(c.slice(0, -1)) : m === c);
-};
-const rulesOf = p => (DB.rules || []).filter(r => ruleHit(r, p));
-const ppb = p => { const r = rulesOf(p).find(r => r.perBox > 0); return r ? Math.max(1, Math.round(r.perBox / slotsOf(p.box))) : (p.perBox || 1); };
-const noPick = p => rulesOf(p).some(r => r.noPick);
-const boxesOf = p => Math.ceil(p.stock / Math.max(1, ppb(p)));
-// หมวดสินค้า: shirt = เสื้อ/ผ้า (ได้ที่ก่อน) · acc = อุปกรณ์ (เติมที่ว่างที่เหลือ) ตั้งเองได้ต่อรุ่น ไม่ตั้ง = เดาจากชื่อ SKU
-const ACC_RE = /ถุงเท้า|สนับ|เชือก|กระเป๋า|หมวก|ถุงมือ|ผ้าพัน|ปลอก|สายรัด|ที่รัด|ลูก|ขวด|กระติก|นกหวีด|อุปกรณ์|ผ้าเช็ด|ผ้าขนหนู|แว่น|หน้ากาก|เทป/;
-// ใส่โซนหยิบเฉพาะแบรนด์ที่กำหนด (คั่น , ได้; ว่าง = ทุกแบรนด์)
-const DEFAULT_BRAND_MAP = [{ brand: 'WARRIX', types: [2, 1] }, { brand: 'GRAND', types: [3, 1] }]; // ยาว/กล่องเหลี่ยม เฉพาะแบรนด์ · แคบ ใช้ร่วมกัน
-const brandOK = p => {
-  const b = String((DB.settings || {}).brandOnly || '').split(/[,，]/).map(x => x.trim().toUpperCase()).filter(Boolean);
-  return !b.length || b.some(x => String(p.brand || '').toUpperCase().includes(x));
-};
-const catOf = p => p.cat || (ACC_RE.test(p.sku) || ACC_RE.test(p.model) ? 'acc' : 'shirt');
-
-function fitInfo(W, D, H, b) {
-  const a = [b.w, b.d, b.h];
-  let best = { n: 0, grid: [0, 0, 0], box: a };
-  if (!a.every(v => v > 0)) return best;
-  for (const [i, j, k] of PERMS) {
-    const g = [Math.floor(W / a[i]), Math.floor(D / a[j]), Math.floor(H / a[k])];
-    const n = g[0] * g[1] * g[2];
-    if (n > best.n) best = { n, grid: g, box: [a[i], a[j], a[k]] };
-  }
-  return best;
-}
-const capAuto = (t, bt) => fitInfo(t.w, t.d, t.h, btype(bt)).n;
-const capLB = (lt, bt) => { const t = ltype(lt); return t.cap && t.cap[bt] != null ? t.cap[bt] : capAuto(t, bt); };
-// 1 กล่องมีหลายช่องหยิบได้ (กล่องยาว = 2 ช่อง) — ระบบนับ/จัดของเป็น "ช่อง" (1 ช่อง = 1 SKU)
-const DEF_SLOTS = { B1: 2, B2: 1 };
-const slotsOf = id => { const b = btype(id); return b.slots || DEF_SLOTS[id] || 1; };
-// ชั้นวางเป็นตัวกำหนดกล่อง: ถ้ากล่องของสินค้านี้ไม่ใช่แบบที่ชั้นนี้รองรับ ให้ใช้กล่องแบบที่ชั้นนี้ใส่ได้มากสุดแทน
-const nativeBox = lt => { let best = null, n = 0; DB.boxTypes.forEach(b => { const c = capLB(lt, b.id); if (c > n) { n = c; best = b.id; } }); return best; };
-const fitLP = (L, p) => {
-  const c = capLB(L.t, p.box);
-  if (c > 0) return c * slotsOf(p.box);
-  const b = nativeBox(L.t);
-  return b ? capLB(L.t, b) * slotsOf(b) : 0;
-};
-function usedFrac(L, items = L.items) {
-  let f = 0;
-  for (const it of items) { const p = prod(it.pid); if (!p) continue; const c = fitLP(L, p); f += c ? it.boxes / c : (it.boxes ? 1 : 0); }
-  return f;
-}
-const remaining = (L, p, frac = usedFrac(L)) => Math.max(0, Math.floor((1 - frac) * fitLP(L, p) + 1e-9));
-
-function zoneOf(sh) {
-  const cx = sh.x + sh.w / 2, cy = sh.y + sh.h / 2;
-  return DB.zones.find(z => cx >= z.x && cx <= z.x + z.w && cy >= z.y && cy <= z.y + z.h) || null;
-}
-const typeOf = sh => (zoneOf(sh) || {}).type || 'none';
-
-// แบ่ง A/B/C ตามยอดขายสะสม (Pareto): A = SKU ที่รวมกันได้ยอดขาย aPct% แรก
-function classify() {
-  const st = DB.settings, r = {}, ok = DB.products.filter(brandOK);
-  DB.products.forEach(p => { r[p.id] = 'C'; });
-  const list = ok.slice().sort((a, b) => b.sales30 - a.sales30);
-  const total = list.reduce((a, p) => a + p.sales30, 0) || 1;
-  let cum = 0;
-  for (const p of list) {
-    const before = cum / total * 100; cum += p.sales30;
-    r[p.id] = p.sales30 <= 0 ? 'C' : before < st.aPct ? 'A' : before < st.bPct ? 'B' : 'C';
-  }
-  return r;
-}
-function sizeIdx(s) {
-  const order = DB.settings.sizeOrder.split(',').map(x => x.trim().toUpperCase());
-  const i = order.indexOf(String(s).toUpperCase());
-  if (i >= 0) return i;
-  const n = parseFloat(s); return isNaN(n) ? 9999 : 100 + n;
-}
-function locations(pid) {
-  const r = [];
-  for (const sh of DB.shelves) sh.levels.forEach((L, li) => L.items.forEach(it => { if (it.pid === pid && it.boxes > 0) r.push({ sh, li, boxes: it.boxes, type: typeOf(sh) }); }));
-  return r;
-}
-
-/* ================= อัลกอริทึมจัดวาง ================= */
-// ลำดับชั้นที่หยิบง่าย: ชั้น 2, 3 (ระดับเอว-อก) ก่อน แล้วค่อยชั้น 1 และชั้นบน
-const golden = n => [1, 2, 0, 3, 4, 5, 6, 7, 8, 9].filter(i => i < n).concat(Array.from({ length: Math.max(0, n - 10) }, (_, i) => i + 10));
-function makeSlots(type) {
-  return DB.shelves.filter(s => typeOf(s) === type).sort(byCode)
-    .flatMap(sh => golden(sh.levels.length).sort((a, b) => !!ltype(sh.levels[a].t).roof - !!ltype(sh.levels[b].t).roof).map(li => ({ sh, li, L: sh.levels[li], items: [], frac: 0 })));
-}
-// จัดกลุ่ม: รุ่นที่ขายดีก่อน → ในรุ่น สีที่ขายดีก่อน → ในสี เรียงไซส์เล็กไปใหญ่
-function groupEntries(entries) {
-  const mv = {}, cv = {};
-  for (const e of entries) { mv[e.p.model] = (mv[e.p.model] || 0) + e.p.sales30; const k = e.p.model + '|' + e.p.color; cv[k] = (cv[k] || 0) + e.p.sales30; }
-  entries.sort((a, b) => mv[b.p.model] - mv[a.p.model] || a.p.model.localeCompare(b.p.model)
-    || cv[b.p.model + '|' + b.p.color] - cv[a.p.model + '|' + a.p.color] || a.p.color.localeCompare(b.p.color)
-    || sizeIdx(a.p.size) - sizeIdx(b.p.size));
-  const groups = []; let key = null;
-  for (const e of entries) { const k = e.p.model + '|' + e.p.color; if (k !== key) { groups.push([]); key = k; } groups[groups.length - 1].push(e); }
-  return groups;
-}
-function fill(slots, groups, keepColor = false) {
-  const left = []; let start = 0;
-  const put = (s, p, n) => { const it = s.items.find(i => i.pid === p.id); if (it) it.boxes += n; else s.items.push({ pid: p.id, boxes: n }); s.frac += n / fitLP(s.L, p); };
-  for (const g of groups) {
-    while (start < slots.length && slots[start].frac >= 1 - 1e-6) start++;
-    if (keepColor && start < slots.length && slots[start].frac > 0) {
-      // ถ้าสีนี้ใส่ชั้นปัจจุบันไม่หมด แต่ใส่ชั้นถัดไปได้หมด → ขึ้นชั้นใหม่ ไม่ให้สีเดียวกันแตกหลายที่
-      const gf = s => g.reduce((a, e) => { const c = fitLP(s.L, e.p); return a + (c ? e.boxes / c : 99); }, 0);
-      const s = slots[start], nx = slots[start + 1];
-      if (gf(s) > 1 - s.frac + 1e-9 && nx && nx.frac === 0 && gf(nx) <= 1 + 1e-9) start++;
-    }
-    let last = start;
-    for (const e of g) {
-      let need = e.boxes, j = start;
-      while (need > 0) {
-        while (j < slots.length && remaining(slots[j].L, e.p, slots[j].frac) <= 0) j++;
-        if (j >= slots.length) break;
-        const n = Math.min(need, remaining(slots[j].L, e.p, slots[j].frac));
-        put(slots[j], e.p, n); need -= n; last = Math.max(last, j);
-      }
-      if (need > 0) left.push({ p: e.p, boxes: need });
-    }
-    start = last;
-  }
-  return left;
-}
-// วางโดยให้ "คนละรุ่น" อยู่ไกลกันมากที่สุด: รุ่นขายดีได้ชั้นแรก รุ่นถัดไปเลือกชั้นที่อยู่ไกลจากชั้นที่มีรุ่นอื่นวางแล้วมากที่สุด
-// (รุ่นเดียวกันยังอยู่ชั้นเดียวกัน ล้นแล้วค่อยไหลไปชั้นที่ไกลรองลงมา)
-function spreadFill(pool, entries, keepColor) {
-  if (DB.settings.spread === false || !pool.length || !entries.length) return fill(pool, groupEntries(entries), keepColor);
-  const byModel = new Map();
-  for (const g of groupEntries(entries)) { const m = g[0].p.model; if (!byModel.has(m)) byModel.set(m, []); byModel.get(m).push(g); }
-  const shelves = [...new Set(pool.map(s => s.sh))];
-  const ctr = sh => [sh.x + sh.w / 2, sh.y + sh.h / 2];
-  const left = [];
-  for (const groups of byModel.values()) {
-    const used = shelves.filter(sh => pool.some(s => s.sh === sh && s.frac > 1e-6));
-    const score = sh => {
-      if (!pool.some(s => s.sh === sh && s.frac < 1 - 1e-6)) return -1;      // เต็มแล้ว
-      if (used.includes(sh)) return 0;                                         // มีรุ่นอื่นอยู่แล้ว ใช้เป็นที่สำรองสุดท้าย
-      if (!used.length) return Infinity;
-      const [x, y] = ctr(sh);
-      return Math.min(...used.map(u => { const [ux, uy] = ctr(u); return Math.hypot(x - ux, y - uy); }));
-    };
-    const order = shelves.map(sh => ({ sh, sc: score(sh) })).sort((a, b) => b.sc - a.sc || byCode(a.sh, b.sh)).map(o => o.sh);
-    const ordered = order.flatMap(sh => pool.filter(s => s.sh === sh));
-    left.push(...fill(ordered, groups, keepColor));
-  }
-  return left;
-}
-function merge(entries) {
-  const m = new Map();
-  for (const e of entries) m.set(e.p.id, { p: e.p, boxes: (m.has(e.p.id) ? m.get(e.p.id).boxes : 0) + e.boxes });
-  return [...m.values()].filter(e => e.boxes > 0);
-}
-function buildPlan() {
-  const st = DB.settings, pick = [], toStock = [], acc = [];
-  for (const p of DB.products) {
-    if (!brandOK(p)) continue; // ไม่ใช่แบรนด์ที่เลือกให้ขึ้นโซนหยิบ
-    // ไม่ใช้สต็อก (ค่าเริ่มต้น): คิดจากยอดขายอย่างเดียว = จำนวนช่องที่ต้องมีให้พอขาย "cover" วัน
-    const boxes = st.useStock ? boxesOf(p) : (p.sales30 > 0 ? Math.max(1, Math.ceil(p.sales30 / 30 * st.cover / ppb(p))) : 0);
-    if (!boxes) continue;
-    if (noPick(p)) { toStock.push({ p, boxes }); continue; } // ใส่กล่องโซนหยิบไม่ได้ → เก็บสต็อกเสมอ
-    // อุปกรณ์: ไม่แย่งที่กับเสื้อ — เก็บไว้เติมช่องว่างที่เหลือหลังจัดเสื้อเสร็จ
-    if (catOf(p) === 'acc') {
-      const want = p.sales30 > 0 ? Math.min(boxes, Math.max(1, Math.ceil(p.sales30 / 30 * st.cover / ppb(p)))) : 0;
-      if (want) acc.push({ p, boxes: want });
-      if (boxes - want) toStock.push({ p, boxes: boxes - want });
-      continue;
-    }
-    const c = CLS[p.id];
-    // A: โซนหยิบเก็บพอขาย "cover" วัน · B: 1 กล่อง (ถ้าเปิดไว้) · C: ไม่ขึ้นโซนหยิบ — ที่เหลือส่งเข้าสต็อก
-    const pk = c === 'A' ? Math.min(boxes, Math.max(1, Math.ceil(p.sales30 / 30 * st.cover / ppb(p))))
-      : c === 'B' && st.bPick ? 1 : 0;
-    if (pk) pick.push({ p, boxes: pk });
-    if (boxes - pk) toStock.push({ p, boxes: boxes - pk });
-  }
-  const slots = makeSlots('pick');
-  const A = pick.filter(e => CLS[e.p.id] === 'A'), B = pick.filter(e => CLS[e.p.id] !== 'A');
-  // ใส่กลุ่ม A ก่อนให้ได้ชั้นดีสุด แล้วค่อยเติม B ในที่ว่างที่เหลือ
-  // แบรนด์ → แบบชั้นวางที่ใส่ได้ (index ของแบบชั้น: 0 กว้าง · 1 แคบ 4 ชั้น · 2 ยาว 3 ชั้น · 3 กล่องเหลี่ยม)
-  // แบบที่ใช้ร่วมกันหลายแบรนด์ (แคบ 4 ชั้น) ไม่ฟิกแบรนด์: ใครขายดีกว่าได้ก่อน
-  const bm = st.brandMap || DEFAULT_BRAND_MAP;
-  const bidx = p => bm.findIndex(m => String(p.brand || '').toUpperCase().includes(m.brand.toUpperCase()));
-  const typeCount = new Map(); bm.forEach(m => m.types.forEach(t => typeCount.set(t, (typeCount.get(t) || 0) + 1)));
-  const stOf = new Map(slots.map(s => [s, stIdx(s.sh)]));
-  const exclSlots = bm.map(m => slots.filter(s => m.types.includes(stOf.get(s)) && typeCount.get(stOf.get(s)) === 1));
-  const exclSet = new Set(exclSlots.flat());
-  const freeSlots = slots.filter(s => !exclSet.has(s));
-  const placeAll = (entries, keepColor) => {
-    const left = [];
-    bm.forEach((m, i) => { if (exclSlots[i].length) left.push(...spreadFill(exclSlots[i], entries.filter(e => bidx(e.p) === i), keepColor)); else left.push(...entries.filter(e => bidx(e.p) === i)); });
-    return spreadFill(freeSlots, left.concat(entries.filter(e => bidx(e.p) < 0)), keepColor);
-  };
-  let start = placeAll(A, st.keepColor);
-  const leftB = placeAll(B, st.keepColor);
-  // เสื้อขายยังไม่พอเต็มโซนหยิบ → เอาอุปกรณ์ที่ขายดีสุดมาเติมที่ว่างที่เหลือ
-  const leftAcc = st.accFill === false ? acc.map(e => ({ ...e })) : placeAll(acc.map(e => ({ ...e })), false);
-  const accLeft = new Map(leftAcc.map(e => [e.p.id, e.boxes]));
-  const accStock = acc.map(e => ({ p: e.p, boxes: accLeft.get(e.p.id) || 0 })).filter(e => e.boxes > 0);
-  const accPlaced = sumB(acc) - sumB(accStock);
-  // ยังมีที่ว่างในโซนหยิบ → (1) เอาตัวที่ขายได้แต่ยังไม่ได้ขึ้น (B/C) ขึ้นมา (2) เพิ่มจำนวนตัวขายดีรอบละ "cover" วัน จนเต็ม (สูงสุด 6 รอบ)
-  const extra = new Map();
-  if (st.fillAll !== false) {
-    const room = () => slots.some(s => s.frac < 1 - 1e-6);
-    const place = list => {
-      if (!list.length) return;
-      const left = new Map(placeAll(list.map(e => ({ ...e })), false).map(e => [e.p.id, e.boxes]));
-      for (const e of list) { const n = e.boxes - (left.get(e.p.id) || 0); if (n > 0) extra.set(e.p.id, (extra.get(e.p.id) || 0) + n); }
-    };
-    const need = (p, mult) => Math.ceil(p.sales30 / 30 * st.cover * mult / ppb(p));
-    const sellers = DB.products.filter(p => p.sales30 > 0 && !noPick(p) && brandOK(p)).sort((a, b) => b.sales30 - a.sales30);
-    const picked = new Set(pick.map(e => e.p.id)), accIds = new Set(acc.map(e => e.p.id));
-    const cap = p => st.useStock ? boxesOf(p) : Infinity;
-    if (room()) place(sellers.filter(p => catOf(p) !== 'acc' && !picked.has(p.id)).map(p => ({ p, boxes: Math.min(cap(p), Math.max(1, need(p, 1))) })));
-    if (room()) place(sellers.filter(p => catOf(p) === 'acc' && !accIds.has(p.id)).map(p => ({ p, boxes: Math.min(cap(p), Math.max(1, need(p, 1))) })));
-    for (let r = 2; r <= 6 && !st.useStock && room(); r++) {
-      const add = p => ({ p, boxes: need(p, r) - need(p, r - 1) });
-      place(sellers.filter(p => catOf(p) !== 'acc').map(add).filter(e => e.boxes > 0));
-      if (room()) place(sellers.filter(p => catOf(p) === 'acc').map(add).filter(e => e.boxes > 0));
-    }
-    // ยังว่างอยู่ (ยอดขายน้อยจนพอขาย cover วันใน 1 ช่องแล้ว) → เพิ่มจำนวนช่องให้ตัวขายดี รอบละ 1 ช่อง ยิ่งขายดียิ่งได้มาก
-    // รอบที่ k ให้เฉพาะ (11-k)/10 อันดับแรก — ตัวละไม่เกิน 10 ช่องเพิ่ม
-    for (let k = 1; k <= 10 && !st.useStock && room(); k++) {
-      const top = sellers.slice(0, Math.max(1, Math.ceil(sellers.length * (11 - k) / 10)));
-      place(top.filter(p => catOf(p) !== 'acc').map(p => ({ p, boxes: 1 })));
-      if (room()) place(top.filter(p => catOf(p) === 'acc').map(p => ({ p, boxes: 1 })));
-    }
-  }
-  const map = new Map();
-  for (const s of slots) map.set(s.sh.id + '|' + s.li, s);
-  const stockLeft = merge(toStock.concat(start, leftB, accStock)).map(e => ({ p: e.p, boxes: e.boxes - (extra.get(e.p.id) || 0) })).filter(e => e.boxes > 0);
-  return { slots, map, want: sumB(pick), accPlaced, extraPlaced: [...extra.values()].reduce((a, b) => a + b, 0), unplacedA: start, unplacedB: leftB, toStock: stockLeft };
-}
-const sumB = a => a.reduce((x, e) => x + e.boxes, 0);
-
-/* ================= วาดผัง ================= */
-const preview = () => ui.tab === 'plan' && PLAN;
-const itemsOf = (sh, li) => preview() ? ((PLAN.map.get(sh.id + '|' + li) || {}).items || []) : sh.levels[li].items;
-function domClass(items) {
-  const w = { A: 0, B: 0, C: 0 };
-  items.forEach(it => { const c = CLS[it.pid]; if (c) w[c] += it.boxes; });
-  return w.A >= w.B && w.A >= w.C && w.A ? 'A' : w.B >= w.C && w.B ? 'B' : 'C';
-}
-function matchedIds() {
-  if (ui.focus) return [ui.focus];
-  const terms = ui.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (!terms.length) return [];
-  return DB.products.filter(p => {
-    const words = [p.brand, p.model, p.color, p.size, p.sku].map(x => String(x).toLowerCase());
-    const hay = words.join(' ');
-    // ไซส์ต้องตรงทั้งคำ (พิมพ์ "M" ไม่ให้เจอ "XL")
-    return terms.every(t => words.includes(t) || (t.length > 2 && hay.includes(t)) || (p.color.toLowerCase().startsWith(t)) || p.model.toLowerCase().includes(t) || p.sku.toLowerCase() === t);
-  }).map(p => p.id);
-}
-// ชั้นวางนี้เป็นแบบไหน (เทียบลำดับชั้นกับแบบชั้นวาง)
-function stIdx(sh) {
-  const key = sh.levels.map(L => L.t).join(',');
-  return (DB.shelfTypes || []).findIndex(st => st.levels.join(',') === key);
-}
-const stName = i => (DB.shelfTypes[i] || {}).name || 'ไม่ระบุแบบ';
-const stShort = i => stName(i).replace(/^แบบ\s*\d+\s*·\s*/, '');
-const tcOf = i => i >= 0 ? `var(--t${i % 4 + 1})` : 'var(--shelf-b)';
-const tnHtml = i => i >= 0 ? `<b class="tn" style="--tc:${tcOf(i)}">${i + 1}</b>` : '';
-function renderTypebar() {
-  const cnt = i => DB.shelves.filter(sh => stIdx(sh) === i).length;
-  $('#typebar').innerHTML = `<span class="tt">แบบชั้นวาง (คลิกเพื่อดูเฉพาะแบบ):</span>` + (DB.shelfTypes || []).map((st, i) =>
-    `<button data-tf="${i}" class="${ui.tf === i ? 'on' : ''}" style="--tc:${tcOf(i)}">${tnHtml(i)}${esc(stShort(i))} <small>${cnt(i)} ตู้</small></button>`).join('');
-}
-// รูปหน้าตู้: เรียงกล่องตามจริง (cols = จำนวนกล่องต่อแถว) ระบายสีตามกลุ่มสินค้าที่วางอยู่
-const DEF_COLS = { S1: 8, S2: 9, S3: 2, S4: 4, S5: 3, T3: 2, T5: 3 };
-const DEF_AR = { B1: 0.65, B2: 0.9 };
-const DEF_BAYS = { S1: 2, S2: 3 }; // จำนวนช่องที่มีเสากั้น
-const DEF_HEAD = { S1: 1.1 }; // ที่ว่างเหนือกล่อง (หน่วย = ความสูงกล่อง)
-const DEF_OPEN = { S4: true }; // ชั้นบนสุดไม่มีคานปิด กล่องแถวบนโผล่พ้นเสา
-function elevSVG(sh) {
-  const pad = 16, gap = 2, post = 5, rows = [];
-  for (let li = sh.levels.length - 1; li >= 0; li--) {
-    const L = sh.levels[li], lt = ltype(L.t);
-    let n = 0, bt = DB.boxTypes[0], sl = 1;
-    DB.boxTypes.forEach(b => { const c = capLB(L.t, b.id); if (c > n) { n = c; bt = b; } });
-    const cols = Math.max(1, Math.min(n || 1, lt.cols || DEF_COLS[lt.id] || (n <= 8 ? n : Math.ceil(n / Math.ceil(n / 8)))));
-    const fills = L.items.flatMap(it => Array(it.boxes).fill(CLS[it.pid] || 'C'));
-    sl = slotsOf(bt.id);
-    rows.push({ li, n, sl, cols, rn: Math.max(1, Math.ceil(n / cols)), fills, roof: !!lt.roof, head: lt.head ?? DEF_HEAD[lt.id] ?? 0, bays: lt.bays || DEF_BAYS[lt.id] || 1, open: lt.open ?? !!DEF_OPEN[lt.id], ar: bt.ar || DEF_AR[bt.id] || 0.65 });
-  }
-  const maxCols = Math.max(...rows.map(r => r.cols));
-  const BG = 10, bw = Math.min(46, 260 / maxCols);
-  const rowW = r => r.cols * (bw + gap) - gap + (r.bays - 1) * BG;
-  const inner = Math.max(...rows.map(rowW)), W = inner + pad * 2;
-  let y = 4, body = '', frameTop = null;
-  const firstShelf = rows.findIndex(r => !r.roof);
-  rows.forEach((r, i) => {
-    // ขยายกล่องให้เต็มความกว้างตู้ทุกชั้น
-    const bw = (inner - (r.bays - 1) * BG - (r.cols - 1) * gap) / r.cols;
-    const bh = bw * r.ar, x0 = pad, perBay = Math.ceil(r.cols / r.bays);
-    // ชั้นบนสุดที่ไม่มีหลังคา: กล่องแถวบนโผล่พ้นเสา
-    if (i === firstShelf) frameTop = y + (r.rn > 1 && i === 0 && r.open ? (r.rn - 1) * (bh + gap) : 0) - 3;
-    if (!r.roof && i > firstShelf) y += 3;
-    const top = y; y += r.head * bh;
-    for (let k = 0; k < r.n; k++) {
-      // เติมทีละช่อง (bay) จากล่างขึ้นบน แล้วค่อยไปช่องถัดไป
-      const perBayN = perBay * r.rn, j = k % perBayN, row = Math.floor(j / perBay), col = Math.floor(k / perBayN) * perBay + j % perBay;
-      // นับจากล่างขึ้นบน: กล่องแรกอยู่แถวล่างซ้าย
-      const cx = x0 + col * (bw + gap) + Math.floor(col / perBay) * BG, cy = y + (r.rn - 1 - row) * (bh + gap);
-      body += `<rect x="${cx}" y="${cy}" width="${bw}" height="${bh}" rx="2" style="fill:var(--shelf-bg);stroke:var(--shelf-b)"/>`;
-      // ช่องหยิบในกล่อง: ระบายสีตามกลุ่มของ SKU ที่อยู่ในช่องนั้น
-      const ow = (bw - 4 - (r.sl - 1) * 3) / r.sl;
-      for (let q = 0; q < r.sl; q++) {
-        const c = r.fills[k * r.sl + q], ox = cx + 2 + q * (ow + 3);
-        body += c ? `<rect x="${ox}" y="${cy + 2}" width="${ow}" height="${bh - 4}" rx="2" style="fill:var(--${c})"/>`
-          : `<rect x="${ox}" y="${cy + 2}" width="${ow}" height="${bh - 4}" rx="2" style="fill:none;stroke:var(--muted);stroke-dasharray:2 2;opacity:.6"/>`;
-      }
-    }
-    if (r.fills.length > r.n * r.sl) body += `<text x="${W - pad}" y="${y + 11}" text-anchor="end" style="fill:var(--bad);font-size:11px;font-weight:600">+${r.fills.length - r.n * r.sl}</text>`;
-    body += `<text x="2" y="${y + r.rn * (bh + gap) / 2 + 3}" style="fill:var(--muted);font-size:9px">${r.roof ? 'บน' : r.li + 1}</text>`;
-    for (let b = 1; b < r.bays; b++) body += `<rect x="${x0 + b * perBay * (bw + gap) + (b - 1) * BG + (BG - gap - 5) / 2}" y="${top - 3}" width="5" height="${y - top + r.rn * (bh + gap) + 3}" style="fill:#4b515c"/>`;
-    y += r.rn * (bh + gap);
-    if (!r.roof) { body += `<rect x="${pad - post}" y="${y}" width="${inner + post * 2}" height="5" style="fill:#4b515c"/>`; y += 5; }
-    else y += 2;
-  });
-  if (frameTop !== null) {
-    if (!(rows[0].open && rows[0].rn > 1)) body += `<rect x="${pad - post}" y="${frameTop}" width="${inner + post * 2}" height="5" style="fill:#4b515c"/>`;
-    body = `<rect x="${pad - post - 4}" y="${frameTop}" width="5" height="${y - frameTop + 8}" style="fill:#4b515c"/>
-      <rect x="${pad + inner + post - 1}" y="${frameTop}" width="5" height="${y - frameTop + 8}" style="fill:#4b515c"/>` + body;
-  }
-  return `<svg class="elev" viewBox="0 0 ${W} ${y + 12}" width="${W}" height="${y + 12}" role="img" aria-label="หน้าตู้ ${esc(sh.code)}">${body}</svg>`;
-}
-function contents(items) {
-  const grp = new Map();
-  items.forEach(it => { const p = prod(it.pid); if (!p) return; const k = p.model + ' ' + p.color; grp.set(k, (grp.has(k) ? grp.get(k) + ' ' : '') + `${p.size}×${it.boxes}`); });
-  return [...grp].map(([k, v]) => `${k} (${v})`).join(', ');
-}
-function renderMap() {
-  const m = $('#map');
-  // ย่อ/ขยายผังให้พอดีความกว้างพื้นที่
-  const stage = $('#stage'), wrap = stage.parentElement, v3 = ui.view === '3d';
-  const avail = wrap.clientWidth - 28;
-  wrap.classList.toggle('v3', v3);
-  CELL = v3 ? 26 : Math.max(16, Math.min(44, Math.floor(avail / DB.map.cols)));
-  m.style.setProperty('--cell', CELL + 'px');
-  m.style.setProperty('--fs', Math.max(10, Math.min(14, Math.round(CELL * 0.42))) + 'px');
-  m.style.width = DB.map.cols * CELL + 'px';
-  m.style.height = DB.map.rows * CELL + 'px';
-  m.parentElement.classList.toggle('edit', ui.edit);
-  if (v3) {
-    // มุมมองเอียง: หมุนผังแล้วย่อให้พอดีความกว้าง
-    const W = DB.map.cols * CELL, Hm = DB.map.rows * CELL, a = 30 * Math.PI / 180, t = 55 * Math.PI / 180;
-    const pw = W * Math.cos(a) + Hm * Math.sin(a), ph = (W * Math.sin(a) + Hm * Math.cos(a)) * Math.cos(t) + 260;
-    const sc = Math.min(1.5, avail / pw);
-    stage.style.height = ph * sc + 'px';
-    m.style.margin = `${-Hm / 2 + 90}px 0 0 ${-W / 2}px`;
-    m.style.transform = `scale(${sc}) rotateX(55deg) rotateZ(-30deg)`;
-  } else { stage.style.height = ''; m.style.margin = ''; m.style.transform = ''; }
-  $('#banner').innerHTML = preview() ? `<span class="preview-banner">👁 กำลังแสดงผังตาม “แผนใหม่” (ยังไม่ได้บันทึก)</span>` : '';
-  const ids = new Set(matchedIds());
-  let h = '';
-  for (const z of DB.zones) {
-    const dim = false;
-    h += `<div class="zone ${z.type} ${dim ? 'dim' : ''}" style="left:${z.x * CELL}px;top:${z.y * CELL}px;width:${z.w * CELL}px;height:${z.h * CELL}px">
-      ${z.w >= DB.map.cols && z.h >= DB.map.rows ? '' : `<span class="zl">${esc(z.name)} · ${ZT[z.type]}</span>`}</div>`;
-  }
-  for (const a of DB.areas || []) h += `<div class="area ${a.type}" style="left:${a.x * CELL}px;top:${a.y * CELL}px;width:${a.w * CELL}px;height:${a.h * CELL}px"></div>`;
-  for (const sh of DB.shelves) {
-    const lv = sh.levels.map((L, li) => { const items = itemsOf(sh, li); return { f: usedFrac(L, items), c: domClass(items), items }; });
-    const avg = lv.length ? lv.reduce((a, x) => a + x.f, 0) / lv.length : 0;
-    let cls = 'shelf';
-    if (sh.h > sh.w) cls += ' vert';
-    if (avg === 0) cls += ' empty';
-    if (ui.sel === sh.id) cls += ' sel';
-    let badge = '';
-    if (ids.size) {
-      let q = 0; lv.forEach(x => x.items.forEach(it => { if (ids.has(it.pid)) q += it.boxes; }));
-      if (q > 0) { cls += ' hl'; badge = `<span class="badge">${fmt(q)} ช่อง</span>`; } else cls += ' dim';
-    }
-    const all = lv.flatMap(x => x.items), c = avg > 1.0001 ? 'bad' : domClass(all);
-    const ti = stIdx(sh); if (ui.tf !== null && ti !== ui.tf) cls += ' tdim';
-    const g = 3, pctTxt = avg === 0 ? 'ว่าง' : Math.round(avg * 100) + '%';
-    const tip = esc(`${sh.code} · ${sh.levels.length} ชั้น · ใช้ไป ${Math.round(avg * 100)}%\n` + lv.map((x, li) => `ชั้น ${li + 1}: ` + (contents(x.items) || 'ว่าง')).reverse().join('\n'));
-    const box = `left:${sh.x * CELL + g}px;top:${sh.y * CELL + g}px;width:${sh.w * CELL - g * 2}px;height:${sh.h * CELL - g * 2}px`;
-    if (v3) {
-      const W = sh.w * CELL - g * 2, D = sh.h * CELL - g * 2, H = Math.round(CELL * 0.55 * 2.5 * 4); // ทุกตู้สูงเท่ากัน แบ่งแถบตามจำนวนชั้นของตู้นั้น
-      const band = (dir) => lv.map(x => `<i style="--dir:${dir};--f:${Math.min(100, x.f * 100)}%;--c:var(--${x.f > 1.0001 ? 'bad' : x.c})"></i>`).join('');
-      const q = badge ? ` · ${badge.replace(/<[^>]+>/g, '')}` : '';
-      h += `<div class="s3 ${cls.replace('shelf', '')} ${c === 'bad' ? 'over' : ''}" data-shelf="${sh.id}" title="${tip}" style="${box};--tc:${tcOf(ti)}">
-        <div class="f top" style="transform:translateZ(${H}px)"></div>
-        <div class="f south" style="top:${D - H}px;width:${W}px;height:${H}px">${band('to right')}</div>
-        <div class="f west" style="width:${H}px;height:${D}px">${band('to bottom')}</div>
-        <div class="lbl" style="transform:translateZ(${H + 6}px) rotateZ(30deg) rotateX(-55deg) translate(-50%,-100%)">${tnHtml(ti)}${esc(sh.code)}<small>${pctTxt}${q}</small></div></div>`;
-      continue;
-    }
-    h += `<div class="${cls}" data-shelf="${sh.id}" title="${tip}"
-      style="${box};--f:${Math.min(100, avg * 100)}%;--c:var(--${c});--tc:${tcOf(ti)}">
-      <span class="fill"></span><span class="code">${esc(sh.code)}</span>${avg > 0 && (sh.w * CELL > 80 || sh.h * CELL > 80) ? `<span class="pct">${Math.round(avg * 100)}%</span>` : ''}${badge}</div>`;
-  }
-  m.innerHTML = h; xT = null;
-  renderTypebar();
-  $('#editHint').hidden = !ui.edit;
-}
-
-/* ================= ผลการค้นหา ================= */
-function renderResult() {
-  const el = $('#result');
-  if (!ui.q.trim() && !ui.focus) { el.innerHTML = ''; return; }
-  const ids = matchedIds();
-  if (!ids.length) { el.innerHTML = `<span class="chip bad">❌ ไม่พบ “${esc(ui.q)}” ในระบบ</span>`; return; }
-  let h = '';
-  if (ids.length > 1) {
-    const ps = ids.map(prod), stock = ps.reduce((a, p) => a + p.stock, 0), zero = ps.filter(p => !p.stock).length;
-    h += `<span class="chip"><b>พบ ${ids.length} SKU</b> · สต็อกรวม ${fmt(stock)} ชิ้น${zero ? ` · <span style="color:var(--bad)">หมด ${zero} SKU</span>` : ''}</span>`;
-  }
-  h += ids.slice(0, 8).map(id => {
-    const p = prod(id), locs = locations(id);
-    const st = !p.stock ? 'bad' : !locs.length ? 'warn' : 'ok';
-    const icon = { bad: '❌', warn: '⚠️', ok: '✅' }[st];
-    const where = locs.slice(0, 3).map(l => `${l.sh.code}-${l.li + 1}`).join(', ') + (locs.length > 3 ? '…' : '');
-    return `<span class="chip ${st}" data-act="focus" data-pid="${id}">${icon} <b>${esc(pname(p))}</b>
-      ${!p.stock ? 'ไม่มีของ' : `${fmt(p.stock)} ชิ้น ${where ? '📍' + esc(where) : '(ยังไม่ได้วางบนชั้น)'}`}</span>`;
-  }).join('');
-  if (ids.length > 8) h += `<span class="chip">+ อีก ${ids.length - 8}</span>`;
-  if (ui.focus) h += `<span class="chip" data-act="clearfocus">✕ ล้าง</span>`;
-  el.innerHTML = h;
-}
-
-/* ================= แผงด้านขวา ================= */
-function renderPanel() {
-  if (['products', 'cap', 'layout'].includes(ui.tab)) $('#tabs').classList.add('more');
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
-  $('#panel').innerHTML = { start: panelStart, plan: panelPlan, products: panelProducts, detail: panelDetail, cap: panelCap, layout: panelLayout }[ui.tab]();
-}
-const pill = c => `<span class="pill ${c}">${CLS_TXT[c]}</span>`;
-const prodOptions = sel => {
-  // รายการ SKU จาก Supabase มีหลายหมื่น — ให้เลือกเฉพาะตัวที่มีของ (หรือที่กำลังเลือกอยู่)
-  const g = new Map();
-  for (const p of DB.products) if (p.stock > 0 || p.id === sel) { if (!g.has(p.model)) g.set(p.model, []); g.get(p.model).push(p); }
-  return [...g].map(([m, ps]) => `<optgroup label="${esc(m)}">${ps.map(p =>
-    `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${esc(p.color)} ${esc(p.size)}</option>`).join('')}</optgroup>`).join('');
-};
-const ltOptions = sel => DB.levelTypes.map(t => `<option value="${t.id}" ${t.id === sel ? 'selected' : ''}>${esc(t.name)} (${t.w}×${t.d}×${t.h})</option>`).join('');
-const btOptions = sel => DB.boxTypes.map(t => `<option value="${t.id}" ${t.id === sel ? 'selected' : ''}>${esc(t.name)} (${t.w}×${t.d}×${t.h})</option>`).join('');
-
-/* ---------- แท็บ: จัดวางอัตโนมัติ ---------- */
-function panelPlan() {
-  const st = DB.settings, P = PLAN;
-  const cnt = { A: 0, B: 0, C: 0 }, sales = { A: 0, B: 0, C: 0 };
-  DB.products.forEach(p => { cnt[CLS[p.id]]++; sales[CLS[p.id]] += p.sales30; });
-  const totalSales = sales.A + sales.B + sales.C || 1;
-  let h = `<h2>⚡ จัดโซนหยิบอัตโนมัติ</h2>
-  <p class="muted small">ระบบดูยอดขาย 30 วันของแต่ละ SKU แล้วคำนวณว่าแต่ละชั้นใส่ได้กี่กล่อง จากนั้นเลือกว่าอะไรควรอยู่โซนหยิบ และควรวางชั้นไหน</p>
-  <div class="box small">
-    ${pill('A')} → ขึ้น <span class="pill pick">โซนหยิบ</span> เก็บไว้พอขาย ${st.cover} วัน<br>
-    ${pill('B')} → ${st.bPick ? 'ขึ้นโซนหยิบ 1 ช่อง (ถ้ายังมีที่ว่าง)' : 'เข้าสต็อก'}<br>
-    ${pill('C')} → เข้าสต็อก<br>
-    ${DB.settings.brandOnly ? `<b>เฉพาะแบรนด์ ${esc(DB.settings.brandOnly)}</b> เท่านั้นที่ขึ้นโซนหยิบ · WARRIX → ชั้นยาว · GRAND → กล่องเหลี่ยม · ชั้นแคบ 4 ชั้นใช้ร่วมกัน (ใครขายดีกว่าได้ก่อน)<br>` : ''}
-    <b>เสื้อ</b>ได้ที่โซนหยิบก่อน · <b>อุปกรณ์</b> ${st.accFill !== false ? 'เติมในที่ว่างที่เหลือ (เรียงตามที่ขายดีสุดก่อน)' : 'ไม่ขึ้นโซนหยิบ'} <span class="muted">(ตั้งหมวดของแต่ละรุ่นได้ที่แท็บสินค้า)</span><br>
-    <span class="muted">การเรียงในโซนหยิบ: รุ่นที่ขายดีก่อน → สีที่ขายดีก่อน → ไซส์จากเล็กไปใหญ่ · ของที่ขายดีที่สุดอยู่ชั้นที่หยิบง่าย (ชั้น 2–3)</span>
+  <div class="brand">WARRIX<span>POLO CATALOG</span></div>
+  <div class="tools">
+    <button id="soundBtn" title="เสียงพลิกหน้า">🔊</button>
+    <button id="fsBtn" title="เต็มจอ">⛶ เต็มจอ</button>
   </div>
-  <details><summary>⚙️ ปรับเกณฑ์</summary>
-    <div class="row"><label>A = ยอดขายสะสม % แรก<input type="number" data-f="set" data-k="aPct" value="${st.aPct}"></label>
-      <label>A+B ถึง %<input type="number" data-f="set" data-k="bPct" value="${st.bPct}"></label>
-      <label>โซนหยิบเก็บพอขายกี่วัน<input type="number" data-f="set" data-k="cover" value="${st.cover}"></label></div>
-    <div class="row small"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="set" data-k="keepColor" ${st.keepColor ? 'checked' : ''}> พยายามให้สีเดียวกันอยู่ชั้นเดียวกัน</label></div>
-    <div class="row small"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="set" data-k="bPick" ${st.bPick ? 'checked' : ''}> กลุ่ม B ขึ้นโซนหยิบ 1 ช่อง</label></div>
-    <div class="row small"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="set" data-k="spread" ${st.spread !== false ? 'checked' : ''}> ให้คนละรุ่นอยู่ไกลกันมากที่สุด (รุ่นเดียวกันอยู่ชั้นเดียวกัน)</label></div>
-    <div class="row small"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="set" data-k="fillAll" ${st.fillAll !== false ? 'checked' : ''}> เติมโซนหยิบให้เต็ม (ตัวขายรองลงมาขึ้นมา + เพิ่มจำนวนตัวขายดี)</label></div>
-    <div class="row small"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="set" data-k="useStock" ${st.useStock ? 'checked' : ''}> ใช้สต็อกจริงในการคำนวณ (ปิดไว้ = คิดจากยอดขายอย่างเดียว)</label></div>
-    <div class="row small"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="set" data-k="accFill" ${st.accFill !== false ? 'checked' : ''}> ถ้าเสื้อขายไม่พอเต็มโซนหยิบ ให้เอาอุปกรณ์ที่ขายดีมาเติมที่ว่าง</label></div>
-    <div class="row"><label style="flex:1">ลำดับไซส์<input type="text" data-f="set" data-k="sizeOrder" value="${esc(st.sizeOrder)}"></label></div>
-  </details>
-  <div class="stats">${['A', 'B', 'C'].map(c => `<div class="stat">${pill(c)}<div class="big">${cnt[c]} <span class="small muted">SKU</span></div>
-    <div class="small muted">${Math.round(sales[c] / totalSales * 100)}% ของยอดขาย</div></div>`).join('')}</div>`;
-  if (!P) return h;
-  const sl = P.slots, used = sl.reduce((a, s) => a + Math.min(1, s.frac), 0), pct = sl.length ? used / sl.length * 100 : 0;
-  const placed = sl.reduce((a, s) => a + sumB(s.items), 0), stockBoxes = sumB(P.toStock);
-  h += `<div class="stats" style="grid-template-columns:1fr 1fr">
-    <div class="stat"><span class="pill pick">โซนหยิบ</span><div class="big">${fmt(placed)} <span class="small muted">ช่อง</span></div>
-      <div class="small muted">${sl.length} ชั้น · ใช้พื้นที่ ${Math.round(pct)}%</div><div class="bar"><i style="width:${pct}%"></i></div></div>
-    <div class="stat"><span class="pill none">ส่งเข้าสต็อก</span><div class="big">${fmt(stockBoxes)} <span class="small muted">ช่อง</span></div>
-      <div class="small muted">${P.toStock.length} SKU</div></div></div>`;
-  if (P.unplacedA.length) h += `<div class="warnbox">⚠️ โซนหยิบไม่พอสำหรับของขายดี ยังขาดอีก ${fmt(sumB(P.unplacedA))} ช่อง (${P.unplacedA.length} SKU) ให้เพิ่มชั้นวาง หรือลดจำนวนวันที่เก็บ</div>`;
-  if (P.accPlaced) h += `<div class="box small">🧰 เสื้อไม่เต็มโซนหยิบ จึงเติมอุปกรณ์เข้ามา ${fmt(P.accPlaced)} ช่อง</div>`;
-  if (P.extraPlaced) h += `<div class="box small">📦 ยังมีที่ว่าง จึงเติมตัวที่ขายรองลงมา และเพิ่มจำนวนตัวขายดี รวม ${fmt(P.extraPlaced)} ช่อง</div>`;
-  // ชั้นวางที่เลือกบนผัง: แสดงของตามแผนทีละชั้น (บนสุดอยู่บน)
-  const selSh = shelf(ui.sel);
-  if (selSh) {
-    h += `<div class="box"><div class="row" style="justify-content:space-between"><h3 style="margin:0">ชั้นวาง ${esc(selSh.code)} <span class="muted small">ตามแผน</span></h3>
-      <button class="btn sm" data-act="clearsel">ปิด</button></div>
-      ${selSh.levels.map((L, li) => ({ L, li })).reverse().map(({ li }) => {
-        const s = P.map.get(selSh.id + '|' + li), its = s ? s.items : [];
-        return `<div class="plan-lv"><b>ชั้น ${li + 1}</b> <span class="muted small">${its.length ? Math.round(s.frac * 100) + '%' : 'ว่าง'}</span>
-          ${its.map(it => { const p = prod(it.pid); return `<div class="small">${esc(p.sku)} <span class="muted">× ${it.boxes} ช่อง (~${fmt(it.boxes * ppb(p))} ตัว) · ${CLS[p.id]}</span></div>`; }).join('')}</div>`;
-      }).join('')}</div>`;
-  }
-  h += `<div class="row"><button class="btn primary" data-act="apply">✅ ใช้แผนนี้</button>
-    <button class="btn" data-act="exportplan">⬇ ใบจัดของ (Excel)</button></div>
-    <p class="muted small">ผังด้านซ้ายแสดงตามแผนใหม่อยู่ สีของแถบบนชั้นวางบอกว่าชั้นนั้นเป็นของกลุ่มไหน</p>`;
-  // รายตัว: ขายดีสุด 100 อันดับ → ตอนนี้อยู่ไหน / ควรไปอยู่ไหน
-  const dest = new Map();
-  for (const s of sl.slice().sort((a, b) => byCode(a.sh, b.sh) || a.li - b.li)) for (const it of s.items) {
-    if (!dest.has(it.pid)) dest.set(it.pid, []); dest.get(it.pid).push(`${s.sh.code} ชั้น ${s.li + 1}${it.boxes > 1 ? ' ×' + it.boxes : ''}`);
-  }
-  const top = DB.products.filter(p => p.sales30 > 0).sort((a, b) => b.sales30 - a.sales30).slice(0, 100);
-  h += `<details><summary>📋 ตัวขายดี → ควรไปไว้ที่ไหน (ขายดีสุด ${top.length} อันดับ)</summary>
-    ${top.length ? `<div class="mx"><table><tr><th>SKU</th><th>ขาย/30วัน</th><th>กลุ่ม</th><th>ตอนนี้อยู่</th><th>ควรไปอยู่</th></tr>
-    ${top.map(p => {
-      const now = locations(p.id).map(l => `${l.sh.code}-${l.li + 1}`).join(' ') || '—';
-      const to = st.useStock && !p.stock ? '<span class="muted">ยังไม่มีสต็อก</span>' : dest.has(p.id) ? `<b>${esc(dest.get(p.id).join(', '))}</b>` : '<span class="muted">เข้าสต็อก</span>';
-      return `<tr class="click" data-act="focus" data-pid="${p.id}"><td>${esc(p.sku)}${catOf(p) === 'acc' ? ' <span class="muted small">อุปกรณ์</span>' : ''}</td><td class="n">${p.sales30}</td><td>${CLS[p.id]}</td><td>${esc(now)}</td><td>${to}</td></tr>`;
-    }).join('')}</table></div>` : '<p class="muted small">ยังไม่มียอดขาย — นำเข้ายอดขายในแท็บสินค้าก่อน</p>'}</details>
-  <h3>แผนการวางโซนหยิบ</h3>`;
-  const bySh = new Map();
-  sl.forEach(s => { if (!bySh.has(s.sh)) bySh.set(s.sh, []); bySh.get(s.sh).push(s); });
-  for (const [sh, ss] of bySh) {
-    const total = ss.reduce((a, s) => a + sumB(s.items), 0);
-    h += `<details><summary><span class="pill pick">${esc(sh.code)}</span> <span class="small muted">${fmt(total)} ช่อง</span></summary>
-      ${ss.slice().sort((a, b) => b.li - a.li).map(s => {
-        const lt = ltype(s.L.t), grp = new Map();
-        s.items.forEach(it => { const p = prod(it.pid), k = p.model + ' · ' + p.color; if (!grp.has(k)) grp.set(k, []); grp.get(k).push(`${p.size}×${it.boxes}`); });
-        return `<div class="plan-lv"><b>ชั้น ${s.li + 1}</b> <span class="muted">${esc(lt.name)} ${Math.round(s.frac * 100)}%</span><br>
-          ${[...grp].map(([k, v]) => `${esc(k)}: <span class="muted">${esc(v.join(' '))}</span>`).join('<br>') || '<span class="muted">— ว่าง —</span>'}</div>`;
-      }).join('')}</details>`;
-  }
-  return h;
-}
+</header>
 
-/* ---------- แท็บ: เริ่มที่นี่ (ทำตามลำดับ 1→5) ---------- */
-function panelStart() {
-  const real = DB.products.filter(p => p.src === 'sb').length;
-  const sold = DB.products.filter(p => p.sales30 > 0 && !isDemo(p)).length;
-  const si = DB.salesInfo;
-  return `<h2>นำเข้ายอดขาย</h2>
-    <div class="box">
-      <p class="muted small">เลือกไฟล์ออเดอร์ .xlsx / .csv ได้ <b>หลายไฟล์พร้อมกัน</b> (กด Ctrl+A ในหน้าต่างเลือกไฟล์) ระบบรวมยอดทุกไฟล์ ไม่นับออเดอร์ที่ยกเลิก แล้วแบ่งตัวขายดีให้เอง</p>
-      <div class="row"><label>ข้อมูลย้อนหลังกี่วัน<input type="number" id="salesDays" value="${(si || {}).days || 90}" style="width:80px"></label>
-        <label style="flex:1">ใส่โซนหยิบเฉพาะแบรนด์ (ว่าง = ทุกแบรนด์ · คั่นหลายแบรนด์ด้วย ,)<input type="text" data-f="set" data-k="brandOnly" value="${esc(DB.settings.brandOnly || '')}" placeholder="เช่น WARRIX"></label></div>
-      <input type="file" id="salesFile" accept=".xlsx,.csv,.tsv,.txt" multiple>
-      <input type="checkbox" id="salesZero" checked style="display:none"><textarea id="salesText" style="display:none"></textarea>
-    </div>
-    <p class="muted small">${si ? `✔ นำเข้าล่าสุด ${esc(si.at)}${si.files > 1 ? ` · ${si.files} ไฟล์` : ''} · ขาย ${fmt(si.pcs || 0)} ชิ้น ใน ${si.days} วัน · ตรงระบบ ${fmt(si.hit)} SKU${si.cancelled ? ` · ไม่นับยกเลิก ${fmt(si.cancelled)}` : ''}` : 'ยังไม่ได้นำเข้า'}
-      <br>${real ? `รายการสินค้าในระบบ ${fmt(real)} SKU (ดึงจากฐานข้อมูลอัตโนมัติ)` : sync.busy ? 'กำลังดึงรายการสินค้า…' : sync.err ? 'ดึงรายการสินค้าไม่สำเร็จ: ' + esc(sync.err) : ''}</p>
-    ${sold ? `<button class="btn primary" data-act="gototab" data-tab="plan">② ดูผลจัดโซนหยิบ →</button>` : ''}`;
-}
+<main>
+  <button class="nav prev" id="prevBtn" aria-label="หน้าก่อนหน้า">‹</button>
+  <div id="stage"><div id="book"></div></div>
+  <button class="nav next" id="nextBtn" aria-label="หน้าถัดไป">›</button>
+</main>
 
-/* ---------- แท็บ: สินค้า ---------- */
-function panelProducts() {
-  let h = '';
-  const f = prod(ui.focus);
-  if (f) {
-    const locs = locations(f.id);
-    h += `<div class="box"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(pname(f))}</h2>${pill(CLS[f.id])}</div>
-      <div class="muted small">${esc(f.brand)} · SKU ${esc(f.sku)}</div>
-      <div class="row" style="gap:18px;margin:10px 0"><div><div class="big">${fmt(f.stock)}</div><div class="muted small">ชิ้นในสต็อก</div></div>
-        <div><div class="big">${fmt(boxesOf(f))}</div><div class="muted small">ช่อง (${ppb(f)} ชิ้น/ช่อง${rulesOf(f).some(r => r.perBox > 0) ? ' ตามกฎ' : ''}${noPick(f) ? ' · ไม่ขึ้นโซนหยิบตามกฎ' : ''})</div></div>
-        <div><div class="big">${fmt(f.sales30)}</div><div class="muted small">ขาย/30 วัน</div></div></div>
-      ${locs.length ? `<table>${locs.map(l => `<tr class="click" data-act="gotoshelf" data-sid="${l.sh.id}"><td><b>${esc(l.sh.code)}</b> ชั้น ${l.li + 1}</td>
-        <td><span class="pill ${l.type}">${ZT[l.type]}</span></td><td class="n">${l.boxes} ช่อง</td></tr>`).join('')}</table>`
-        : `<p class="pill bad">${f.stock ? 'ยังไม่ได้วางบนชั้น' : 'ไม่มีของ'}</p>`}
-      <div class="row"><label>ขาย 30 วัน<input type="number" data-f="prod" data-k="sales30" value="${f.sales30}"></label>
-        <label>สต็อก (ชิ้น)<input type="number" data-f="prod" data-k="stock" value="${f.stock}"></label>
-        <label>ชิ้น/ช่อง<input type="number" data-f="prod" data-k="perBox" value="${f.perBox}"></label>
-        <button class="btn sm danger" data-act="delprod" style="align-self:flex-end">ลบ SKU</button></div></div>`;
+<footer>
+  <div id="counter">1 / 9</div>
+  <div id="thumbs"></div>
+  <div class="hint">ลากมุมกระดาษ · คลิกขอบหน้า · หรือกดปุ่ม ← → เพื่อพลิกหน้า</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script>
+  const TOTAL = 9;
+  const RATIO = 1500 / 2667; // page height / width (landscape 16:9)
+  const pad = n => String(n).padStart(2, "0");
+
+  const book = document.getElementById("book");
+  const thumbs = document.getElementById("thumbs");
+  for (let i = 1; i <= TOTAL; i++) {
+    const p = document.createElement("div");
+    p.className = "page";
+    if (i === 1 || i === TOTAL) p.dataset.density = "hard";
+    p.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}" ${i > 2 ? 'loading="lazy"' : ""}>`;
+    book.appendChild(p);
+
+    const t = document.createElement("img");
+    t.src = `t${pad(i)}.jpg`;
+    t.alt = `หน้า ${i}`;
+    t.onclick = () => flip.flip(i - 1);
+    thumbs.appendChild(t);
   }
-  h += `<h2>สินค้า</h2><p class="muted small">ตารางสี × ไซส์ ตัวเลขในช่องคือยอดขาย 30 วัน สีพื้นบอกกลุ่ม ${pill('A')} ${pill('B')} ${pill('C')} คลิกช่องเพื่อดูว่าวางอยู่ชั้นไหน</p>`;
-  h += `<details><summary>☁️ เชื่อมฐานข้อมูล Supabase (ตาราง products)</summary>
-    <p class="muted small">${sync.busy ? 'กำลังดึงข้อมูล…' : sync.err ? `ล่าสุดดึงไม่สำเร็จ: ${esc(sync.err)}` : sync.at ? `ดึงล่าสุด ${sync.at.toLocaleTimeString('th-TH')} · ${fmt(sync.n)} SKU` : 'ยังไม่ได้ดึง'}
-      · ในระบบตอนนี้ ${fmt(DB.products.length)} SKU. ดึงรายการ SKU/แบรนด์ให้อัตโนมัติทุกครั้งที่เปิดหน้านี้ ส่วนยอดขายและสต็อกยังวางจาก Excel (SKU ที่มีอยู่แล้วจะไม่ถูกเขียนทับ)</p>
-    <button class="btn primary" data-act="sync">🔄 ดึง SKU จาก Supabase ตอนนี้</button>
-    ${DB.products.some(isDemo) ? `<button class="btn danger" data-act="deldemo">🗑 ลบสินค้าตัวอย่าง (${DB.products.filter(isDemo).length} SKU)</button>` : ''}</details>`;
-  h += `<details><summary>📈 นำเข้ายอดขายย้อนหลัง (เช่น 3 เดือน) → คิดกลุ่ม A/B/C ให้อัตโนมัติ</summary>
-    <p class="muted small">เลือกไฟล์ออเดอร์ .xlsx/.csv หรือวางข้อมูลก็ได้ ระบบหาคอลัมน์ <b>SKU Merchant</b> / <b>จำนวน</b> / <b>สถานะ</b> จากหัวตารางเอง (ไม่มีหัวตาราง = คอลัมน์ A เป็น SKU, B เป็นจำนวน) รวมจำนวนของ SKU ที่ซ้ำกัน และ <b>ไม่นับออเดอร์ที่ยกเลิก</b>
-      ระบบแปลงเป็น "ขายต่อ 30 วัน" แล้วแบ่งกลุ่ม A/B/C ตามยอดขาย ตัวขายดี (A) จะถูกจัดขึ้นโซนหยิบในแท็บ ⚡ จัดอัตโนมัติ</p>
-    <div class="row"><label>ข้อมูลย้อนหลังกี่วัน<input type="number" id="salesDays" value="${(DB.salesInfo || {}).days || 90}" style="width:80px"></label>
-      <label><input type="checkbox" id="salesZero" checked> SKU ที่ไม่อยู่ในไฟล์ = ขาย 0</label>
-      <label>เลือกไฟล์ .xlsx / .csv (คำนวณทันที)<input type="file" id="salesFile" accept=".xlsx,.csv,.tsv,.txt" multiple></label></div>
-    <textarea id="salesText" placeholder="WP-262JKACL71-EE-XS&#9;35&#10;YS001-เทา-YXL&#9;12"></textarea>
-    <button class="btn primary" data-act="importsales">คำนวณยอดขาย</button>
-    ${DB.salesInfo ? `<p class="muted small">นำเข้าล่าสุด ${esc(DB.salesInfo.at)} · ข้อมูล ${DB.salesInfo.days} วัน · ขาย ${fmt(DB.salesInfo.pcs || 0)} ชิ้น · ตรงระบบ ${fmt(DB.salesInfo.hit)} SKU${DB.salesInfo.cancelled ? ` · ไม่นับยกเลิก ${fmt(DB.salesInfo.cancelled)} แถว` : ''}${DB.salesInfo.miss ? ` · SKU ที่ไม่พบในระบบ ${fmt(DB.salesInfo.miss)}` : ''}</p>` : ''}</details>`;
-  h += `<details><summary>📏 กฎขนาดบรรจุ / ของที่ใส่กล่องไม่ได้ (${(DB.rules || []).length} กฎ)</summary>
-    <p class="muted small">ค่าเริ่มต้น: กล่องยาว 1 กล่อง (2 ช่อง) ใส่ได้ ~${PER_DEF * 2} ตัว = ${PER_DEF} ตัวต่อช่อง ข้อยกเว้นเพิ่มได้ที่นี่ — ใส่ <b>แบรนด์</b> (มีคำนี้อยู่ เช่น EGO) และ/หรือ <b>รหัสรุ่น</b> (คั่น , เช่น TT001,TT002 ใช้ * ท้ายได้ เช่น DKS*)
-      แล้วกำหนด <b>ตัวต่อกล่อง</b> (เช่น กางเกงใน/กางเกงวอร์ม 20) หรือติ๊ก <b>ไม่ขึ้นโซนหยิบ</b> กฎที่ตรงจะใช้แทนค่าตัวต่อช่องของ SKU นั้น</p>
-    ${(DB.rules || []).map((r, i) => `<div class="row small">
-      <label>แบรนด์<input type="text" data-f="rule" data-i="${i}" data-k="brand" value="${esc(r.brand)}" style="width:110px"></label>
-      <label style="flex:1">รหัสรุ่น<input type="text" data-f="rule" data-i="${i}" data-k="codes" value="${esc(r.codes)}"></label>
-      <label>ตัว/กล่อง (0 = ไม่เปลี่ยน)<input type="number" data-f="rule" data-i="${i}" data-k="perBox" value="${r.perBox || 0}" style="width:70px"></label>
-      <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-f="rule" data-i="${i}" data-k="noPick" ${r.noPick ? 'checked' : ''}> ไม่ขึ้นโซนหยิบ</label>
-      <button class="btn sm danger" data-act="delrule" data-i="${i}" style="align-self:flex-end">ลบ</button>
-      <span class="muted small" style="align-self:flex-end">ตรง ${fmt(DB.products.filter(p => ruleHit(r, p)).length)} SKU</span></div>`).join('')}
-    <button class="btn" data-act="addrule">➕ เพิ่มกฎ</button></details>`;
-  const byModel = new Map();
-  for (const p of DB.products) { let a = byModel.get(p.model); if (!a) byModel.set(p.model, a = []); a.push(p); }
-  // รุ่นที่มียอดขาย/สต็อกขึ้นก่อน (sort เสถียร) — รุ่นที่เหลือแสดงเป็นหัวข้อ กดแล้วค่อยวาดตาราง
-  const models = [...byModel.keys()].sort((a, b) => byModel.get(b).some(p => p.stock || p.sales30) - byModel.get(a).some(p => p.stock || p.sales30));
-  for (const m of models) {
-    const ps = byModel.get(m), p0 = ps[0];
-    const open = ui.openModel === m || models.length === 1;
-    let s30 = 0, stk = 0; const cs = new Set(), ss = new Set();
-    for (const p of ps) { s30 += p.sales30; stk += p.stock; cs.add(p.color); ss.add(p.size); }
-    h += `<details ${open ? 'open' : ''} data-model="${esc(m)}"><summary>${esc(m)} <span class="muted small">· ${esc(p0.brand)} · ${cs.size} สี × ${ss.size} ไซส์ = ${ps.length} SKU · ขาย ${fmt(s30)} · สต็อก ${fmt(stk)} ชิ้น</span></summary>`;
-    if (open) {
-      const colors = [...cs], sizes = [...ss].sort((a, b) => sizeIdx(a) - sizeIdx(b));
-      h += `<div class="mx"><table><tr><th></th>${sizes.map(s => `<th>${esc(s)}</th>`).join('')}</tr>
-      ${colors.map(c => `<tr><th class="cl" title="${esc(c)}">${esc(c)}</th>${sizes.map(s => {
-        const p = ps.find(x => x.color === c && x.size === s);
-        if (!p) return '<td></td>';
-        const cls = !p.stock ? 'z' : CLS[p.id];
-        return `<td class="c ${cls} ${ui.focus === p.id ? 'on' : ''}" data-act="focus" data-pid="${p.id}" title="${esc(pname(p))} · ขาย ${p.sales30} · สต็อก ${p.stock} ชิ้น">${p.sales30}</td>`;
-      }).join('')}</tr>`).join('')}</table></div>
-      <div class="row small"><label>หมวด<select data-f="model" data-m="${esc(m)}" data-k="cat"><option value="shirt" ${catOf(p0) === 'shirt' ? 'selected' : ''}>เสื้อ/ผ้า (ได้ที่ก่อน)</option><option value="acc" ${catOf(p0) === 'acc' ? 'selected' : ''}>อุปกรณ์ (เติมที่ว่าง)</option></select></label>
-        <label>ประเภทกล่อง<select data-f="model" data-m="${esc(m)}" data-k="box">${btOptions(p0.box)}</select></label>
-        <label>ชิ้น/ช่อง<input type="number" data-f="model" data-m="${esc(m)}" data-k="perBox" value="${p0.perBox}"></label>
-        <button class="btn sm danger" data-act="delmodel" data-m="${esc(m)}" style="align-self:flex-end">ลบทั้งรุ่น</button></div>`;
-    }
-    h += `</details>`;
+
+  // Size one page to fit the available area; the stage is exactly one page wide,
+  // so the book opens one landscape sheet at a time.
+  function fitSize() {
+    const main = document.querySelector("main");
+    const cs = getComputedStyle(main);
+    const availW = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const availH = main.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    // Hidden/minimized windows can report 0 — keep a sane minimum.
+    const w = Math.max(240, Math.floor(Math.min(availW, availH / RATIO)));
+    return { w, h: Math.floor(w * RATIO) };
   }
-  h += `<details><summary>➕ เพิ่มรุ่นสินค้าใหม่ (สร้าง SKU ทุกสี × ทุกไซส์อัตโนมัติ)</summary>
-    <div class="row"><label style="flex:1">แบรนด์<input type="text" id="nmBrand" value="BrandX"></label><label style="flex:1">รุ่น<input type="text" id="nmModel" placeholder="เช่น เสื้อฮู้ด"></label>
-      <label>รหัสรุ่น<input type="text" id="nmCode" placeholder="HD" style="width:70px"></label></div>
-    <div class="row"><label style="flex:1">สี (คั่นด้วย ,)<input type="text" id="nmColors" placeholder="ดำ,ขาว,กรม"></label></div>
-    <div class="row"><label style="flex:1">ไซส์ (คั่นด้วย ,)<input type="text" id="nmSizes" value="S,M,L,XL,2XL"></label></div>
-    <div class="row"><label>ประเภทกล่อง<select id="nmBox">${btOptions()}</select></label><label>ชิ้น/ช่อง<input type="number" id="nmPer" value="10"></label></div>
-    <button class="btn primary" data-act="addmodel">สร้าง SKU</button></details>
-  <details><summary>📋 วางข้อมูลยอดขาย/สต็อกจาก Excel</summary>
-    <p class="muted small">ก๊อปจาก Excel 3 คอลัมน์: <b>SKU</b> | <b>ขาย 30 วัน</b> | <b>สต็อก (ชิ้น)</b> แล้ววางลงช่องนี้ (ใส่แค่ 2 คอลัมน์แรกก็ได้)</p>
-    <textarea id="paste" placeholder="TB-1-M	52	80&#10;TB-1-L	48	75"></textarea>
-    <button class="btn primary" data-act="paste">อัปเดต</button> <button class="btn" data-act="exportsku">⬇ ดาวน์โหลดรายการ SKU</button></details>`;
-  return h;
-}
 
-/* ---------- แท็บ: ชั้นวาง ---------- */
-function panelDetail() {
-  const sh = shelf(ui.sel);
-  if (!sh) return `<div class="empty-state">👆 คลิกชั้นวางบนผัง<br>เพื่อดูว่ามีของอะไร แต่ละชั้นใส่ได้อีกกี่กล่อง</div>`;
-  const z = zoneOf(sh), t = typeOf(sh);
-  let h = `<h2>ชั้นวาง ${esc(sh.code)}</h2>
-    <div class="row"><span class="pill" style="background:color-mix(in srgb,${tcOf(stIdx(sh))} 15%,transparent);color:var(--text)">${tnHtml(stIdx(sh))}${esc(stName(stIdx(sh)))}</span>
-      <span class="muted small">${sh.levels.length} ชั้น · ของที่วางอยู่จริงตอนนี้</span></div>
-    ${elevSVG(sh)}
-    <div class="row small muted" style="justify-content:center;gap:10px"><span><span style="color:var(--A)">■</span> ขายดี</span><span><span style="color:var(--B)">■</span> พอขายได้</span><span><span style="color:var(--C)">■</span> ขายช้า</span><span>⬚ ว่าง</span></div>
-    ${ui.edit ? `<div class="row small">เปลี่ยนแบบชั้นวาง <select data-f="stype">${DB.shelfTypes.map((st, i) => `<option value="${i}" ${stIdx(sh) === i ? 'selected' : ''}>${esc(st.name)}</option>`).join('')}${stIdx(sh) < 0 ? '<option selected>— ไม่ระบุแบบ —</option>' : ''}</select></div>` : ''}`;
-  for (let li = sh.levels.length - 1; li >= 0; li--) {
-    const L = sh.levels[li], f = usedFrac(L), lt = ltype(L.t);
-    h += `<div class="level"><div class="lv-head"><b>ชั้นที่ ${li + 1}</b>
-      <span class="muted small">${esc(lt.name)} ${lt.w}×${lt.d}×${lt.h} · ใช้ไป <b>${Math.round(f * 100)}%</b></span></div>
-      <div class="bar"><i class="${f > 1.0001 ? 'over' : ''}" style="width:${Math.min(100, f * 100)}%"></i></div>
-      <div class="muted small">จุได้: ${DB.boxTypes.map(b => capLB(L.t, b.id) ? `${esc(b.name)} ${capLB(L.t, b.id)} กล่อง = ${capLB(L.t, b.id) * slotsOf(b.id)} ช่อง` : '').filter(Boolean).join(' · ')}</div>`;
-    if (ui.edit) h += `<div class="row small">แบบชั้น <select data-f="lvt" data-li="${li}">${ltOptions(L.t)}</select>
-      <button class="btn sm danger" data-act="dellevel" data-li="${li}">ลบชั้น</button></div>`;
-    L.items.forEach((it, ii) => {
-      const p = prod(it.pid); if (!p) return;
-      h += `<div class="item"><span class="pill ${CLS[p.id]}">${CLS[p.id]}</span>
-        <span class="nm" title="${esc(pname(p))}">${esc(pname(p))}</span>
-        <input type="number" min="0" data-f="qty" data-li="${li}" data-ii="${ii}" value="${it.boxes}" style="width:56px"><span class="small muted">ช่อง</span>
-        <button class="btn sm danger" data-act="delitem" data-li="${li}" data-ii="${ii}">✕</button></div>`;
-    });
-    if (!L.items.length) h += `<div class="muted small">— ว่าง —</div>`;
-    h += `<div class="row"><select data-addsel="${li}" style="flex:1;max-width:220px">${prodOptions()}</select>
-      <input type="number" min="1" value="1" data-addqty="${li}" style="width:56px"><button class="btn sm primary" data-act="additem" data-li="${li}">+ เพิ่ม</button></div></div>`;
-  }
-  if (ui.edit) {
-    h += `<h3>ตั้งค่าชั้นวาง</h3>
-    <div class="row"><label>รหัส<input type="text" data-f="sh" data-k="code" value="${esc(sh.code)}" style="width:80px"></label>
-      <label>X<input type="number" data-f="sh" data-k="x" value="${sh.x}"></label><label>Y<input type="number" data-f="sh" data-k="y" value="${sh.y}"></label>
-      <label>กว้าง (ช่อง)<input type="number" data-f="sh" data-k="w" value="${sh.w}"></label><label>ยาว (ช่อง)<input type="number" data-f="sh" data-k="h" value="${sh.h}"></label></div>
-    <div class="row"><button class="btn" data-act="addlevel">+ เพิ่มชั้น</button><button class="btn" data-act="dupshelf">⧉ ทำสำเนา</button>
-      <button class="btn danger" data-act="delshelf">🗑 ลบชั้นวาง</button></div>`;
-  } else h += `<p class="muted small">กด “แก้ไขผัง” ด้านบน เพื่อเปลี่ยนแบบชั้น เพิ่มหรือลบชั้น</p>`;
-  return h;
-}
-
-/* ---------- แท็บ: ความจุ ---------- */
-function panelCap() {
-  const useCount = id => DB.shelves.reduce((a, s) => a + s.levels.filter(L => L.t === id).length, 0);
-  let h = `<h2>แต่ละชั้นใส่ได้กี่กล่อง</h2>
-  <p class="muted small">ใส่จำนวนกล่องที่วางได้จริงในแต่ละชั้นลงในตารางได้เลย ช่องที่ว่างไว้ ระบบจะคำนวณจากขนาด (ถ้าใส่ขนาดไว้) ถ้าชั้นไหนวางกล่องแบบนั้นไม่ได้ ใส่ 0</p>
-  <table class="tbl-in"><tr><th>แบบชั้น</th>${DB.boxTypes.map(b => `<th class="n">${esc(b.name)}</th>`).join('')}<th class="n">ใช้อยู่</th></tr>
-  ${DB.levelTypes.map((t, i) => `<tr><td><input type="text" data-f="lt" data-i="${i}" data-k="name" value="${esc(t.name)}"></td>
-    ${DB.boxTypes.map(b => `<td class="n"><input type="number" min="0" data-f="cap" data-i="${i}" data-b="${b.id}" value="${t.cap && t.cap[b.id] != null ? t.cap[b.id] : ''}" placeholder="${capAuto(t, b.id)}"></td>`).join('')}
-    <td class="n">${useCount(t.id)} <button class="btn sm danger" data-act="dellt" data-i="${i}">✕</button></td></tr>`).join('')}</table>
-  <button class="btn sm" data-act="addlt">+ เพิ่มแบบชั้น</button>
-  <h3>แบบชั้นวาง (ใช้ตอนเพิ่มชั้นวางใหม่)</h3>
-  <table>${(DB.shelfTypes || []).map(st => `<tr><td>${esc(st.name)}</td><td class="small muted">${st.levels.map(id => esc(ltype(id).name)).join(' → ')}</td>
-    <td class="n small">${DB.boxTypes.map(b => { const n = st.levels.reduce((a, id) => a + capLB(id, b.id), 0); return n ? `${esc(b.name)} ${n}` : ''; }).filter(Boolean).join('<br>')}</td></tr>`).join('')}</table>
-  <h3>ประเภทกล่อง</h3><table class="tbl-in"><tr><th>ชื่อ</th><th>ช่องหยิบ/กล่อง</th><th>กว้าง</th><th>ลึก</th><th>สูง</th><th></th></tr>
-  ${DB.boxTypes.map((t, i) => `<tr><td><input type="text" data-f="bt" data-i="${i}" data-k="name" value="${esc(t.name)}"></td>
-    <td><input type="number" min="1" data-f="bt" data-i="${i}" data-k="slots" value="${slotsOf(t.id)}"></td>
-    ${['w', 'd', 'h'].map(k => `<td><input type="number" data-f="bt" data-i="${i}" data-k="${k}" value="${t[k]}"></td>`).join('')}
-    <td><button class="btn sm danger" data-act="delbt" data-i="${i}">✕</button></td></tr>`).join('')}</table>
-  <button class="btn sm" data-act="addbt">+ เพิ่มประเภทกล่อง</button>
-  <h3>รวมทั้งโกดัง (ถ้าใส่กล่องแบบเดียวเต็มทุกชั้น)</h3>
-  <table><tr>${DB.boxTypes.map(b => `<th class="n">${esc(b.name)}</th>`).join('')}</tr><tr>${DB.boxTypes.map(b =>
-    `<td class="n"><b>${fmt(DB.shelves.reduce((a, s) => a + s.levels.reduce((x, L) => x + capLB(L.t, b.id), 0), 0))}</b> กล่อง<div class="small muted">= ${fmt(DB.shelves.reduce((a, s) => a + s.levels.reduce((x, L) => x + capLB(L.t, b.id), 0), 0) * slotsOf(b.id))} ช่อง</div></td>`).join('')}</tr></table>
-  <details><summary>ใส่ขนาดชั้นเป็น ซม. แทน (ให้ระบบคำนวณเอง)</summary>
-  <table class="tbl-in"><tr><th>แบบชั้น</th><th>กว้าง</th><th>ลึก</th><th>สูง</th></tr>
-  ${DB.levelTypes.map((t, i) => `<tr><td class="small">${esc(t.name)}</td>${['w', 'd', 'h'].map(k => `<td><input type="number" data-f="lt" data-i="${i}" data-k="${k}" value="${t[k]}"></td>`).join('')}</tr>`).join('')}</table></details>`;
-  return h;
-}
-
-/* ---------- แท็บ: ตั้งค่าผัง ---------- */
-function panelLayout() {
-  let h = `<h2>ตั้งค่าผังโกดัง</h2>
-  <div class="row"><button class="btn ${ui.edit ? 'on' : ''}" data-act="toggleedit">${ui.edit ? '✅ กำลังแก้ไขผัง' : '✏️ เปิดโหมดแก้ไข'}</button>
-    <select id="newST">${(DB.shelfTypes || []).map((st, i) => `<option value="${i}">${esc(st.name)}</option>`).join('')}</select>
-    <button class="btn primary" data-act="addshelf">+ เพิ่มชั้นวาง</button></div>
-  <p class="muted small">เปิดโหมดแก้ไขแล้วลากชั้นวางบนผังได้เลย ชั้นวางที่อยู่ในกรอบโซนหยิบจะถูกนำไปใช้จัดวาง</p>
-  <h3>ขนาดผัง</h3><div class="row"><label>คอลัมน์<input type="number" data-f="map" data-k="cols" value="${DB.map.cols}"></label>
-    <label>แถว<input type="number" data-f="map" data-k="rows" value="${DB.map.rows}"></label></div><h3>โซน</h3>`;
-  DB.zones.forEach((z, zi) => {
-    h += `<div class="level"><div class="row"><input type="text" data-f="zone" data-zi="${zi}" data-k="name" value="${esc(z.name)}" style="flex:1">
-      
-      <button class="btn sm danger" data-act="delzone" data-zi="${zi}">✕</button></div>
-      <div class="row">${['x', 'y', 'w', 'h'].map(k => `<label>${{ x: 'X', y: 'Y', w: 'กว้าง', h: 'ยาว' }[k]}<input type="number" data-f="zone" data-zi="${zi}" data-k="${k}" value="${z[k]}" style="width:60px"></label>`).join('')}</div></div>`;
+  const { w, h } = fitSize();
+  document.getElementById("stage").style.width = w + "px";
+  const flip = new St.PageFlip(book, {
+    width: w, height: h,
+    size: "fixed",
+    usePortrait: true,
+    showCover: false,
+    maxShadowOpacity: 0.6,
+    flippingTime: 900,
+    drawShadow: true,
+    mobileScrollSupport: false,
+    swipeDistance: 20,
   });
-  h += `<button class="btn" data-act="addzone">+ เพิ่มโซน</button>
-  <h3>ทางเดิน / พื้นที่</h3>`;
-  (DB.areas || []).forEach((a, ai) => {
-    h += `<div class="row"><select data-f="area" data-ai="${ai}" data-k="type"><option value="aisle" ${a.type === 'aisle' ? 'selected' : ''}>ทางเดิน (เทา)</option>
-      <option value="floor" ${a.type === 'floor' ? 'selected' : ''}>พื้นว่าง (ขาว)</option></select>
-      ${['x', 'y', 'w', 'h'].map(k => `<input type="number" data-f="area" data-ai="${ai}" data-k="${k}" value="${a[k]}" style="width:52px" title="${k}">`).join('')}
-      <button class="btn sm danger" data-act="delarea" data-ai="${ai}">✕</button></div>`;
+  flip.loadFromHTML(document.querySelectorAll("#book .page"));
+
+  // Rebuild on resize (debounced) keeping the current page.
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => location.reload(), 300); // URL hash already holds the current page
   });
-  h += `<p class="muted small">ช่องตัวเลข: X, Y, กว้าง, ยาว (หน่วยเป็นช่องตาราง) · พื้นที่ที่อยู่ล่างในรายการจะวาดทับอันบน</p>
-  <button class="btn" data-act="addarea">+ เพิ่มทางเดิน</button>
-  <h3>สำรอง / กู้คืนข้อมูล</h3>
-  <p class="muted small">ข้อมูลบันทึกอัตโนมัติในเบราว์เซอร์เครื่องนี้ ควร Export เก็บไว้เป็นระยะ</p>
-  <div class="row"><button class="btn" data-act="export">⬇ Export JSON</button>
-    <label class="btn">⬆ Import JSON<input type="file" id="imp" accept=".json" hidden></label>
-    <button class="btn danger" data-act="reset">รีเซ็ตเป็นข้อมูลตัวอย่าง</button></div>`;
-  return h;
-}
 
-/* ================= การกระทำ ================= */
-function render() {
-  CLS = classify();
-  PLAN = ui.tab === 'plan' ? buildPlan() : null;
-  renderMap(); renderResult(); renderPanel(); save();
-}
-function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2400); }
-function download(name, text, type) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click();
-}
-const csv = rows => '﻿' + rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v).join(',')).join('\n');
-
-// นำผลจาก parseSalesRows (รวมหลายไฟล์ได้) ไปใส่ยอดขาย 30 วันของแต่ละ SKU
-function applySales({ tot, used, cancelled, blank, pcs }, days, zero, files) {
-  const by = new Map(DB.products.map(p => [String(p.sku).toLowerCase(), p]));
-  let hit = 0, miss = 0;
-  for (const [k, q] of tot) { const p = by.get(k); if (p) { p.sales30 = Math.round(q / days * 30 * 10) / 10; hit++; } else miss++; }
-  if (!hit) return toast('ไม่พบ SKU ในไฟล์ตรงกับระบบเลย — เช็กคอลัมน์ SKU');
-  if (zero) for (const p of DB.products) if (!tot.has(String(p.sku).toLowerCase())) p.sales30 = 0;
-  DB.salesInfo = { days, hit, at: new Date().toLocaleString('th-TH'), pcs, used, cancelled, blank, miss, files };
-  const cls = classify(), a = DB.products.filter(p => cls[p.id] === 'A').length;
-  toast(`${files > 1 ? files + ' ไฟล์ · ' : ''}ยอดขาย ${fmt(pcs)} ชิ้น (${fmt(used)} รายการ) ใน ${days} วัน · ตรงระบบ ${fmt(hit)} SKU` + (miss ? ` · ไม่พบ ${fmt(miss)}` : '') + (cancelled ? ` · ไม่นับยกเลิก ${fmt(cancelled)}` : '') + ` · กลุ่ม A ${fmt(a)} SKU`);
-}
-
-const actions = {
-  focus: d => { ui.focus = ui.focus === d.pid ? null : d.pid; if (ui.focus) { ui.openModel = prod(ui.focus).model; ui.tab = 'products'; } },
-  clearfocus: () => { ui.focus = null; ui.q = ''; $('#q').value = ''; },
-  gotoshelf: d => { ui.sel = d.sid; ui.tab = 'detail'; },
-  toggleedit: () => setEdit(!ui.edit),
-  apply: () => {
-    if (!confirm('จัดโซนหยิบใหม่ตามแผนนี้? (ของบนชั้นตอนนี้จะถูกแทนที่ แนะนำให้ดาวน์โหลดใบจัดของก่อน)')) return;
-    const P = buildPlan();
-    DB.shelves.forEach(sh => sh.levels.forEach((L, li) => { const s = P.map.get(sh.id + '|' + li); L.items = s ? s.items.map(i => ({ ...i })) : []; }));
-    toast('จัดของตามแผนเรียบร้อย');
-  },
-  exportplan: () => {
-    const P = buildPlan(), rows = [['ทำอะไร', 'ชั้นวาง', 'ชั้น', 'SKU', 'รุ่น', 'สี', 'ไซส์', 'กลุ่ม', 'จำนวนช่อง', 'ตำแหน่งเดิม']];
-    const old = p => locations(p.id).map(l => `${l.sh.code}-${l.li + 1}`).join(' ');
-    for (const s of P.slots.slice().sort((a, b) => byCode(a.sh, b.sh) || a.li - b.li))
-      for (const it of s.items) { const p = prod(it.pid); rows.push(['วางโซนหยิบ', s.sh.code, s.li + 1, p.sku, p.model, p.color, p.size, CLS[p.id], it.boxes, old(p)]); }
-    P.toStock.forEach(e => rows.push(['เข้าสต็อก', '', '', e.p.sku, e.p.model, e.p.color, e.p.size, CLS[e.p.id], e.boxes, old(e.p)]));
-    download('ใบจัดของ-' + new Date().toISOString().slice(0, 10) + '.csv', csv(rows), 'text/csv');
-  },
-  additem: d => {
-    const sh = shelf(ui.sel), L = sh.levels[d.li];
-    const pid = document.querySelector(`[data-addsel="${d.li}"]`).value, n = int(document.querySelector(`[data-addqty="${d.li}"]`).value);
-    if (!pid || !n) return;
-    const r = remaining(L, prod(pid));
-    if (n > r && !confirm(`ชั้นนี้ใส่ได้อีกแค่ ${r} ช่อง จะเพิ่ม ${n} ช่องอยู่ดีไหม?`)) return;
-    const it = L.items.find(i => i.pid === pid); if (it) it.boxes += n; else L.items.push({ pid, boxes: n });
-  },
-  delitem: d => shelf(ui.sel).levels[d.li].items.splice(d.ii, 1),
-  addlevel: () => { const sh = shelf(ui.sel); sh.levels.push({ t: (sh.levels[sh.levels.length - 1] || DB.levelTypes[0]).t || DB.levelTypes[0].id, items: [] }); },
-  dellevel: d => { const sh = shelf(ui.sel); if (sh.levels[d.li].items.length && !confirm('ชั้นนี้มีของอยู่ ลบเลยไหม?')) return; sh.levels.splice(d.li, 1); },
-  addshelf: () => {
-    const sh = { id: uid(), code: 'S' + (DB.shelves.length + 1), x: 1, y: DB.map.rows - 1, w: 4, h: 1, levels: ((DB.shelfTypes || [])[+($('#newST') || {}).value || 0] || { levels: [DB.levelTypes[0].id] }).levels.map(t => ({ t, items: [] })) };
-    DB.shelves.push(sh); ui.sel = sh.id; ui.tab = 'detail'; setEdit(true); toast('เพิ่มชั้นวางที่มุมล่างซ้าย ลากไปวางที่ที่ต้องการ');
-  },
-  dupshelf: () => {
-    const s = shelf(ui.sel), c = JSON.parse(JSON.stringify(s));
-    c.id = uid(); c.code = s.code + '-2'; c.y = Math.min(DB.map.rows - c.h, s.y + s.h + 1); c.levels.forEach(L => L.items = []);
-    DB.shelves.push(c); ui.sel = c.id;
-  },
-  delshelf: () => { if (!confirm('ลบชั้นวางนี้และของทั้งหมดในนั้น?')) return; DB.shelves = DB.shelves.filter(s => s.id !== ui.sel); ui.sel = null; },
-  delprod: () => {
-    if (!confirm('ลบ SKU นี้ออกจากระบบ?')) return;
-    DB.products = DB.products.filter(p => p.id !== ui.focus);
-    DB.shelves.forEach(s => s.levels.forEach(L => L.items = L.items.filter(i => i.pid !== ui.focus))); ui.focus = null;
-  },
-  delmodel: d => {
-    if (!confirm(`ลบรุ่น “${d.m}” ทุก SKU?`)) return;
-    const ids = new Set(DB.products.filter(p => p.model === d.m).map(p => p.id));
-    DB.products = DB.products.filter(p => !ids.has(p.id));
-    DB.shelves.forEach(s => s.levels.forEach(L => L.items = L.items.filter(i => !ids.has(i.pid)))); ui.focus = null;
-  },
-  addmodel: () => {
-    const v = id => $(id).value.trim(), split = s => s.split(/[,，]/).map(x => x.trim()).filter(Boolean);
-    const model = v('#nmModel'), colors = split(v('#nmColors')), sizes = split(v('#nmSizes'));
-    if (!model || !colors.length || !sizes.length) return toast('กรอกชื่อรุ่น สี และไซส์ให้ครบ');
-    const code = v('#nmCode') || model.slice(0, 3).toUpperCase();
-    colors.forEach((c, ci) => sizes.forEach(s => DB.products.push({ id: uid(), brand: v('#nmBrand'), model, color: c, size: s,
-      sku: `${code}-${ci + 1}-${s}`, box: $('#nmBox').value, perBox: Math.max(1, int($('#nmPer').value)), sales30: 0, stock: 0 })));
-    ui.openModel = model; toast(`สร้าง ${colors.length * sizes.length} SKU แล้ว ใส่ยอดขาย/สต็อกด้วยการวางจาก Excel ได้`);
-  },
-  paste: () => {
-    let ok = 0, miss = [];
-    $('#paste').value.split(/\r?\n/).forEach(line => {
-      const c = line.split(/\t|,/).map(x => x.trim()); if (!c[0]) return;
-      const p = DB.products.find(x => x.sku.toLowerCase() === c[0].toLowerCase());
-      if (!p) { if (!/sku/i.test(c[0])) miss.push(c[0]); return; }
-      if (c[1] !== undefined && c[1] !== '') p.sales30 = num(c[1]);
-      if (c[2] !== undefined && c[2] !== '') p.stock = int(c[2]);
-      ok++;
-    });
-    toast(`อัปเดต ${ok} SKU` + (miss.length ? ` · ไม่พบ ${miss.length} SKU` : ''));
-  },
-  exportsku: () => download('sku.csv', csv([['SKU', 'ขาย30วัน', 'สต็อก', 'แบรนด์', 'รุ่น', 'สี', 'ไซส์', 'ชิ้นต่อช่อง', 'กลุ่ม']]
-    .concat(DB.products.map(p => [p.sku, p.sales30, p.stock, p.brand, p.model, p.color, p.size, p.perBox, CLS[p.id]]))), 'text/csv'),
-  addlt: () => DB.levelTypes.push({ id: uid(), name: 'แบบใหม่', w: 0, d: 0, h: 0, cap: {} }),
-  dellt: d => {
-    const t = DB.levelTypes[d.i];
-    if (DB.levelTypes.length < 2) return toast('ต้องมีอย่างน้อย 1 แบบ');
-    if (DB.shelves.some(s => s.levels.some(L => L.t === t.id))) return toast('แบบชั้นนี้ยังถูกใช้อยู่ เปลี่ยนชั้นที่ใช้แบบนี้ก่อน');
-    DB.levelTypes.splice(d.i, 1);
-  },
-  addbt: () => DB.boxTypes.push({ id: uid(), name: 'กล่องใหม่', w: 30, d: 30, h: 20 }),
-  delbt: d => {
-    const t = DB.boxTypes[d.i];
-    if (DB.products.some(p => p.box === t.id)) return toast('มีสินค้าใช้กล่องแบบนี้อยู่');
-    DB.boxTypes.splice(d.i, 1);
-  },
-  addzone: () => DB.zones.push({ id: uid(), name: 'โซนใหม่', type: 'pick', x: 0, y: 0, w: 5, h: 4 }),
-  delzone: d => DB.zones.splice(d.zi, 1),
-  addarea: () => (DB.areas = DB.areas || []).push({ type: 'aisle', x: 0, y: 0, w: 4, h: 2 }),
-  delarea: d => DB.areas.splice(d.ai, 1),
-  sync: () => { syncCatalog(false); },
-  gototab: d => { ui.tab = d.tab; },
-  clearsel: () => { ui.sel = null; },
-  importstock: () => {
-    const rows = $('#stockText').value.split(/\r?\n/).filter(l => l.trim())
-      .map(l => l.split(l.includes('\t') ? '\t' : ',').map(x => x.trim().replace(/^"|"$/g, '')));
-    let sk = 0, qc = 1, start = 0;
-    const hi = rows.slice(0, 5).findIndex(r => r.some(c => /sku/i.test(c)));
-    if (hi >= 0) {
-      const h = rows[hi]; start = hi + 1;
-      sk = h.findIndex(c => /sku.*merchant|merchant.*sku/i.test(c)); if (sk < 0) sk = h.findIndex(c => /sku/i.test(c));
-      qc = h.findIndex(c => /สต็อก|สต๊อก|stock|คงเหลือ|คงคลัง|available|on.?hand|จำนวน|qty|quantity/i.test(c));
-      if (qc < 0) return toast('ไม่พบคอลัมน์สต็อกในหัวตาราง (ลองตั้งชื่อคอลัมน์ว่า สต็อก)');
-    }
-    const tot = new Map(); let pcs = 0;
-    for (const r of rows.slice(start)) {
-      const sku = String(r[sk] ?? '').trim(), q = parseFloat(String(r[qc] ?? '').replace(/,/g, ''));
-      if (!sku || isNaN(q)) continue;
-      const k = sku.toLowerCase(); tot.set(k, (tot.get(k) || 0) + q);
-    }
-    const by = new Map(DB.products.map(p => [String(p.sku).toLowerCase(), p]));
-    let hit = 0, miss = 0;
-    for (const [k, q] of tot) { const p = by.get(k); if (p) { p.stock = Math.max(0, Math.round(q)); pcs += p.stock; hit++; } else miss++; }
-    if (!hit) return toast('ไม่พบ SKU ในไฟล์ตรงกับระบบเลย — เช็กคอลัมน์ SKU');
-    toast(`ใส่สต็อก ${fmt(hit)} SKU (รวม ${fmt(pcs)} ชิ้น)` + (miss ? ` · ไม่พบในระบบ ${fmt(miss)}` : ''));
-  },
-  deldemo: () => {
-    const ids = new Set(DB.products.filter(isDemo).map(p => p.id));
-    if (!ids.size || !confirm(`ลบสินค้าตัวอย่าง ${ids.size} SKU และของตัวอย่างที่วางอยู่บนชั้น?`)) return;
-    DB.products = DB.products.filter(p => !ids.has(p.id));
-    DB.shelves.forEach(s => s.levels.forEach(L => L.items = L.items.filter(i => !ids.has(i.pid)))); ui.focus = null;
-  },
-  addrule: () => (DB.rules = DB.rules || []).push({ id: uid(), brand: '', codes: '', perBox: 0, noPick: false }),
-  delrule: d => DB.rules.splice(d.i, 1),
-  importsales: () => {
-    const days = Math.max(1, int($('#salesDays').value) || 90), zero = $('#salesZero').checked;
-    const rows = $('#salesText').value.split(/\r?\n/).filter(l => l.trim())
-      .map(l => l.split(l.includes('\t') ? '\t' : ',').map(x => x.trim().replace(/^"|"$/g, '')));
-    applySales(parseSalesRows(rows), days, zero, 1);
-  },
-  export: () => download('warehouse-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(persistable(), null, 2), 'application/json'),
-  reset: () => { if (confirm('ล้างข้อมูลทั้งหมดและกลับไปใช้ข้อมูลตัวอย่าง?')) { DB = seed(); ui.sel = ui.focus = null; } },
-};
-function setEdit(v) { ui.edit = v; if (v && ui.view === '3d') setView('2d'); $('#editBtn').classList.toggle('on', v); $('#editBtn').textContent = v ? '✅ เสร็จสิ้นแก้ไข' : '✏️ แก้ไขผัง'; }
-
-document.addEventListener('click', e => {
-  const t = e.target.closest('[data-act]'); if (!t) return;
-  const d = { ...t.dataset }; ['li', 'ii', 'zi', 'ai', 'i'].forEach(k => d[k] !== undefined && (d[k] = +d[k]));
-  actions[d.act](d); render();
-});
-document.addEventListener('toggle', e => {
-  const d = e.target;
-  if (!d.dataset || !d.dataset.model || !d.open) return;
-  ui.openModel = d.dataset.model;
-  if (!d.querySelector('.mx')) { // รุ่นที่ยังไม่ได้วาดตาราง → วาดใหม่โดยเปิดรุ่นนี้
-    const p = $('#panel'), sc = [p, p.parentElement].map(x => x.scrollTop);
-    renderPanel();
-    p.scrollTop = sc[0]; p.parentElement.scrollTop = sc[1];
+  const counter = document.getElementById("counter");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  function update(idx) {
+    counter.textContent = `${idx + 1} / ${TOTAL}`;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === TOTAL - 1;
+    [...thumbs.children].forEach((t, i) => t.classList.toggle("active", i === idx));
+    thumbs.children[idx].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    history.replaceState(null, "", "#p" + (idx + 1));
   }
-}, true);
-document.addEventListener('change', e => {
-  const el = e.target, d = el.dataset, f = d.f;
-  if (el.id === 'salesFile') {
-    const files = [...el.files]; if (!files.length) return;
-    const days = Math.max(1, int($('#salesDays').value) || 90), zero = $('#salesZero').checked;
-    (async () => {
-      const all = { tot: new Map(), used: 0, cancelled: 0, blank: 0, pcs: 0 }, bad = [];
-      for (const [i, file] of files.entries()) {
-        try {
-          toast(`กำลังอ่านไฟล์ ${i + 1}/${files.length}: ${file.name}`);
-          const rows = /\.xlsx$/i.test(file.name) ? await readXlsx(await file.arrayBuffer())
-            : (await file.text()).replace(/^﻿/, '').split(/\r?\n/).filter(l => l.trim()).map(l => l.split(l.includes('\t') ? '\t' : ',').map(x => x.trim().replace(/^"|"$/g, '')));
-          const r = parseSalesRows(rows);
-          for (const [k, q] of r.tot) all.tot.set(k, (all.tot.get(k) || 0) + q);
-          all.used += r.used; all.cancelled += r.cancelled; all.blank += r.blank; all.pcs += r.pcs;
-        } catch (x) { bad.push(file.name); }
+
+  // Paper rustle synthesized with WebAudio (no audio file needed).
+  let soundOn = true, actx;
+  function rustle() {
+    if (!soundOn) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      const dur = 0.45, n = actx.sampleRate * dur;
+      const buf = actx.createBuffer(1, n, actx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) {
+        const t = i / n;
+        d[i] = (Math.random() * 2 - 1) * Math.pow(Math.sin(Math.PI * t), 2) * (0.6 + 0.4 * Math.random());
       }
-      applySales(all, days, zero, files.length - bad.length);
-      if (bad.length) setTimeout(() => toast('อ่านไม่สำเร็จ: ' + bad.join(', ')), 3500);
-      render();
-    })();
-    return;
+      const src = actx.createBufferSource(); src.buffer = buf;
+      const bp = actx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2400; bp.Q.value = 0.7;
+      const g = actx.createGain(); g.gain.value = 0.18;
+      src.connect(bp).connect(g).connect(actx.destination);
+      src.start();
+    } catch (e) {}
   }
-  if (el.id === 'stockFile') {
-    const file = el.files[0]; if (!file) return;
-    (async () => {
-      try {
-        if (/\.xlsx$/i.test(file.name)) $('#stockText').value = (await readXlsx(await file.arrayBuffer())).map(r => Array.from(r, c => String(c ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
-        else $('#stockText').value = (await file.text()).replace(/^﻿/, '');
-        actions.importstock({}); render();
-      } catch (x) { toast('อ่านไฟล์ไม่สำเร็จ: ' + (x.message || x)); }
-    })();
-    return;
-  }
-  if (el.id === 'imp') {
-    const file = el.files[0]; if (!file) return;
-    file.text().then(txt => { try { const j = JSON.parse(txt); if (!j.shelves || !j.products || !j.levelTypes) throw 0; DB = j; ui.sel = ui.focus = null; render(); toast('นำเข้าข้อมูลแล้ว'); syncCatalog(true); } catch (x) { toast('ไฟล์ไม่ถูกต้อง'); } });
-    return;
-  }
-  if (f === 'rule') {
-    const r = (DB.rules || [])[+d.i]; if (!r) return;
-    r[d.k] = d.k === 'noPick' ? el.checked : d.k === 'perBox' ? num(el.value) : el.value;
-    render(); return;
-  }
-  if (!f) return;
-  const sh = shelf(ui.sel), str = ['name', 'type', 'code', 'sizeOrder', 'brandOnly'].includes(d.k);
-  if (f === 'qty') { const L = sh.levels[+d.li]; const q = int(el.value); if (q) L.items[+d.ii].boxes = q; else L.items.splice(+d.ii, 1); }
-  else if (f === 'stype') {
-    const st = DB.shelfTypes[+el.value]; if (!st) return;
-    const old = sh.levels;
-    if (old.some(L => L.items.length) && !confirm('เปลี่ยนแบบแล้ว ของในชั้นที่เกินจำนวนชั้นใหม่จะหาย ดำเนินการต่อไหม?')) { render(); return; }
-    sh.levels = st.levels.map((t, i) => ({ t, items: old[i] ? old[i].items : [] }));
-  }
-  else if (f === 'lvt') sh.levels[+d.li].t = el.value;
-  else if (f === 'sh') sh[d.k] = str ? el.value.trim() : (d.k === 'w' || d.k === 'h' ? Math.max(1, int(el.value)) : int(el.value));
-  else if (f === 'zone') DB.zones[+d.zi][d.k] = str ? el.value : int(el.value);
-  else if (f === 'area') DB.areas[+d.ai][d.k] = d.k === 'type' ? el.value : int(el.value);
-  else if (f === 'map') DB.map[d.k] = Math.max(5, int(el.value));
-  else if (f === 'prod') { const p = prod(ui.focus); p[d.k] = d.k === 'perBox' ? Math.max(1, int(el.value)) : num(el.value); }
-  else if (f === 'model') DB.products.filter(p => p.model === d.m).forEach(p => p[d.k] = d.k === 'box' || d.k === 'cat' ? el.value : Math.max(1, int(el.value)));
-  else if (f === 'cap') { const t = DB.levelTypes[+d.i]; t.cap = t.cap || {}; if (el.value === '') delete t.cap[d.b]; else t.cap[d.b] = int(el.value); }
-  else if (f === 'lt') DB.levelTypes[+d.i][d.k] = str ? el.value : num(el.value);
-  else if (f === 'bt') DB.boxTypes[+d.i][d.k] = str ? el.value : num(el.value);
-  else if (f === 'calc') ui.calc[d.k] = el.value;
-  else if (f === 'set') DB.settings[d.k] = el.type === 'checkbox' ? el.checked : str ? el.value : num(el.value);
-  else return;
-  render();
-});
-$('#moreBtn').addEventListener('click', () => $('#tabs').classList.toggle('more'));
-$('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { ui.tab = b.dataset.tab; render(); } });
-function applyTheme(t) {
-  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
-  const dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  $('#themeBtn').textContent = dark ? '☀️' : '🌙';
-  $('#themeBtn').title = dark ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด';
-}
-let theme = null; try { theme = localStorage.getItem('wh2d-theme'); } catch (e) {}
-applyTheme(theme);
-$('#themeBtn').addEventListener('click', () => {
-  const dark = $('#themeBtn').textContent === '☀️';
-  theme = dark ? 'light' : 'dark'; applyTheme(theme);
-  try { localStorage.setItem('wh2d-theme', theme); } catch (e) {}
-});
-function setView(v) {
-  ui.view = v; $('#viewBtn').textContent = v === '3d' ? '▦ 2D' : '🧊 3D';
-  try { localStorage.setItem('wh2d-view', v); } catch (e) {}
-}
-$('#typebar').addEventListener('click', e => { const b = e.target.closest('[data-tf]'); if (!b) return; ui.tf = ui.tf === +b.dataset.tf ? null : +b.dataset.tf; renderMap(); });
-$('#viewBtn').addEventListener('click', () => { if (ui.view === '2d' && ui.edit) setEdit(false); setView(ui.view === '3d' ? '2d' : '3d'); renderMap(); });
-try { if (localStorage.getItem('wh2d-view') === '3d') setView('3d'); } catch (e) {}
-// X-ray: หาตู้ที่อยู่ใกล้คนดูกว่า (ด้านหน้า) และทับตู้ที่ชี้อยู่บนจอ แล้วทำให้โปร่งใส
-let xT = null;
-const depth = sh => -0.5 * (sh.x + sh.w / 2) + 0.866 * (sh.y + sh.h / 2);
-function rectOf(el) {
-  const rs = [...el.querySelectorAll('.f')].map(f => f.getBoundingClientRect());
-  return { l: Math.min(...rs.map(r => r.left)), r: Math.max(...rs.map(r => r.right)), t: Math.min(...rs.map(r => r.top)), b: Math.max(...rs.map(r => r.bottom)) };
-}
-function clearXray() { xT = null; document.querySelectorAll('.s3.xray,.s3.focus').forEach(e => e.classList.remove('xray', 'focus')); }
-$('#map').addEventListener('mousemove', e => {
-  if (ui.view !== '3d') return;
-  // ยังอยู่ในกรอบตู้เดิม → ไม่เปลี่ยนเป้า (กันเด้งไปตู้ด้านหลังตอนตู้ด้านหน้าโปร่งใส)
-  const cur = xT && document.querySelector(`.s3[data-shelf="${xT}"]`);
-  if (cur) { const r = rectOf(cur); if (e.clientX >= r.l && e.clientX <= r.r && e.clientY >= r.t && e.clientY <= r.b) return; }
-  const el = e.target.closest('.s3');
-  if (!el) { clearXray(); return; }
-  if (el.dataset.shelf === xT) return;
-  clearXray(); xT = el.dataset.shelf; el.classList.add('focus');
-  const d = depth(shelf(xT)), r = rectOf(el);
-  document.querySelectorAll('.s3').forEach(o => {
-    if (o === el || depth(shelf(o.dataset.shelf)) <= d) return;
-    const q = rectOf(o);
-    if (q.l < r.r && q.r > r.l && q.t < r.b && q.b > r.t) o.classList.add('xray');
+
+  flip.on("flip", e => update(e.data));
+  flip.on("changeState", e => { if (e.data === "flipping") rustle(); });
+
+  prevBtn.onclick = () => flip.flipPrev();
+  nextBtn.onclick = () => flip.flipNext();
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); flip.flipNext(); }
+    if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); flip.flipPrev(); }
+    if (e.key === "Home") flip.flip(0);
+    if (e.key === "End") flip.flip(TOTAL - 1);
   });
-});
-$('#map').addEventListener('mouseleave', clearXray);
-let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(renderMap, 150); });
-$('#editBtn').addEventListener('click', () => { setEdit(!ui.edit); render(); });
-$('#q').addEventListener('input', e => { ui.q = e.target.value; ui.focus = null; renderMap(); renderResult(); });
 
-/* ================= ลาก/คลิกชั้นวาง ================= */
-let drag = null;
-const map = $('#map');
-map.addEventListener('pointerdown', e => {
-  const el = e.target.closest('[data-shelf]'); if (!el) return;
-  const sh = shelf(el.dataset.shelf);
-  drag = { sh, el, sx: e.clientX, sy: e.clientY, ox: sh.x, oy: sh.y, moved: false };
-  if (ui.edit && ui.view !== '3d') el.setPointerCapture(e.pointerId);
-});
-map.addEventListener('pointermove', e => {
-  if (!drag || !ui.edit || ui.view === '3d') return;
-  const { sh, el } = drag;
-  const nx = Math.min(DB.map.cols - sh.w, Math.max(0, drag.ox + Math.round((e.clientX - drag.sx) / CELL)));
-  const ny = Math.min(DB.map.rows - sh.h, Math.max(0, drag.oy + Math.round((e.clientY - drag.sy) / CELL)));
-  if (nx !== sh.x || ny !== sh.y) { sh.x = nx; sh.y = ny; drag.moved = true; el.style.left = nx * CELL + 3 + 'px'; el.style.top = ny * CELL + 3 + 'px'; }
-});
-map.addEventListener('pointerup', () => {
-  if (!drag) return;
-  const d = drag; drag = null;
-  // อยู่หน้าแผน → คลิกชั้นแล้วดูของที่ "ตามแผน" ในหน้าเดิม (ยังไม่กดใช้แผน ชั้นจริงยังว่าง)
-  if (!d.moved) { ui.sel = d.sh.id; if (ui.tab !== 'plan') ui.tab = 'detail'; }
-  render();
-});
+  const soundBtn = document.getElementById("soundBtn");
+  soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.textContent = soundOn ? "🔊" : "🔇"; };
+  document.getElementById("fsBtn").onclick = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen?.();
+  };
 
-DB = load() || seed();
-DB.boxTypes.forEach(b => { if (b.slots == null) b.slots = DEF_SLOTS[b.id] || 1; });
-if (!DB.rules) DB.rules = defaultRules();
-if (!DB.brandV2) { DB.settings.brandOnly = 'WARRIX, GRAND'; DB.brandV2 = true; }
-if (!DB.perBoxV2) { DB.products.forEach(p => { if (p.src === 'sb' && p.perBox === 10) p.perBox = PER_DEF; }); DB.perBoxV2 = true; }
-render();
-syncCatalog(true);
+  const start = Math.min(TOTAL, Math.max(1, parseInt((location.hash.match(/p(\d+)/) || [])[1] || "1"))) - 1;
+  if (start) flip.turnToPage(start);
+  update(start);
 </script>
 </body>
 </html>
