@@ -6,6 +6,7 @@
 <title>Polo Catalog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+<script>if (matchMedia('(max-width: 640px)').matches) document.documentElement.classList.add('m');</script>
 <style>
   :root {
     --bg: #1b1d22;
@@ -76,6 +77,43 @@
     .brand { font-size: 13px; }
     #thumbs img { height: 36px; }
   }
+
+  /* ---------- Mobile version: vertical feed, tap to zoom ---------- */
+  #feed, #lb { display: none; }
+  html.m, html.m body { height: auto; }
+  html.m body { display: block; overflow: auto; -webkit-tap-highlight-color: transparent; }
+  html.m header {
+    position: sticky; top: 0; z-index: 20; padding: 10px 14px;
+    background: rgba(27,29,34,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  html.m .brand { font-size: 13px; }
+  html.m .brand span { display: block; margin: 0; font-size: 10px; letter-spacing: .2em; }
+  html.m #fsBtn, html.m #soundBtn, html.m main, html.m .hint { display: none; }
+  html.m #feed { display: block; padding: 12px 12px 8px; }
+  html.m .card { margin: 0 0 14px; scroll-margin-top: 70px; }
+  html.m .card img {
+    width: 100%; height: auto; aspect-ratio: 2667 / 1500; display: block; border-radius: 10px;
+    box-shadow: 0 10px 24px -10px rgba(0,0,0,.7); background: #f4f1ec;
+  }
+  html.m .card .cap { margin: 6px 4px 0; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+  html.m footer {
+    position: sticky; bottom: 0; z-index: 20; padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(27,29,34,.94); backdrop-filter: blur(8px); border-top: 1px solid rgba(255,255,255,.08);
+    gap: 6px;
+  }
+  html.m #thumbs img { height: 40px; }
+  html.m #lb {
+    position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.94);
+    overflow: auto; -webkit-overflow-scrolling: touch;
+  }
+  html.m #lb.open { display: block; }
+  html.m #lb img { display: block; width: 260vw; max-width: none; margin: 20vh 0; }
+  html.m #lbClose {
+    position: fixed; top: 12px; right: 12px; z-index: 51; width: 44px; height: 44px; padding: 0; font-size: 22px;
+    display: none;
+  }
+  html.m #lb.open ~ #lbClose { display: block; }
 </style>
 </head>
 <body>
@@ -93,6 +131,10 @@
   <button class="nav next" id="nextBtn" aria-label="หน้าถัดไป">›</button>
 </main>
 
+<div id="feed"></div>
+<div id="lb"></div>
+<button id="lbClose" aria-label="ปิด">✕</button>
+
 <footer>
   <div id="counter">1 / 9</div>
   <div id="thumbs"></div>
@@ -105,6 +147,8 @@
   const RATIO = 1500 / 2667; // page height / width (landscape 16:9)
   const pad = n => String(n).padStart(2, "0");
 
+  const MOBILE = document.documentElement.classList.contains("m");
+  let goTo = i => {};
   const book = document.getElementById("book");
   const thumbs = document.getElementById("thumbs");
   for (let i = 1; i <= TOTAL; i++) {
@@ -112,15 +156,55 @@
     p.className = "page";
     if (i === 1 || i === TOTAL) p.dataset.density = "hard";
     p.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}" ${i > 2 ? 'loading="lazy"' : ""}>`;
-    book.appendChild(p);
+    if (!MOBILE) book.appendChild(p);
 
     const t = document.createElement("img");
     t.src = `t${pad(i)}.jpg`;
     t.alt = `หน้า ${i}`;
-    t.onclick = () => flip.flip(i - 1);
+    t.onclick = () => goTo(i - 1);
     thumbs.appendChild(t);
   }
 
+  if (MOBILE) {
+    const feed = document.getElementById("feed");
+    const lb = document.getElementById("lb");
+    const counter = document.getElementById("counter");
+    for (let i = 1; i <= TOTAL; i++) {
+      const c = document.createElement("div");
+      c.className = "card"; c.id = "c" + i;
+      c.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}" ${i > 2 ? 'loading="lazy"' : ""}>` +
+        `<div class="cap"><span>หน้า ${i} / ${TOTAL}</span><span>แตะเพื่อซูม</span></div>`;
+      c.querySelector("img").onclick = () => {
+        lb.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}">`;
+        lb.classList.add("open"); document.body.style.overflow = "hidden";
+        requestAnimationFrame(() => { lb.scrollLeft = (lb.scrollWidth - lb.clientWidth) / 2; lb.scrollTop = 0; });
+      };
+      feed.appendChild(c);
+    }
+    const closeLb = () => { lb.classList.remove("open"); lb.innerHTML = ""; document.body.style.overflow = ""; };
+    document.getElementById("lbClose").onclick = closeLb;
+    goTo = i => document.getElementById("c" + (i + 1)).scrollIntoView({ behavior: "smooth", block: "start" });
+
+    let cur = -1;
+    function mark(idx) {
+      if (idx === cur) return; cur = idx;
+      counter.textContent = `${idx + 1} / ${TOTAL}`;
+      [...thumbs.children].forEach((t, k) => t.classList.toggle("active", k === idx));
+      thumbs.children[idx].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      history.replaceState(null, "", "#p" + (idx + 1));
+    }
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting) mark(+e.target.id.slice(1) - 1); });
+    }, { rootMargin: "-35% 0px -55% 0px" });
+    feed.querySelectorAll(".card").forEach(c => io.observe(c));
+    addEventListener("scroll", () => {
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) mark(TOTAL - 1);
+    }, { passive: true });
+
+    const st = Math.min(TOTAL, Math.max(1, parseInt((location.hash.match(/p(\d+)/) || [])[1] || "1"))) - 1;
+    mark(st);
+    if (st) setTimeout(() => document.getElementById("c" + (st + 1)).scrollIntoView({ block: "start" }), 50);
+  } else {
   // Size one page to fit the available area; the stage is exactly one page wide,
   // so the book opens one landscape sheet at a time.
   function fitSize() {
@@ -210,6 +294,8 @@
   const start = Math.min(TOTAL, Math.max(1, parseInt((location.hash.match(/p(\d+)/) || [])[1] || "1"))) - 1;
   if (start) flip.turnToPage(start);
   update(start);
+  goTo = i => flip.flip(i);
+  }
 </script>
 </body>
 </html>
