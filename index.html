@@ -6,7 +6,8 @@
 <title>Polo Catalog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-<script>if (matchMedia('(max-width: 640px)').matches) document.documentElement.classList.add('m');</script>
+<script>const MQ = '(max-width: 640px), (pointer: coarse) and (max-height: 500px)';
+if (matchMedia(MQ).matches) document.documentElement.classList.add('m');</script>
 <style>
   :root {
     --bg: #1b1d22;
@@ -103,6 +104,15 @@
     gap: 6px;
   }
   html.m #thumbs img { height: 40px; }
+  @media (max-height: 500px) {
+    html.m header { position: static; padding: 6px 14px; }
+    html.m .brand span { display: inline; margin-left: 8px; }
+    html.m #feed { padding: 8px 10px 4px; }
+    html.m .card { scroll-margin-top: 8px; }
+    html.m footer { padding: 4px 10px; }
+    html.m #thumbs { display: none; }
+    html.m #lb.open img { width: 150vw; margin: 0; }
+  }
   html.m #lb {
     position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.94);
     overflow: auto; -webkit-overflow-scrolling: touch;
@@ -148,6 +158,10 @@
   const pad = n => String(n).padStart(2, "0");
 
   const MOBILE = document.documentElement.classList.contains("m");
+  // Rotating the phone can switch layout: reload (hash keeps the page).
+  addEventListener("resize", () => {
+    if (matchMedia(MQ).matches !== MOBILE) location.reload();
+  });
   let goTo = i => {};
   const book = document.getElementById("book");
   const thumbs = document.getElementById("thumbs");
