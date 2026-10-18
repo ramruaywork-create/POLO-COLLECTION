@@ -9,11 +9,12 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   };
+  window.fromDrive = function (j) { return fromDriveImpl(j); };
   window.isVid = function (m) { return /\.mp4$|\/preview$/.test(m); };
 
   var lh = function (id, w) { return "https://lh3.googleusercontent.com/d/" + id + "=w" + w; };
 
-  function fromDrive(j) {
+  function fromDriveImpl(j) {
     return (j.brands || []).map(function (b) {
       return {
         brand: b.brand,
@@ -50,13 +51,18 @@
       .filter(function (b) { return b.items.length; });
   }
 
-  var api = C.site.driveApi;
+  var api = window.API_URL || C.site.driveApi || "";
   if (api) {
-    window.catalogReady = fetch(api + (api.indexOf("?") < 0 ? "?" : "&") + "catalog=1")
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
+    var base = api + (api.indexOf("?") < 0 ? "?" : "&");
+    var getJson = function (u) { return fetch(u).then(function (r) { return r.json(); }); };
+    window.catalogReady = Promise.all([getJson(base + "content=1").catch(function () { return null; }), getJson(base + "catalog=1")])
+      .then(function (res) {
+        var c = res[0], j = res[1];
+        if (c && !c.error && (c.site || c.brands || c.products)) {
+          C.site = Object.assign({}, C.site, c.site || {}); C.brands = c.brands || {}; C.products = c.products || {};
+        }
         if (j.error) throw new Error(j.error);
-        finish(fromDrive(j));
+        finish(fromDriveImpl(j));
       })
       .catch(function (e) {
         console.warn("โหลดรายการจาก Drive ไม่ได้ ใช้ข้อมูลในเครื่องแทน:", e);

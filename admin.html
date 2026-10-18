@@ -65,24 +65,41 @@ textarea{resize:vertical;min-height:90px}
 <main id="m"></main>
 
 <script src="data.js"></script>
+<script src="config.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const U=p=>encodeURI(p).replace(/#/g,"%23");
 const DEF={title:"แคตตาล็อกสินค้า — ร่ำรวย 2024",logoA:"ร่ำรวย",logoB:"2024",topbar1:"แคตตาล็อกสินค้า — รวมทุกแบรนด์ในที่เดียว",topbar2:"ค้นหาด้วยรหัสรุ่น · ดูรูป วิดีโอ และสีสินค้า",heroTitle:"ร่ำรวย 2024\nแคตตาล็อกสินค้า",heroSub:"รวมทุกแบรนด์ ดูรูปและสีได้ครบ",footerText:"เว็บไซต์แคตตาล็อกสินค้า รวมรูปภาพ รุ่น และสีของสินค้าทุกแบรนด์ ค้นหาง่าย ดูครบในที่เดียว",copyright:"© 2024 ร่ำรวย แคตตาล็อก. All rights reserved.",banner:""};
 let C={site:{...DEF},brands:{},products:{}},tab="site",sel=null,fq="",fb="",dirty=false,server=false;
-const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand,key:b.brand+"|"+i.sku})));
+let all=[];
+function buildAll(){all=[];CATALOG.forEach(b=>b.items.forEach(i=>{if(String(i.sku).charAt(0)!=="_")all.push({...i,brand:b.brand,key:b.brand+"|"+i.sku})}))}
+buildAll();
+const fromDriveRaw=j=>(j.brands||[]).map(b=>({brand:b.brand,items:b.items.map(i=>({sku:i.sku,cover:"https://lh3.googleusercontent.com/d/"+i.imgs[0]+"=w520",imgs:i.imgs.map(id=>"https://lh3.googleusercontent.com/d/"+id+"=w1100"),vids:(i.vids||[]),colors:(i.colors||[]).map(c=>({n:c.n,t:"https://lh3.googleusercontent.com/d/"+c.id+"=w160",f:"https://lh3.googleusercontent.com/d/"+c.id+"=w1100"}))}))}));
 
 function setSt(t,c){const s=$("st");s.textContent=t;s.className=c||""}
 function touch(){dirty=true;setSt("● มีการแก้ไขที่ยังไม่บันทึก","dirty")}
 async function load(){
+  const api=D.url;
+  if(api){
+    try{
+      const b=api+(api.indexOf("?")<0?"?":"&");
+      const [c,cat]=await Promise.all([fetch(b+"content=1").then(r=>r.json()).catch(()=>null),fetch(b+"catalog=1").then(r=>r.json())]);
+      if(c&&!c.error&&(c.site||c.brands||c.products))C={site:{...DEF,...(c.site||{})},brands:c.brands||{},products:c.products||{}};
+      if(!cat.error&&cat.brands){window.CATALOG=fromDriveRaw(cat);buildAll()}
+      else setSt("ยังไม่มีรายการสินค้าจาก Drive — ไปแท็บ Google Drive แล้วกด อัปเดตรายการสินค้า","err");
+      server=false;render();
+      if(D.key)autoConnect();
+      return;
+    }catch(e){setSt("โหลดข้อมูลจาก Drive ไม่ได้ ใช้ข้อมูลในเครื่องแทน: "+e.message,"err")}
+  }
   try{
     const r=await fetch("content.js?t="+Date.now(),{cache:"no-store"});const t=await r.text();
     const m=t.match(/window\.CONTENT\s*=\s*([\s\S]*?);\s*$/);
     if(m){const o=JSON.parse(m[1]);C={site:{...DEF,...(o.site||{})},brands:o.brands||{},products:o.products||{}}}
   }catch(e){}
   try{server=(await fetch("/api/ping")).ok}catch(e){server=false}
-  if(!server)setSt("⚠ ไม่ได้เปิดผ่านเซิร์ฟเวอร์ — จะบันทึกเป็นไฟล์ดาวน์โหลด","err");
+  if(!server&&!D.url)setSt("⚠ ยังไม่ได้เชื่อมต่อ Drive — ไปแท็บ Google Drive ใส่ URL ก่อน (ตอนนี้จะบันทึกเป็นไฟล์ดาวน์โหลด)","err");
   render();
 }
 function prod(k){return C.products[k]||(C.products[k]={})}
@@ -99,6 +116,10 @@ function clean(){ // ตัดข้อมูลว่างออกก่อ�
 }
 async function save(){
   const data=clean();
+  if(D.url&&D.key){
+    try{setSt("กำลังบันทึกไป Drive…");await dcall("saveContent",{data});dirty=false;setSt("✓ บันทึกแล้ว — เว็บจะแสดงค่าใหม่ทันทีที่รีเฟรช "+new Date().toLocaleTimeString("th-TH"),"ok");return}
+    catch(e){setSt("✗ บันทึกไม่สำเร็จ: "+e.message,"err");return}
+  }
   if(server){
     try{const r=await fetch("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
       if(!r.ok)throw new Error(r.status);dirty=false;setSt("✓ บันทึกแล้ว "+new Date().toLocaleTimeString("th-TH"),"ok");return}
@@ -129,11 +150,9 @@ function siteView(){
   <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><input type="file" id="bf" accept="image/*" style="display:none"><button class="btn g sm" id="bu">อัปโหลดรูปใหม่…</button><span class="hint" id="bm"></span></div>
   <img class="pv" id="bp" src="${U(C.site.banner||"assets/banner.jpg")}" alt="">
   ${F("footerText","ข้อความส่วนท้ายเว็บ","",true)}
-  <label>ดึงสินค้าจาก Google Drive <small>(Web app URL ของ Apps Script — ว่าง = ใช้ข้อมูลในเครื่อง)</small></label>
-  <input type="text" data-s="driveApi" value="${esc(C.site.driveApi||"")}" placeholder="https://script.google.com/macros/s/.../exec">
   ${F("copyright","ลิขสิทธิ์ (แถบดำล่างสุด)")}
   </div></div>
-  <p class="hint">หมายเหตุ: ค่าที่แก้จะแสดงบนหน้า index.html และ product.html หลังกด "บันทึก" แล้วรีเฟรชหน้าเว็บ</p></div>`;
+  <p class="hint">กด "บันทึก" มุมขวาบน แล้วรีเฟรชหน้าเว็บ ค่าที่แก้จะแสดงทันที (เก็บไว้ใน Google Drive ไม่ต้อง push GitHub)</p></div>`;
 }
 function brandView(){
   return `<div class="card"><h2 style="margin-top:0">แบรนด์</h2><p class="hint">ติ๊กออก = ซ่อนแบรนด์นี้ (และสินค้าทั้งหมดของแบรนด์) จากหน้าเว็บ</p><div class="bgrid">${CATALOG.map(b=>{
@@ -198,8 +217,8 @@ window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.return
 
 /* ===================== Google Drive (ผ่าน Apps Script) ===================== */
 const DK="adminDriveGAS";
-const D={url:"",key:"",path:[],items:[],msg:"",busy:"",ok:false};
-try{const s=JSON.parse(localStorage.getItem(DK)||"{}");D.url=s.url||"";D.key=s.key||""}catch(e){}
+const D={url:window.API_URL||"",key:"",path:[],items:[],msg:"",busy:"",ok:false};
+try{const s=JSON.parse(localStorage.getItem(DK)||"{}");D.url=s.url||D.url;D.key=s.key||""}catch(e){}
 const dsave=()=>{try{localStorage.setItem(DK,JSON.stringify({url:D.url,key:D.key}))}catch(e){}};
 async function dcall(action,p){
   const r=await fetch(D.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:D.key,action,...p})});
@@ -212,12 +231,23 @@ async function dconnect(){
   D.url=($("gurl")||{}).value?.trim()||D.url;D.key=($("gkey")||{}).value||D.key;dsave();
   if(!D.url||!D.key){D.msg="กรอก Web app URL และรหัสลับให้ครบ";return drender()}
   D.busy="กำลังเชื่อมต่อ…";D.msg="";D.path=[];drender();
-  try{await dlist();D.ok=true;if(D.url&&C.site.driveApi!==D.url){C.site.driveApi=D.url;touch()}}catch(e){D.msg=e.message;D.ok=false}
+  try{await dlist();D.ok=true}catch(e){D.msg=e.message;D.ok=false}
   D.busy="";drender();
+}
+async function autoConnect(){try{D.path=[];await dlist();D.ok=true;if(tab==="drive")drender()}catch(e){D.ok=false}}
+let rbBusy=false,rbPending=false;
+async function queueRebuild(){
+  if(rbBusy){rbPending=true;return}
+  rbBusy=true;
+  try{do{rbPending=false;setSt("⟳ กำลังอัปเดตรายการสินค้าบนเว็บ… (1-2 นาที)","dirty");const j=await dcall("rebuild",{});setSt("✓ อัปเดตรายการสินค้าแล้ว: "+j.brands+" แบรนด์ "+j.skus+" รุ่น","ok");
+    try{const b=D.url+(D.url.indexOf("?")<0?"?":"&");const cat=await fetch(b+"catalog=1").then(r=>r.json());if(cat.brands){window.CATALOG=fromDriveRaw(cat);buildAll()}}catch(e){}
+  }while(rbPending)}catch(e){setSt("✗ อัปเดตรายการไม่สำเร็จ: "+e.message,"err")}
+  rbBusy=false;
 }
 function dsize(n){n=+n;if(!n)return"";return n>1048576?(n/1048576).toFixed(1)+" MB":Math.ceil(n/1024)+" KB"}
 function drender(){
   if(tab!=="drive")return;
+  if(!D.ok&&D.url&&D.key&&!D.busy&&!D._tried){D._tried=true;autoConnect()}
   const setup=`<div class="card" style="max-width:760px"><h2 style="margin-top:0">เชื่อมต่อ Google Drive (Apps Script)</h2>
   <p class="hint">1) ไปที่ <b>script.google.com</b> ด้วยบัญชีเจ้าของโฟลเดอร์ DATA → โปรเจกต์ใหม่ → วางโค้ดจากไฟล์ <b>Code.gs</b> (ในโฟลเดอร์ catalog) แล้วเปลี่ยน <b>SECRET</b> เป็นรหัสของคุณ<br>
   2) Deploy → New deployment → ชนิด <b>Web app</b> → Execute as: <b>Me</b> → Who has access: <b>Anyone</b> → กดอนุญาตสิทธิ์ Drive<br>
@@ -257,7 +287,7 @@ async function dupload(files){
     try{await dcall("upload",{parentId:cur(),name:f.name,mime:f.type,data:await b64(f)})}
     catch(e){D.msg="อัปโหลด "+f.name+" ไม่สำเร็จ: "+e.message;break}
   }
-  D.busy="";try{await dlist()}catch(e){D.msg=e.message}drender();
+  D.busy="";try{await dlist()}catch(e){D.msg=e.message}drender();queueRebuild();
 }
 document.addEventListener("click",async e=>{
   const b=e.target.closest("[data-d]");if(!b)return;e.preventDefault();
@@ -270,9 +300,9 @@ document.addEventListener("click",async e=>{
     else if(a==="re"){await dlist()}
     else if(a==="rb"){D.busy="กำลังสแกน Drive สร้างรายการสินค้า… (อาจใช้เวลา 1-2 นาที)";drender();const j=await dcall("rebuild",{});D.busy="";D.msg="";D.ok=true;alert("อัปเดตแล้ว: "+j.brands+" แบรนด์ "+j.skus+" รุ่น")}
     else if(a==="up"){$("dup").click();return}
-    else if(a==="mk"){const n=prompt("ชื่อโฟลเดอร์ใหม่");if(!n)return;await dcall("mkdir",{parentId:cur(),name:n});await dlist()}
-    else if(a==="ren"){const n=prompt("ชื่อใหม่",b.dataset.name);if(!n||n===b.dataset.name)return;await dcall("rename",{id:b.dataset.id,name:n});await dlist()}
-    else if(a==="del"){if(!confirm("ย้าย “"+b.dataset.name+"” ไปถังขยะของ Drive?\n(กู้คืนได้จากถังขยะใน Google Drive)"))return;await dcall("trash",{id:b.dataset.id});await dlist()}
+    else if(a==="mk"){const n=prompt("ชื่อโฟลเดอร์ใหม่");if(!n)return;await dcall("mkdir",{parentId:cur(),name:n});await dlist();queueRebuild()}
+    else if(a==="ren"){const n=prompt("ชื่อใหม่",b.dataset.name);if(!n||n===b.dataset.name)return;await dcall("rename",{id:b.dataset.id,name:n});await dlist();queueRebuild()}
+    else if(a==="del"){if(!confirm("ย้าย “"+b.dataset.name+"” ไปถังขยะของ Drive?\n(กู้คืนได้จากถังขยะใน Google Drive)"))return;await dcall("trash",{id:b.dataset.id});await dlist();queueRebuild()}
   }catch(err){D.msg=err.message}
   drender();
 });

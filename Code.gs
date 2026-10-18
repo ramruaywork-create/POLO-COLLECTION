@@ -13,15 +13,21 @@ const ROOT_ID = '1znWxZ7wp3K6zj6HNHHQzlHA-RjU2hixA';
 // รหัสลับสำหรับ "แก้ไข" Drive (อัปโหลด/ลบ/เปลี่ยนชื่อ/อัปเดตรายการ)
 // เพราะ Web app URL จะอยู่ในเว็บสาธารณะ จึงควรมีรหัสเสมอ — เปลี่ยนเป็นของคุณเอง
 // (การ "อ่าน" รายการสินค้าไม่ต้องใช้รหัส)
-const SECRET = 'rr-8f3KqW7xZ2mP9vLd4Tn6Hs1';
+const SECRET = 'ตั้งรหัสของคุณตรงนี้';
 
 const CATALOG_FILE = '_catalog.json';
+const CONTENT_FILE = '_content.json'; // ข้อความ/ชื่อสินค้า/การซ่อน ที่แก้จากหน้า Admin
 const SKIP_BRANDS = ['น้ำถ้วม'];
 
 // ---------------------------------------------------------------- entry points
 
 function doGet(e) {
   try {
+    if (e && e.parameter && e.parameter.content) {
+      var ci = DriveApp.getFolderById(ROOT_ID).getFilesByName(CONTENT_FILE);
+      return ContentService.createTextOutput(ci.hasNext() ? ci.next().getBlob().getDataAsString() : '{}')
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     if (e && e.parameter && e.parameter.catalog) {
       var it = DriveApp.getFolderById(ROOT_ID).getFilesByName(CATALOG_FILE);
       if (!it.hasNext()) return out({ error: 'ยังไม่มีรายการสินค้า — กด "อัปเดตรายการสินค้า" ในหน้า Admin ก่อน' });
@@ -37,7 +43,8 @@ function doGet(e) {
 function doPost(e) {
   try {
     const r = JSON.parse(e.postData.contents);
-    if (!SECRET || r.key !== SECRET) return out({ error: 'รหัสลับไม่ถูกต้อง' });
+    if (!SECRET || SECRET.indexOf('ตั้งรหัส') === 0) return out({ error: 'ยังไม่ได้ตั้ง SECRET ในโค้ด Apps Script' });
+    if (r.key !== SECRET) return out({ error: 'รหัสลับไม่ถูกต้อง' });
 
     switch (r.action) {
       case 'list':    return out(list_(r.folderId || ROOT_ID));
@@ -46,6 +53,7 @@ function doPost(e) {
       case 'trash':   return out(trash_(r.id));
       case 'upload':  return out(upload_(r.parentId, r.name, r.mime, r.data));
       case 'rebuild': return out(rebuild_());
+      case 'saveContent': return out(saveContent_(r.data));
       default:        return out({ error: 'ไม่รู้จักคำสั่ง' });
     }
   } catch (err) {
@@ -162,6 +170,21 @@ function group_(files) {
   return g;
 }
 
+function writeFile_(name, text) {
+  var root = DriveApp.getFolderById(ROOT_ID);
+  var it = root.getFilesByName(name);
+  if (it.hasNext()) it.next().setContent(text);
+  else root.createFile(name, text, 'application/json');
+}
+
+function saveContent_(data) {
+  if (!data || typeof data !== 'object') throw new Error('ข้อมูลไม่ถูกต้อง');
+  var text = JSON.stringify(data);
+  if (text.length > 3000000) throw new Error('ข้อมูลใหญ่เกินไป');
+  writeFile_(CONTENT_FILE, text);
+  return { ok: true };
+}
+
 // สแกน Drive แล้วเขียนรายการสินค้าลงไฟล์ _catalog.json (เว็บอ่านไฟล์นี้)
 function rebuild_() {
   var brands = children_([ROOT_ID]).filter(function (f) {
@@ -208,9 +231,6 @@ function rebuild_() {
   });
 
   var json = JSON.stringify({ updated: new Date().toISOString(), brands: data });
-  var root = DriveApp.getFolderById(ROOT_ID);
-  var it = root.getFilesByName(CATALOG_FILE);
-  if (it.hasNext()) it.next().setContent(json);
-  else root.createFile(CATALOG_FILE, json, 'application/json');
+  writeFile_(CATALOG_FILE, json);
   return { ok: true, brands: data.length, skus: data.reduce(function (n, b) { return n + b.items.length; }, 0) };
 }
