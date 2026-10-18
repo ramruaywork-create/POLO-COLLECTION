@@ -189,7 +189,8 @@ table.sp td:first-child{width:220px;color:var(--mut);background:var(--bg)}
 <script src="data.js"></script>
 <script src="content.js"></script>
 <script src="common.js"></script>
-<script>
+<script type="module">
+await window.catalogReady;
 const U=p=>encodeURI(p).replace(/#/g,"%23");
 const $=id=>document.getElementById(id);
 const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand})));
@@ -226,16 +227,16 @@ $("app").innerHTML=`
 <div class="sec" id="rel"><div class="sh"><h2>จากแบรนด์เดียวกัน</h2></div><div class="rel">${rel.map(card).join("")}</div></div>`;
 
 function big(n){cur=(n+media.length)%media.length;const m=media[cur];
-  $("big").innerHTML=(m.endsWith(".mp4")?`<video controls autoplay src="${U(m)}"></video>`:`<img src="${U(m)}" alt="" data-zoom>`)+(media.length>1?'<button class="gar l" data-g="-1">‹</button><button class="gar r" data-g="1">›</button>':"");
+  $("big").innerHTML=(isVid(m)?(m.endsWith(".mp4")?`<video controls autoplay src="${U(m)}"></video>`:`<iframe style="width:100%;height:100%;border:0" allow="autoplay" src="${U(m)}"></iframe>`):`<img src="${U(m)}" alt="" data-zoom>`)+(media.length>1?'<button class="gar l" data-g="-1">‹</button><button class="gar r" data-g="1">›</button>':"");
   document.querySelectorAll("#gth [data-i]").forEach(x=>x.classList.toggle("sel",+x.dataset.i===cur));}
-$("gth").innerHTML=media.map((m,n)=>m.endsWith(".mp4")?`<div class="vd" data-i="${n}">▶</div>`:`<img loading="lazy" data-i="${n}" src="${U(m)}" alt="">`).join("");
+$("gth").innerHTML=media.map((m,n)=>isVid(m)?`<div class="vd" data-i="${n}">▶</div>`:`<img loading="lazy" data-i="${n}" src="${U(m)}" alt="">`).join("");
 big(0);
 
 const rows=[...(it.specs||[]),["แบรนด์",it.brand],["รหัสรุ่น",it.sku],["จำนวนรูปภาพ",it.imgs.length+" รูป"],["จำนวนสี",it.colors.length?it.colors.length+" สี":"-"],["วิดีโอ",it.vids.length?it.vids.length+" คลิป":"-"]];
 const spec=(it.desc?`<h2>รายละเอียดสินค้า</h2><p style="white-space:pre-line;line-height:1.8;margin:0 0 24px">${esc(it.desc)}</p>`:"")+`<h2>ข้อมูลสินค้า</h2><table class="sp">${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("")}</table>`;
 const imgs=`<h2>ภาพสินค้า</h2><div class="gridimgs">${it.imgs.map(m=>`<img loading="lazy" src="${U(m)}" data-zoom alt="">`).join("")}</div>`;
 const cols=`<h2>สีสินค้า</h2><div class="gridimgs">${it.colors.map(c=>`<figure style="margin:0;text-align:center"><img loading="lazy" src="${U(c.f)}" data-zoom alt="">${c.n}</figure>`).join("")}</div>`;
-const vids=`<h2>วิดีโอ</h2><div class="gridimgs">${it.vids.map(v=>`<video controls preload="none" src="${U(v)}"></video>`).join("")}</div>`;
+const vids=`<h2>วิดีโอ</h2><div class="gridimgs">${it.vids.map(v=>v.endsWith(".mp4")?`<video controls preload="none" src="${U(v)}"></video>`:`<iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" allow="autoplay" src="${U(v)}"></iframe>`).join("")}</div>`;
 function tab(t){document.querySelectorAll("#tabs span").forEach(s=>s.classList.toggle("on",s.dataset.t===t));
   $("pane").innerHTML=t==="spec"?spec:t==="img"?imgs:t==="col"?cols:t==="vid"?vids:spec+imgs+(it.colors.length?cols:"")+(it.vids.length?vids:"");}
 tab("all");

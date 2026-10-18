@@ -1,4 +1,5 @@
-// ใช้ร่วมกันทุกหน้า: รวมค่าที่แก้จากหน้า Admin (content.js) เข้ากับ data.js
+// ใช้ร่วมกันทุกหน้า: รวมค่าที่แก้จากหน้า Admin (content.js) เข้ากับรายการสินค้า
+// รายการสินค้ามาจาก Google Drive (ถ้าตั้ง site.driveApi ไว้) หรือไฟล์ data.js ในเครื่อง
 (function () {
   var C = window.CONTENT || {};
   C.site = C.site || {}; C.brands = C.brands || {}; C.products = C.products || {};
@@ -8,19 +9,63 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   };
-  window.CATALOG = (window.CATALOG || [])
-    .filter(function (b) { return !(C.brands[b.brand] && C.brands[b.brand].hidden); })
-    .map(function (b) {
-      return Object.assign({}, b, {
-        items: b.items
-          .filter(function (i) { var p = C.products[b.brand + "|" + i.sku]; return !(p && p.hidden); })
-          .map(function (i) {
-            var p = C.products[b.brand + "|" + i.sku] || {};
-            return Object.assign({}, i, { title: p.title || "", desc: p.desc || "", specs: p.specs || [], featured: !!p.featured });
-          })
+  window.isVid = function (m) { return /\.mp4$|\/preview$/.test(m); };
+
+  var lh = function (id, w) { return "https://lh3.googleusercontent.com/d/" + id + "=w" + w; };
+
+  function fromDrive(j) {
+    return (j.brands || []).map(function (b) {
+      return {
+        brand: b.brand,
+        items: b.items.map(function (i) {
+          return {
+            sku: i.sku,
+            cover: lh(i.imgs[0], 520),
+            imgs: i.imgs.map(function (id) { return lh(id, 1100); }),
+            vids: (i.vids || []).map(function (id) { return "https://drive.google.com/file/d/" + id + "/preview"; }),
+            colors: (i.colors || []).map(function (c) { return { n: c.n, t: lh(c.id, 160), f: lh(c.id, 1100) }; })
+          };
+        })
+      };
+    });
+  }
+
+  function finish(cat) {
+    window.CATALOG = (cat || [])
+      .filter(function (b) { return !(C.brands[b.brand] && C.brands[b.brand].hidden); })
+      .map(function (b) {
+        return Object.assign({}, b, {
+          items: b.items
+            .filter(function (i) {
+              if (String(i.sku).charAt(0) === "_") return false; // โฟลเดอร์ข้อมูล ไม่ใช่สินค้า
+              var p = C.products[b.brand + "|" + i.sku];
+              return !(p && p.hidden);
+            })
+            .map(function (i) {
+              var p = C.products[b.brand + "|" + i.sku] || {};
+              return Object.assign({}, i, { title: p.title || "", desc: p.desc || "", specs: p.specs || [], featured: !!p.featured });
+            })
+        });
+      })
+      .filter(function (b) { return b.items.length; });
+  }
+
+  var api = C.site.driveApi;
+  if (api) {
+    window.catalogReady = fetch(api + (api.indexOf("?") < 0 ? "?" : "&") + "catalog=1")
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j.error) throw new Error(j.error);
+        finish(fromDrive(j));
+      })
+      .catch(function (e) {
+        console.warn("โหลดรายการจาก Drive ไม่ได้ ใช้ข้อมูลในเครื่องแทน:", e);
+        finish(window.CATALOG);
       });
-    })
-    .filter(function (b) { return b.items.length; });
+  } else {
+    finish(window.CATALOG);
+    window.catalogReady = Promise.resolve();
+  }
 
   window.applySite = function () {
     var s = C.site;

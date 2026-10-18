@@ -129,6 +129,8 @@ function siteView(){
   <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><input type="file" id="bf" accept="image/*" style="display:none"><button class="btn g sm" id="bu">อัปโหลดรูปใหม่…</button><span class="hint" id="bm"></span></div>
   <img class="pv" id="bp" src="${U(C.site.banner||"assets/banner.jpg")}" alt="">
   ${F("footerText","ข้อความส่วนท้ายเว็บ","",true)}
+  <label>ดึงสินค้าจาก Google Drive <small>(Web app URL ของ Apps Script — ว่าง = ใช้ข้อมูลในเครื่อง)</small></label>
+  <input type="text" data-s="driveApi" value="${esc(C.site.driveApi||"")}" placeholder="https://script.google.com/macros/s/.../exec">
   ${F("copyright","ลิขสิทธิ์ (แถบดำล่างสุด)")}
   </div></div>
   <p class="hint">หมายเหตุ: ค่าที่แก้จะแสดงบนหน้า index.html และ product.html หลังกด "บันทึก" แล้วรีเฟรชหน้าเว็บ</p></div>`;
@@ -208,9 +210,9 @@ const cur=()=>D.path[D.path.length-1].id;
 async function dlist(){const j=await dcall("list",{folderId:D.path.length?cur():""});if(!D.path.length)D.path=[j.folder];D.items=j.items}
 async function dconnect(){
   D.url=($("gurl")||{}).value?.trim()||D.url;D.key=($("gkey")||{}).value||D.key;dsave();
-  if(!D.url){D.msg="กรอก Web app URL ก่อน";return drender()}
+  if(!D.url||!D.key){D.msg="กรอก Web app URL และรหัสลับให้ครบ";return drender()}
   D.busy="กำลังเชื่อมต่อ…";D.msg="";D.path=[];drender();
-  try{await dlist();D.ok=true}catch(e){D.msg=e.message;D.ok=false}
+  try{await dlist();D.ok=true;if(D.url&&C.site.driveApi!==D.url){C.site.driveApi=D.url;touch()}}catch(e){D.msg=e.message;D.ok=false}
   D.busy="";drender();
 }
 function dsize(n){n=+n;if(!n)return"";return n>1048576?(n/1048576).toFixed(1)+" MB":Math.ceil(n/1024)+" KB"}
@@ -222,7 +224,7 @@ function drender(){
   3) คัดลอก <b>Web app URL</b> (ลงท้าย /exec) มาวางด้านล่าง พร้อมรหัสลับเดียวกับในโค้ด<br>
   * ทุกครั้งที่แก้โค้ด ต้อง Deploy → Manage deployments → New version</p>
   <label>Web app URL</label><input type="text" id="gurl" value="${esc(D.url)}" placeholder="https://script.google.com/macros/s/.../exec">
-  <label>รหัสลับ (SECRET) <small>(ไม่บังคับ — เว้นว่างได้ถ้าในโค้ดตั้ง SECRET = '')</small></label><input type="text" id="gkey" value="${esc(D.key)}">
+  <label>รหัสลับ (SECRET) <small>(ต้องตรงกับ SECRET ในโค้ด Apps Script)</small></label><input type="text" id="gkey" value="${esc(D.key)}">
   ${D.busy?`<p style="color:var(--ok)">${esc(D.busy)}</p>`:""}${D.msg?`<p style="color:var(--red)">${esc(D.msg)}</p>`:""}
   <p><button class="btn" data-d="connect">เชื่อมต่อ</button></p></div>`;
   if(!D.ok){$("m").innerHTML=setup;return}
@@ -231,7 +233,7 @@ function drender(){
     <b style="flex:1;min-width:200px">${crumb}</b>
     <button class="btn g sm" data-d="mk">+ โฟลเดอร์ใหม่</button>
     <button class="btn sm" data-d="up">⬆ อัปโหลดไฟล์</button><input type="file" id="dup" multiple style="display:none">
-    <button class="btn g sm" data-d="re">รีเฟรช</button><button class="btn g sm" data-d="out">ตัดการเชื่อมต่อ</button></div>
+    <button class="btn g sm" data-d="re">รีเฟรช</button><button class="btn sm" data-d="rb" style="background:#10823d">⟳ อัปเดตรายการสินค้าบนเว็บ</button><button class="btn g sm" data-d="out">ตัดการเชื่อมต่อ</button></div>
   ${D.busy?`<p style="color:var(--ok)">${esc(D.busy)}</p>`:""}${D.msg?`<p style="color:var(--red)">${esc(D.msg)}</p>`:""}
   <div id="dz" style="border:2px dashed var(--bd);border-radius:10px;padding:10px 14px;margin-bottom:12px;color:var(--mut);text-align:center">ลากไฟล์มาวางที่นี่เพื่ออัปโหลดเข้าโฟลเดอร์นี้ (ไฟล์ละไม่เกิน 25 MB)</div>
   <div>${D.items.length?D.items.map(f=>{const m=f.mime||"";
@@ -266,6 +268,7 @@ document.addEventListener("click",async e=>{
     if(a==="go"){D.path=D.path.slice(0,+b.dataset.n+1);await dlist()}
     else if(a==="open"){D.path.push({id:b.dataset.id,name:b.dataset.name});await dlist()}
     else if(a==="re"){await dlist()}
+    else if(a==="rb"){D.busy="กำลังสแกน Drive สร้างรายการสินค้า… (อาจใช้เวลา 1-2 นาที)";drender();const j=await dcall("rebuild",{});D.busy="";D.msg="";D.ok=true;alert("อัปเดตแล้ว: "+j.brands+" แบรนด์ "+j.skus+" รุ่น")}
     else if(a==="up"){$("dup").click();return}
     else if(a==="mk"){const n=prompt("ชื่อโฟลเดอร์ใหม่");if(!n)return;await dcall("mkdir",{parentId:cur(),name:n});await dlist()}
     else if(a==="ren"){const n=prompt("ชื่อใหม่",b.dataset.name);if(!n||n===b.dataset.name)return;await dcall("rename",{id:b.dataset.id,name:n});await dlist()}

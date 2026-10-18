@@ -164,7 +164,8 @@ h4.sub{margin:16px 0 0}
 <script src="data.js"></script>
 <script src="content.js"></script>
 <script src="common.js"></script>
-<script>
+<script type="module">
+await window.catalogReady;
 const U=p=>encodeURI(p).replace(/#/g,"%23");
 const $=id=>document.getElementById(id);
 const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand})));
@@ -202,11 +203,11 @@ function render(){
 function go(n){const s=document.querySelectorAll(".bn .sl");cur=(n+s.length)%s.length;s.forEach((x,i)=>x.classList.toggle("on",i===cur));document.querySelectorAll("#dots i").forEach((x,i)=>x.classList.toggle("on",i===cur))}
 setInterval(()=>{if($("bn").style.display!=="none")go(cur+1)},6000);
 function home(){brand="";q="";$("q").value="";shown=STEP;render();scrollTo({top:0,behavior:"smooth"})}
-function show(s){$("main").innerHTML=s.endsWith(".mp4")?`<video class="main" controls autoplay src="${U(s)}"></video>`:`<img class="main" src="${U(s)}" alt="">`}
+function show(s){$("main").innerHTML=isVid(s)?(s.endsWith(".mp4")?`<video class="main" controls autoplay src="${U(s)}"></video>`:`<iframe class="main" style="width:100%;height:60vh;border:0" allow="autoplay" src="${U(s)}"></iframe>`):`<img class="main" src="${U(s)}" alt="">`}
 function openItem(k){
   const [b,s]=k.split("|");const it=all.find(i=>i.brand===b&&i.sku===s);const media=[...it.imgs,...it.vids];
   $("box").innerHTML=`<button class="x" id="cl">×</button><h2>${it.sku}</h2><div class="br">${it.brand}</div><div class="mw" id="main"></div>
-  <div class="th">${media.map((m,n)=>m.endsWith(".mp4")?`<div class="vd" data-m="${n}">▶</div>`:`<img loading="lazy" data-m="${n}" src="${U(m)}" alt="">`).join("")}</div>
+  <div class="th">${media.map((m,n)=>isVid(m)?`<div class="vd" data-m="${n}">▶</div>`:`<img loading="lazy" data-m="${n}" src="${U(m)}" alt="">`).join("")}</div>
   ${it.colors.length?`<h4 class="sub">สีสินค้า (${it.colors.length})</h4><div class="sw">${it.colors.map(c=>`<figure data-f="${c.f}"><img loading="lazy" src="${U(c.t)}" alt="">${c.n}</figure>`).join("")}</div>`:""}`;
   $("box")._m=media;show(media[0]);$("box").querySelector("[data-m='0']")?.classList.add("sel");$("modal").classList.add("open");
 }
