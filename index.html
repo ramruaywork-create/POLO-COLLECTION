@@ -115,6 +115,7 @@ footer{background:#fff;margin-top:50px;border-top:1px solid var(--bd)}
 h4.sub{margin:16px 0 0}
 @media(max-width:1000px){.pg{grid-template-columns:repeat(3,1fr)}.fg{grid-template-columns:1fr 1fr}.sl.mos{grid-template-columns:1fr}}
 @media(max-width:600px){.pg{grid-template-columns:repeat(2,1fr)}.nv a.l,.circ{display:none}.logo{font-size:22px}}
+.pr{padding:0 12px 4px;color:var(--red);font-weight:700}.pr s{color:var(--mut);font-weight:400;font-size:12px;margin-left:6px}.price{margin:0 0 14px;font-size:30px;line-height:1.2;color:var(--red);font-weight:700}.price s{font-size:16px;color:var(--mut);font-weight:400;margin-left:10px}
 </style>
 </head>
 <body>
@@ -171,7 +172,7 @@ const U=p=>encodeURI(p).replace(/#/g,"%23");
 const $=id=>document.getElementById(id);
 const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand})));
 let brand="",q="",shown=40,tab="",cur=0;const STEP=40;
-const card=i=>`<div class="pc" data-k="${i.brand}|${i.sku}"><div class="im"><span class="bd">${i.brand}</span><img loading="lazy" src="${U(i.cover)}" alt=""></div><div class="nm">${esc(i.title||(i.brand+" "+i.sku))}<small>${i.imgs.length} รูป${i.colors.length?" · "+i.colors.length+" สี":""}${i.vids.length?" · วิดีโอ":""}</small></div><div class="ft">ดูรายละเอียด</div></div>`;
+const card=i=>`<div class="pc" data-k="${i.brand}|${i.sku}"><div class="im"><span class="bd">${i.brand}</span><img loading="lazy" src="${U(i.cover)}" alt=""></div><div class="nm">${esc(i.title||(i.brand+" "+i.sku))}<small>${i.imgs.length} รูป${i.colors.length?" · "+i.colors.length+" สี":""}${i.vids.length?" · วิดีโอ":""}</small></div>${i.price?`<div class="pr">${priceHtml(i)}</div>`:""}<div class="ft">ดูรายละเอียด</div></div>`;
 function init(){
   applySite();
   $("bgrid").innerHTML=CATALOG.map(b=>`<div class="bb" data-b="${b.brand}"><img loading="lazy" src="${U(b.items[0].cover)}" alt=""><b>${b.brand}</b><small>${b.items.length} รุ่น</small></div>`).join("");

@@ -108,7 +108,7 @@ function clean(){ // ตัดข้อมูลว่างออกก่อ�
   Object.keys(C.site).forEach(k=>{if(C.site[k]!=="")o.site[k]=C.site[k]});
   Object.keys(C.brands).forEach(k=>{if(C.brands[k].hidden)o.brands[k]={hidden:true}});
   Object.keys(C.products).forEach(k=>{const p=C.products[k],q={};
-    if(p.title)q.title=p.title;if(p.desc)q.desc=p.desc;
+    if(p.title)q.title=p.title;if(p.desc)q.desc=p.desc;if(p.price)q.price=p.price;if(p.oldPrice)q.oldPrice=p.oldPrice;
     const sp=(p.specs||[]).filter(r=>r[0]||r[1]);if(sp.length)q.specs=sp;
     if(p.hidden)q.hidden=true;if(p.featured)q.featured=true;
     if(Object.keys(q).length)o.products[k]=q});
@@ -159,7 +159,7 @@ function brandView(){
     const on=!(C.brands[b.brand]&&C.brands[b.brand].hidden);
     return `<label class="bi chk" style="margin:0"><input type="checkbox" data-b="${esc(b.brand)}" ${on?"checked":""}><img src="${U(b.items[0].cover)}" alt=""><span><b>${esc(b.brand)}</b><br><small class="hint">${b.items.length} รุ่น</small></span></label>`}).join("")}</div></div>`;
 }
-function badges(k){const p=C.products[k]||{};return (p.hidden?'<span class="tag h">ซ่อน</span>':"")+(p.featured?'<span class="tag f">แนะนำ</span>':"")+((p.title||p.desc||(p.specs&&p.specs.length))?'<span class="tag e">แก้แล้ว</span>':"")}
+function badges(k){const p=C.products[k]||{};return (p.hidden?'<span class="tag h">ซ่อน</span>':"")+(p.featured?'<span class="tag f">แนะนำ</span>':"")+((p.title||p.desc||p.price||(p.specs&&p.specs.length))?'<span class="tag e">แก้แล้ว</span>':"")}
 function listHtml(){
   const l=all.filter(i=>(!fb||i.brand===fb)&&(i.sku.toLowerCase().includes(fq)||((C.products[i.key]||{}).title||"").toLowerCase().includes(fq)));
   return `<div class="lt"><input type="text" id="fq" placeholder="ค้นหารหัสรุ่น / ชื่อ..." value="${esc(fq)}"><select id="fb"><option value="">ทุกแบรนด์</option>${CATALOG.map(b=>`<option ${fb===b.brand?"selected":""}>${esc(b.brand)}</option>`).join("")}</select><span class="hint">${l.length} รุ่น (แสดง 150 แรก)</span></div>`+
@@ -171,6 +171,8 @@ function editHtml(){
   return `<div class="ph"><img src="${U(i.cover)}" alt=""><div><h2>${esc(i.brand)} ${esc(i.sku)}</h2><span class="hint">${i.imgs.length} รูป · ${i.colors.length} สี · ${i.vids.length} วิดีโอ</span></div></div>
   <label>ชื่อสินค้าที่แสดง <small>(ว่าง = ใช้ "${esc(i.brand)} ${esc(i.sku)}")</small></label>
   <input type="text" data-p="title" value="${esc(p.title||"")}">
+  <div class="two"><div><label>ราคา <small>(เช่น 790 หรือ 790 บาท — ว่าง = ไม่แสดงราคา)</small></label><input type="text" data-p="price" value="${esc(p.price||"")}" placeholder="790"></div>
+  <div><label>ราคาเดิม <small>(ขีดฆ่า ไม่บังคับ)</small></label><input type="text" data-p="oldPrice" value="${esc(p.oldPrice||"")}" placeholder="1090"></div></div>
   <label>คำอธิบาย / รายละเอียดสินค้า</label>
   <textarea data-p="desc" style="min-height:140px">${esc(p.desc||"")}</textarea>
   <label>ข้อมูลจำเพาะ <small>(เช่น ขนาด วัสดุ น้ำหนัก)</small></label>

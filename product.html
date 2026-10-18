@@ -159,6 +159,7 @@ table.sp td:first-child{width:220px;color:var(--mut);background:var(--bg)}
 @media(max-width:900px){.pd{grid-template-columns:1fr}}
 #lb{position:fixed;inset:0;background:#000d;display:none;z-index:80;align-items:center;justify-content:center;cursor:zoom-out}
 #lb.open{display:flex}#lb img{max-width:94vw;max-height:94vh}
+.pr{padding:0 12px 4px;color:var(--red);font-weight:700}.pr s{color:var(--mut);font-weight:400;font-size:12px;margin-left:6px}.price{margin:0 0 14px;font-size:30px;line-height:1.2;color:var(--red);font-weight:700}.price s{font-size:16px;color:var(--mut);font-weight:400;margin-left:10px}
 </style>
 </head>
 <body>
@@ -195,7 +196,7 @@ await window.catalogReady;
 const U=p=>encodeURI(p).replace(/#/g,"%23");
 const $=id=>document.getElementById(id);
 const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand})));
-const card=i=>`<a class="pc" href="product.html?k=${encodeURIComponent(i.brand+"|"+i.sku)}"><div class="im"><span class="bd">${i.brand}</span><img loading="lazy" src="${U(i.cover)}" alt=""></div><div class="nm">${esc(i.title||(i.brand+" "+i.sku))}<small>${i.imgs.length} รูป${i.colors.length?" · "+i.colors.length+" สี":""}</small></div><div class="ft">ดูรายละเอียด</div></a>`;
+const card=i=>`<a class="pc" href="product.html?k=${encodeURIComponent(i.brand+"|"+i.sku)}"><div class="im"><span class="bd">${i.brand}</span><img loading="lazy" src="${U(i.cover)}" alt=""></div><div class="nm">${esc(i.title||(i.brand+" "+i.sku))}<small>${i.imgs.length} รูป${i.colors.length?" · "+i.colors.length+" สี":""}</small></div>${i.price?`<div class="pr">${priceHtml(i)}</div>`:""}<div class="ft">ดูรายละเอียด</div></a>`;
 // header search / menus -> index
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")location.href="index.html"});
 $("mega").innerHTML=CATALOG.map(b=>`<a href="index.html">${b.brand}<small>${b.items.length} รุ่น</small></a>`).join("");
@@ -217,6 +218,7 @@ $("app").innerHTML=`
     <span class="stock">สินค้าในแคตตาล็อก</span>
     <h1>${esc(it.title||(it.brand+" "+it.sku))}</h1>
     <div class="meta">แบรนด์: <b>${it.brand}</b><i>|</i>รหัสสินค้า: <b>${it.sku}</b></div>
+    ${it.price?`<div class="price">${priceHtml(it)}</div>`:""}
     ${it.colors.length?`<div class="box2"><div class="lab">สีสินค้า (${it.colors.length} สี) <span id="cn" style="font-weight:400;color:var(--mut)"></span></div><div class="sw" id="sw">${it.colors.map((c,n)=>`<figure data-c="${n}"><img loading="lazy" src="${U(c.t)}" alt="">${c.n}</figure>`).join("")}</div></div>`:""}
     <div class="acts"><a class="btn" href="index.html">ดูสินค้าอื่น</a><a class="btn o" href="#rel">สินค้าจากแบรนด์เดียวกัน</a></div>
     <div class="tags"><span>#${it.brand}</span><span>#${it.sku}</span></div>

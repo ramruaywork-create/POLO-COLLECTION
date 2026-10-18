@@ -10,6 +10,8 @@
     });
   };
   window.fromDrive = function (j) { return fromDriveImpl(j); };
+  var money = function (v) { v = String(v == null ? "" : v).trim(); if (!v) return ""; if (/^[\d,.]+$/.test(v)) { var n = Number(v.replace(/,/g, "")); return "฿" + (isNaN(n) ? v : n.toLocaleString("th-TH")); } return v; };
+  window.priceHtml = function (i) { return i.price ? "<b>" + window.esc(money(i.price)) + "</b>" + (i.oldPrice ? " <s>" + window.esc(money(i.oldPrice)) + "</s>" : "") : ""; };
   window.isVid = function (m) { return /\.mp4$|\/preview$/.test(m); };
 
   var lh = function (id, w) { return "https://lh3.googleusercontent.com/d/" + id + "=w" + w; };
@@ -44,7 +46,7 @@
             })
             .map(function (i) {
               var p = C.products[b.brand + "|" + i.sku] || {};
-              return Object.assign({}, i, { title: p.title || "", desc: p.desc || "", specs: p.specs || [], featured: !!p.featured });
+              return Object.assign({}, i, { title: p.title || "", desc: p.desc || "", specs: p.specs || [], featured: !!p.featured, price: p.price || "", oldPrice: p.oldPrice || "" });
             })
         });
       })
