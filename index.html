@@ -1,315 +1,234 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Polo Catalog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-<script>const MQ = '(max-width: 640px), (pointer: coarse) and (max-height: 500px)';
-if (matchMedia(MQ).matches) document.documentElement.classList.add('m');</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แคตตาล็อกสินค้า — แบบ iHAVE</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #1b1d22;
-    --bg2: #2a2d34;
-    --ink: #f3efe9;
-    --muted: #9aa0aa;
-    --accent: #e0442f;
-    --chip: rgba(255,255,255,.08);
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body {
-    background: radial-gradient(ellipse at 50% 35%, var(--bg2) 0%, var(--bg) 70%);
-    color: var(--ink);
-    font-family: "Kanit", system-ui, sans-serif;
-    display: flex; flex-direction: column; overflow: hidden;
-    user-select: none;
-  }
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px; gap: 12px;
-  }
-  .brand { font-weight: 600; letter-spacing: .25em; font-size: 15px; }
-  .brand span { color: var(--accent); font-weight: 300; letter-spacing: .15em; margin-left: 8px; }
-  .tools { display: flex; gap: 8px; }
-  button {
-    font: inherit; color: var(--ink); background: var(--chip); border: 1px solid rgba(255,255,255,.12);
-    border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: background .2s;
-  }
-  button:hover { background: rgba(255,255,255,.18); }
-  button:disabled { opacity: .3; cursor: default; }
-
-  main {
-    flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
-    padding: 8px 64px; position: relative;
-  }
-  #stage { position: relative; }
-  #book { box-shadow: 0 30px 60px -20px rgba(0,0,0,.7); }
-  .page { background: #f4f1ec; overflow: hidden; }
-  .page img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
-  /* soft binding shadow on left edge to feel like paper */
-  .page::after {
-    content: ""; position: absolute; inset: 0 auto 0 0; width: 22px;
-    background: linear-gradient(90deg, rgba(0,0,0,.18), rgba(0,0,0,0));
-    pointer-events: none;
-  }
-  .nav {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    width: 46px; height: 46px; border-radius: 50%; padding: 0; font-size: 22px; line-height: 1;
-  }
-  .nav.prev { left: 10px; } .nav.next { right: 10px; }
-
-  footer { padding: 6px 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  #counter { color: var(--muted); font-size: 14px; }
-  #thumbs { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; padding: 4px 2px 6px; }
-  #thumbs img {
-    height: 48px; border-radius: 4px; cursor: pointer; opacity: .45;
-    border: 2px solid transparent; transition: opacity .2s, border-color .2s, transform .2s;
-  }
-  #thumbs img:hover { opacity: .85; transform: translateY(-2px); }
-  #thumbs img.active { opacity: 1; border-color: var(--accent); }
-  .hint { color: var(--muted); font-size: 12px; opacity: .8; }
-
-  @media (max-width: 640px) {
-    main { padding: 8px 16px; }
-    .nav { display: none; }
-    header { padding: 10px 16px; }
-    .brand { font-size: 13px; }
-    #thumbs img { height: 36px; }
-  }
-
-  /* ---------- Mobile version: vertical feed, tap to zoom ---------- */
-  #feed, #lb { display: none; }
-  html.m, html.m body { height: auto; }
-  html.m body { display: block; overflow: auto; -webkit-tap-highlight-color: transparent; }
-  html.m header {
-    position: sticky; top: 0; z-index: 20; padding: 10px 14px;
-    background: rgba(27,29,34,.92); backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(255,255,255,.08);
-  }
-  html.m .brand { font-size: 13px; }
-  html.m .brand span { display: block; margin: 0; font-size: 10px; letter-spacing: .2em; }
-  html.m #fsBtn, html.m #soundBtn, html.m main, html.m .hint { display: none; }
-  html.m #feed { display: block; padding: 12px 12px 8px; }
-  html.m .card { margin: 0 0 14px; scroll-margin-top: 70px; }
-  html.m .card img {
-    width: 100%; height: auto; aspect-ratio: 2667 / 1500; display: block; border-radius: 10px;
-    box-shadow: 0 10px 24px -10px rgba(0,0,0,.7); background: #f4f1ec;
-  }
-  html.m .card .cap { margin: 6px 4px 0; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
-  html.m footer {
-    position: sticky; bottom: 0; z-index: 20; padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
-    background: rgba(27,29,34,.94); backdrop-filter: blur(8px); border-top: 1px solid rgba(255,255,255,.08);
-    gap: 6px;
-  }
-  html.m #thumbs img { height: 40px; }
-  @media (max-height: 500px) {
-    html.m header { position: static; padding: 6px 14px; }
-    html.m .brand span { display: inline; margin-left: 8px; }
-    html.m #feed { padding: 8px 10px 4px; }
-    html.m .card { scroll-margin-top: 8px; }
-    html.m footer { padding: 4px 10px; }
-    html.m #thumbs { display: none; }
-    html.m #lb.open img { width: 150vw; margin: 0; }
-  }
-  html.m #lb {
-    position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.94);
-    overflow: auto; -webkit-overflow-scrolling: touch;
-  }
-  html.m #lb.open { display: block; }
-  html.m #lb img { display: block; width: 260vw; max-width: none; margin: 20vh 0; }
-  html.m #lbClose {
-    position: fixed; top: 12px; right: 12px; z-index: 51; width: 44px; height: 44px; padding: 0; font-size: 22px;
-    display: none;
-  }
-  html.m #lb.open ~ #lbClose { display: block; }
+:root{--bg:#f6f9fc;--tx:#2b3445;--tx2:#1a202c;--mut:#7d879c;--red:#d3202c;--bd:#e3e9ef;--dark:#0b0b0b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 "Noto Sans Thai",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1280px;margin:auto;padding:0 16px}
+/* topbar */
+.top{background:var(--dark);color:#fff;font-size:13px}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;height:40px;gap:12px}
+.top span{opacity:.9}
+/* header */
+header{background:#fff;position:sticky;top:0;z-index:30;box-shadow:0 1px 0 var(--bd)}
+.hd{display:flex;align-items:center;gap:20px;height:80px}
+.logo{font-weight:700;font-size:30px;letter-spacing:-1px;color:var(--tx2);white-space:nowrap;cursor:pointer}
+.logo b{color:var(--red)}
+.sf{position:relative;flex:1}
+.sf input{width:100%;height:44px;border:1px solid var(--bd);border-radius:300px;padding:8px 24px 8px 48px;font:inherit;background:#fff;outline:0}
+.sf input:focus{border-color:#aab4c4}
+.sf svg{position:absolute;left:18px;top:13px;width:18px;height:18px;stroke:var(--mut);fill:none;stroke-width:2}
+.circ{width:44px;height:44px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:18px}
+/* nav */
+.nv{background:#fff;border-top:1px solid var(--bd)}
+.nv .wrap{display:flex;align-items:center;gap:8px;height:56px;position:relative}
+.catbtn{height:40px;border:0;border-radius:8px;background:var(--bg);padding:0 22px;font:inherit;font-weight:500;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:200px;justify-content:space-between}
+.nv a.l{padding:0 18px;font-weight:500;line-height:56px}
+.nv a.l:hover,.nv a.l.on{color:var(--red)}
+.mega{display:none;position:absolute;left:16px;top:52px;width:260px;background:#fff;border-radius:10px;box-shadow:0 10px 36px rgba(20,30,60,.18);padding:8px;z-index:40}
+.mega.open{display:block}
+.mega a{display:flex;justify-content:space-between;padding:10px 14px;border-radius:6px;cursor:pointer}
+.mega a:hover{background:var(--bg);color:var(--red)}
+.mega small{color:var(--mut)}
+/* banner */
+.bn{position:relative;margin-top:20px;border-radius:12px;overflow:hidden;background:#111}
+.bn .sl{display:none}.bn .sl.on{display:block}
+.bn img.full{width:100%;display:block}
+.bn .cap{position:absolute;left:0;right:0;bottom:0;color:#fff;padding:40px 5% 36px;background:linear-gradient(0deg,#000d,transparent)}
+.bn .cap h1{margin:0 0 6px;font-size:clamp(22px,3vw,38px);line-height:1.15}
+.bn .cap p{margin:0 0 16px;opacity:.9}
+.bn .dots{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.bn .dots i{width:8px;height:8px;border-radius:50%;background:#fff6;cursor:pointer}
+.bn .dots i.on{background:#fff;width:22px;border-radius:5px}
+.bn .ar{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:0;background:#fffd;cursor:pointer;font-size:18px}
+.bn .ar.l{left:12px}.bn .ar.r{right:12px}
+.pic2{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:#fff}
+.pic2 img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer}
+.bn .sl.mos{display:none}.bn .sl.mos.on{display:grid}
+.sl.mos{grid-template-columns:1fr 2fr;background:linear-gradient(120deg,#151515,#2a2a2a);align-items:center}
+.sl.mos .cap{position:static;background:none;padding:30px 40px}
+.sl.mos .pic2{grid-template-columns:repeat(4,1fr)}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:5px;padding:11px 24px;font:inherit;font-weight:500;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.o{background:#fff;color:var(--tx2);border:1px solid var(--bd)}
+/* sections */
+.sec{margin-top:36px}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sh h2{margin:0;font-size:18px;font-weight:700;color:var(--tx)}
+.sh a{color:var(--red);cursor:pointer;font-size:13px}
+.brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.bb{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:.15s}
+.bb:hover{border-color:var(--red);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.bb img{width:100%;aspect-ratio:1.4;object-fit:cover;border-radius:6px;background:#fff}
+.bb b{display:block;margin-top:8px;font-size:14px}
+.bb small{color:var(--mut)}
+.pg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.pc{background:#fff;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid transparent;transition:.15s;display:flex;flex-direction:column}
+.pc:hover{border-color:var(--red);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.pc .im{aspect-ratio:1;background:#fff;position:relative}
+.pc .im img{width:100%;height:100%;object-fit:contain;display:block}
+.pc .bd{position:absolute;left:8px;top:8px;background:var(--red);color:#fff;font-size:11px;padding:1px 8px;border-radius:4px}
+.pc .nm{padding:10px 12px 2px;font-size:13px;font-weight:700;color:var(--tx2);line-height:1.35;min-height:44px}
+.pc .nm small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+.pc .ft{padding:6px 12px 12px;margin-top:auto;color:var(--red);font-weight:500;font-size:13px}
+.deal{background:linear-gradient(120deg,#d3202c,#8f0f19);border-radius:12px;padding:18px}
+.deal .sh h2,.deal .sh a{color:#fff}
+.deal .pc{border:0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border:1px solid var(--bd);background:#fff;border-radius:999px;padding:6px 16px;cursor:pointer}
+.tab.on{background:var(--red);color:#fff;border-color:var(--red)}
+.crumb{margin:18px 0 6px;color:var(--mut)}
+.crumb a{color:var(--red);cursor:pointer}
+.more{display:block;margin:22px auto}
+.empty{text-align:center;padding:60px;color:var(--mut)}
+/* footer */
+footer{background:#fff;margin-top:50px;border-top:1px solid var(--bd)}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;padding:36px 16px}
+.fg h4{margin:0 0 10px;font-size:15px}
+.fg a{display:block;color:var(--mut);padding:3px 0;cursor:pointer}
+.fg a:hover{color:var(--red)}
+.fg p{color:var(--mut);max-width:360px}
+.cp{background:var(--dark);color:#bbb;text-align:center;padding:14px;font-size:13px}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(10,14,25,.7);display:none;z-index:60;overflow:auto}
+#modal.open{display:block}
+.box{position:relative;max-width:980px;margin:4vh auto;background:#fff;border-radius:14px;padding:24px}
+.x{position:absolute;right:14px;top:6px;font-size:32px;border:0;background:none;cursor:pointer;color:var(--mut)}
+.box h2{margin:0;font-size:24px;color:var(--tx2)}
+.box .br{color:var(--mut);margin-bottom:12px}
+.mw{background:#fff;border:1px solid var(--bd);border-radius:10px;text-align:center}
+.main{max-width:100%;max-height:66vh;display:block;margin:auto;object-fit:contain}
+.th{display:flex;gap:8px;overflow-x:auto;padding:12px 0}
+.th img,.th .vd{height:64px;width:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid var(--bd);flex:none;background:#fff}
+.th .vd{display:flex;align-items:center;justify-content:center;background:#222;color:#fff;font-size:20px}
+.th .sel{border-color:var(--red)}
+.sw{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.sw figure{margin:0;width:70px;text-align:center;font-size:11px;cursor:pointer}
+.sw img{width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid var(--bd);background:#fff}
+.sw figure:hover img{border-color:var(--red)}
+h4.sub{margin:16px 0 0}
+@media(max-width:1000px){.pg{grid-template-columns:repeat(3,1fr)}.fg{grid-template-columns:1fr 1fr}.sl.mos{grid-template-columns:1fr}}
+@media(max-width:600px){.pg{grid-template-columns:repeat(2,1fr)}.nv a.l,.circ{display:none}.logo{font-size:22px}}
 </style>
 </head>
 <body>
+<div class="top"><div class="wrap"><span data-ct="topbar1">แคตตาล็อกสินค้า — รวมทุกแบรนด์ในที่เดียว</span><span data-ct="topbar2">ค้นหาด้วยรหัสรุ่น · ดูรูป วิดีโอ และสีสินค้า</span></div></div>
 <header>
-  <div class="brand">WARRIX<span>POLO CATALOG</span></div>
-  <div class="tools">
-    <button id="soundBtn" title="เสียงพลิกหน้า">🔊</button>
-    <button id="fsBtn" title="เต็มจอ">⛶ เต็มจอ</button>
+  <div class="wrap hd">
+    <div class="logo" data-home>ร่ำรวย<b>2024</b></div>
+    <div class="sf"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="ค้นหารหัสรุ่น..."></div>
+    <div class="circ">🏷</div><div class="circ">🎨</div>
   </div>
+  <div class="nv"><div class="wrap">
+    <button class="catbtn" id="catbtn"><span>☰ &nbsp;หมวดหมู่สินค้า</span><span>›</span></button>
+    <div class="mega" id="mega"></div>
+    <a class="l on" data-home>หน้าแรก</a><a class="l" href="#brands">แบรนด์</a><a class="l" href="#news">สินค้ามาใหม่</a><a class="l" href="#foot">ติดต่อเรา</a>
+  </div></div>
 </header>
 
-<main>
-  <button class="nav prev" id="prevBtn" aria-label="หน้าก่อนหน้า">‹</button>
-  <div id="stage"><div id="book"></div></div>
-  <button class="nav next" id="nextBtn" aria-label="หน้าถัดไป">›</button>
-</main>
+<div class="wrap">
+  <div class="bn" id="bn">
+    <div class="sl on"><img class="full" src="assets/banner.jpg" alt="">
+      <div class="cap"><h1 data-ct="heroTitle">ร่ำรวย 2024<br>แคตตาล็อกสินค้า</h1><p data-ct="heroSub">รวมทุกแบรนด์ ดูรูปและสีได้ครบ</p><a class="btn" href="#brands">ดูแบรนด์ทั้งหมด</a></div></div>
+    <div class="sl mos"><div class="cap"><h1>สินค้าแนะนำ</h1><p>คลิกรูปเพื่อดูรายละเอียด</p></div><div class="pic2" id="mosaic"></div></div>
+    <button class="ar l" id="prev">‹</button><button class="ar r" id="next">›</button>
+    <div class="dots" id="dots"><i class="on"></i><i></i></div>
+  </div>
 
-<div id="feed"></div>
-<div id="lb"></div>
-<button id="lbClose" aria-label="ปิด">✕</button>
+  <div id="home">
+    <section class="sec" id="brands"><div class="sh"><h2>สินค้าจากแบรนด์ชั้นนำ</h2></div><div class="brands" id="bgrid"></div></section>
+    <section class="sec"><div class="deal"><div class="sh"><h2>🔥 Special deals · สินค้าแนะนำ</h2></div><div class="pg" id="deals"></div></div></section>
+    <section class="sec" id="news"><div class="sh"><h2>สินค้ามาใหม่</h2></div><div class="tabs" id="tabs"></div><div class="pg" id="newg"></div></section>
+  </div>
+  <div id="list" style="display:none"></div>
+  <button class="btn more" id="more" style="display:none">แสดงเพิ่มเติม</button>
+</div>
 
-<footer>
-  <div id="counter">1 / 9</div>
-  <div id="thumbs"></div>
-  <div class="hint">ลากมุมกระดาษ · คลิกขอบหน้า · หรือกดปุ่ม ← → เพื่อพลิกหน้า</div>
+<footer id="foot">
+  <div class="wrap fg">
+    <div><div class="logo" data-home>ร่ำรวย<b>2024</b></div><p data-ct="footerText">เว็บไซต์แคตตาล็อกสินค้า รวมรูปภาพ รุ่น และสีของสินค้าทุกแบรนด์ ค้นหาง่าย ดูครบในที่เดียว</p></div>
+    <div><h4>เมนู</h4><a data-home>หน้าแรก</a><a href="#brands">แบรนด์</a><a href="#news">สินค้ามาใหม่</a></div>
+    <div><h4>แบรนด์</h4><span id="fb1"></span></div>
+    <div><h4>แบรนด์</h4><span id="fb2"></span></div>
+  </div>
+  <div class="cp" data-ct="copyright">© 2024 ร่ำรวย แคตตาล็อก. All rights reserved.</div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<div id="modal"><div class="box" id="box"></div></div>
+<script src="data.js"></script>
+<script src="content.js"></script>
+<script src="common.js"></script>
 <script>
-  const TOTAL = 9;
-  const RATIO = 1500 / 2667; // page height / width (landscape 16:9)
-  const pad = n => String(n).padStart(2, "0");
-
-  const MOBILE = document.documentElement.classList.contains("m");
-  // Rotating the phone can switch layout: reload (hash keeps the page).
-  addEventListener("resize", () => {
-    if (matchMedia(MQ).matches !== MOBILE) location.reload();
-  });
-  let goTo = i => {};
-  const book = document.getElementById("book");
-  const thumbs = document.getElementById("thumbs");
-  for (let i = 1; i <= TOTAL; i++) {
-    const p = document.createElement("div");
-    p.className = "page";
-    if (i === 1 || i === TOTAL) p.dataset.density = "hard";
-    p.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}" ${i > 2 ? 'loading="lazy"' : ""}>`;
-    if (!MOBILE) book.appendChild(p);
-
-    const t = document.createElement("img");
-    t.src = `t${pad(i)}.jpg`;
-    t.alt = `หน้า ${i}`;
-    t.onclick = () => goTo(i - 1);
-    thumbs.appendChild(t);
-  }
-
-  if (MOBILE) {
-    const feed = document.getElementById("feed");
-    const lb = document.getElementById("lb");
-    const counter = document.getElementById("counter");
-    for (let i = 1; i <= TOTAL; i++) {
-      const c = document.createElement("div");
-      c.className = "card"; c.id = "c" + i;
-      c.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}" ${i > 2 ? 'loading="lazy"' : ""}>` +
-        `<div class="cap"><span>หน้า ${i} / ${TOTAL}</span><span>แตะเพื่อซูม</span></div>`;
-      c.querySelector("img").onclick = () => {
-        lb.innerHTML = `<img src="p${pad(i)}.jpg" alt="หน้า ${i}">`;
-        lb.classList.add("open"); document.body.style.overflow = "hidden";
-        requestAnimationFrame(() => { lb.scrollLeft = (lb.scrollWidth - lb.clientWidth) / 2; lb.scrollTop = 0; });
-      };
-      feed.appendChild(c);
-    }
-    const closeLb = () => { lb.classList.remove("open"); lb.innerHTML = ""; document.body.style.overflow = ""; };
-    document.getElementById("lbClose").onclick = closeLb;
-    goTo = i => document.getElementById("c" + (i + 1)).scrollIntoView({ behavior: "smooth", block: "start" });
-
-    let cur = -1;
-    function mark(idx) {
-      if (idx === cur) return; cur = idx;
-      counter.textContent = `${idx + 1} / ${TOTAL}`;
-      [...thumbs.children].forEach((t, k) => t.classList.toggle("active", k === idx));
-      thumbs.children[idx].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-      history.replaceState(null, "", "#p" + (idx + 1));
-    }
-    const io = new IntersectionObserver(es => {
-      es.forEach(e => { if (e.isIntersecting) mark(+e.target.id.slice(1) - 1); });
-    }, { rootMargin: "-35% 0px -55% 0px" });
-    feed.querySelectorAll(".card").forEach(c => io.observe(c));
-    addEventListener("scroll", () => {
-      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) mark(TOTAL - 1);
-    }, { passive: true });
-
-    const st = Math.min(TOTAL, Math.max(1, parseInt((location.hash.match(/p(\d+)/) || [])[1] || "1"))) - 1;
-    mark(st);
-    if (st) setTimeout(() => document.getElementById("c" + (st + 1)).scrollIntoView({ block: "start" }), 50);
-  } else {
-  // Size one page to fit the available area; the stage is exactly one page wide,
-  // so the book opens one landscape sheet at a time.
-  function fitSize() {
-    const main = document.querySelector("main");
-    const cs = getComputedStyle(main);
-    const availW = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    const availH = main.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    // Hidden/minimized windows can report 0 — keep a sane minimum.
-    const w = Math.max(240, Math.floor(Math.min(availW, availH / RATIO)));
-    return { w, h: Math.floor(w * RATIO) };
-  }
-
-  const { w, h } = fitSize();
-  document.getElementById("stage").style.width = w + "px";
-  const flip = new St.PageFlip(book, {
-    width: w, height: h,
-    size: "fixed",
-    usePortrait: true,
-    showCover: false,
-    maxShadowOpacity: 0.6,
-    flippingTime: 900,
-    drawShadow: true,
-    mobileScrollSupport: false,
-    swipeDistance: 20,
-  });
-  flip.loadFromHTML(document.querySelectorAll("#book .page"));
-
-  // Rebuild on resize (debounced) keeping the current page.
-  let rt;
-  window.addEventListener("resize", () => {
-    clearTimeout(rt);
-    rt = setTimeout(() => location.reload(), 300); // URL hash already holds the current page
-  });
-
-  const counter = document.getElementById("counter");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  function update(idx) {
-    counter.textContent = `${idx + 1} / ${TOTAL}`;
-    prevBtn.disabled = idx === 0;
-    nextBtn.disabled = idx === TOTAL - 1;
-    [...thumbs.children].forEach((t, i) => t.classList.toggle("active", i === idx));
-    thumbs.children[idx].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-    history.replaceState(null, "", "#p" + (idx + 1));
-  }
-
-  // Paper rustle synthesized with WebAudio (no audio file needed).
-  let soundOn = true, actx;
-  function rustle() {
-    if (!soundOn) return;
-    try {
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      const dur = 0.45, n = actx.sampleRate * dur;
-      const buf = actx.createBuffer(1, n, actx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < n; i++) {
-        const t = i / n;
-        d[i] = (Math.random() * 2 - 1) * Math.pow(Math.sin(Math.PI * t), 2) * (0.6 + 0.4 * Math.random());
-      }
-      const src = actx.createBufferSource(); src.buffer = buf;
-      const bp = actx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2400; bp.Q.value = 0.7;
-      const g = actx.createGain(); g.gain.value = 0.18;
-      src.connect(bp).connect(g).connect(actx.destination);
-      src.start();
-    } catch (e) {}
-  }
-
-  flip.on("flip", e => update(e.data));
-  flip.on("changeState", e => { if (e.data === "flipping") rustle(); });
-
-  prevBtn.onclick = () => flip.flipPrev();
-  nextBtn.onclick = () => flip.flipNext();
-  document.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); flip.flipNext(); }
-    if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); flip.flipPrev(); }
-    if (e.key === "Home") flip.flip(0);
-    if (e.key === "End") flip.flip(TOTAL - 1);
-  });
-
-  const soundBtn = document.getElementById("soundBtn");
-  soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.textContent = soundOn ? "🔊" : "🔇"; };
-  document.getElementById("fsBtn").onclick = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen?.();
-  };
-
-  const start = Math.min(TOTAL, Math.max(1, parseInt((location.hash.match(/p(\d+)/) || [])[1] || "1"))) - 1;
-  if (start) flip.turnToPage(start);
-  update(start);
-  goTo = i => flip.flip(i);
-  }
+const U=p=>encodeURI(p).replace(/#/g,"%23");
+const $=id=>document.getElementById(id);
+const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand})));
+let brand="",q="",shown=40,tab="",cur=0;const STEP=40;
+const card=i=>`<div class="pc" data-k="${i.brand}|${i.sku}"><div class="im"><span class="bd">${i.brand}</span><img loading="lazy" src="${U(i.cover)}" alt=""></div><div class="nm">${esc(i.title||(i.brand+" "+i.sku))}<small>${i.imgs.length} รูป${i.colors.length?" · "+i.colors.length+" สี":""}${i.vids.length?" · วิดีโอ":""}</small></div><div class="ft">ดูรายละเอียด</div></div>`;
+function init(){
+  applySite();
+  $("bgrid").innerHTML=CATALOG.map(b=>`<div class="bb" data-b="${b.brand}"><img loading="lazy" src="${U(b.items[0].cover)}" alt=""><b>${b.brand}</b><small>${b.items.length} รุ่น</small></div>`).join("");
+  $("mega").innerHTML=CATALOG.map(b=>`<a data-b="${b.brand}">${b.brand}<small>${b.items.length} รุ่น</small></a>`).join("");
+  const h=Math.ceil(CATALOG.length/2);
+  const fl=a=>a.map(b=>`<a data-b="${b.brand}">${b.brand}</a>`).join("");
+  $("fb1").innerHTML=fl(CATALOG.slice(0,h));$("fb2").innerHTML=fl(CATALOG.slice(h));
+  const pick=CATALOG.map(b=>({...b.items[0],brand:b.brand}));
+  const feat=CATALOG.flatMap(b=>b.items.filter(i=>i.featured).map(i=>({...i,brand:b.brand})));
+  $("mosaic").innerHTML=pick.slice(0,4).map(i=>`<img data-k="${i.brand}|${i.sku}" src="${U(i.cover)}" alt="">`).join("");
+  $("deals").innerHTML=(feat.length?feat:pick).slice(0,10).map(card).join("");
+  $("tabs").innerHTML=[`<span class="tab on" data-t="">ทั้งหมด</span>`,...CATALOG.map(b=>`<span class="tab" data-t="${b.brand}">${b.brand}</span>`)].join("");
+  news();
+}
+function news(){
+  const l=(tab?CATALOG.find(b=>b.brand===tab).items.map(i=>({...i,brand:tab})):CATALOG.flatMap(b=>b.items.slice(1,3).map(i=>({...i,brand:b.brand})))).slice(0,10);
+  $("newg").innerHTML=l.map(card).join("");
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.t===tab));
+}
+function render(){
+  const f=brand||q;
+  $("home").style.display=f?"none":"";$("bn").style.display=f?"none":"";
+  $("list").style.display=f?"":"none";
+  if(!f){$("more").style.display="none";return}
+  const l=all.filter(i=>(!brand||i.brand===brand)&&i.sku.toLowerCase().includes(q));
+  const nm=brand||"ผลการค้นหา";
+  $("list").innerHTML=`<div class="crumb"><a data-home>หน้าแรก</a> › ${nm}</div><div class="sh"><h2>${nm} <span style="font-weight:400;color:var(--mut)">(${l.length} รุ่น)</span></h2></div>`+(l.length?`<div class="pg">${l.slice(0,shown).map(card).join("")}</div>`:`<div class="empty">ไม่พบสินค้า</div>`);
+  $("more").style.display=l.length>shown?"block":"none";
+}
+function go(n){const s=document.querySelectorAll(".bn .sl");cur=(n+s.length)%s.length;s.forEach((x,i)=>x.classList.toggle("on",i===cur));document.querySelectorAll("#dots i").forEach((x,i)=>x.classList.toggle("on",i===cur))}
+setInterval(()=>{if($("bn").style.display!=="none")go(cur+1)},6000);
+function home(){brand="";q="";$("q").value="";shown=STEP;render();scrollTo({top:0,behavior:"smooth"})}
+function show(s){$("main").innerHTML=s.endsWith(".mp4")?`<video class="main" controls autoplay src="${U(s)}"></video>`:`<img class="main" src="${U(s)}" alt="">`}
+function openItem(k){
+  const [b,s]=k.split("|");const it=all.find(i=>i.brand===b&&i.sku===s);const media=[...it.imgs,...it.vids];
+  $("box").innerHTML=`<button class="x" id="cl">×</button><h2>${it.sku}</h2><div class="br">${it.brand}</div><div class="mw" id="main"></div>
+  <div class="th">${media.map((m,n)=>m.endsWith(".mp4")?`<div class="vd" data-m="${n}">▶</div>`:`<img loading="lazy" data-m="${n}" src="${U(m)}" alt="">`).join("")}</div>
+  ${it.colors.length?`<h4 class="sub">สีสินค้า (${it.colors.length})</h4><div class="sw">${it.colors.map(c=>`<figure data-f="${c.f}"><img loading="lazy" src="${U(c.t)}" alt="">${c.n}</figure>`).join("")}</div>`:""}`;
+  $("box")._m=media;show(media[0]);$("box").querySelector("[data-m='0']")?.classList.add("sel");$("modal").classList.add("open");
+}
+function closeM(){$("modal").classList.remove("open");const m=$("main");if(m)m.innerHTML=""}
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#catbtn")&&!e.target.closest("#mega"))$("mega").classList.remove("open");
+  if(e.target.closest("#catbtn")){$("mega").classList.toggle("open");return}
+  if(e.target.closest("#prev")){go(cur-1);return}
+  if(e.target.closest("#next")){go(cur+1);return}
+  const d=e.target.closest("#dots i");if(d){go([...document.querySelectorAll("#dots i")].indexOf(d));return}
+  const t=e.target.closest("[data-t]");if(t){tab=t.dataset.t;news();return}
+  if(e.target.closest("[data-home]")){home();return}
+  const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;q="";$("q").value="";shown=STEP;render();scrollTo({top:0,behavior:"smooth"});return}
+  const k=e.target.closest("[data-k]");if(k){location.href="product.html?k="+encodeURIComponent(k.dataset.k);return}
+  if(e.target.id==="cl"||e.target.id==="modal"){closeM();return}
+  const m=e.target.closest("[data-m]");if(m){document.querySelectorAll(".th .sel").forEach(x=>x.classList.remove("sel"));m.classList.add("sel");show($("box")._m[+m.dataset.m]);return}
+  const f=e.target.closest("[data-f]");if(f)show(f.dataset.f);
+});
+$("more").onclick=()=>{shown+=STEP;render()};
+$("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();if(q)brand="";shown=STEP;render()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
+init();render();
 </script>
 </body>
 </html>

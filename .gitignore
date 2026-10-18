@@ -1,0 +1,6 @@
+img/
+thumbs/
+*.bak
+*.tmp
+__pycache__/
+

@@ -1,0 +1,255 @@
+﻿<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>รายละเอียดสินค้า</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f9fc;--tx:#2b3445;--tx2:#1a202c;--mut:#7d879c;--red:#d3202c;--bd:#e3e9ef;--dark:#0b0b0b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 "Noto Sans Thai",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1280px;margin:auto;padding:0 16px}
+/* topbar */
+.top{background:var(--dark);color:#fff;font-size:13px}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;height:40px;gap:12px}
+.top span{opacity:.9}
+/* header */
+header{background:#fff;position:sticky;top:0;z-index:30;box-shadow:0 1px 0 var(--bd)}
+.hd{display:flex;align-items:center;gap:20px;height:80px}
+.logo{font-weight:700;font-size:30px;letter-spacing:-1px;color:var(--tx2);white-space:nowrap;cursor:pointer}
+.logo b{color:var(--red)}
+.sf{position:relative;flex:1}
+.sf input{width:100%;height:44px;border:1px solid var(--bd);border-radius:300px;padding:8px 24px 8px 48px;font:inherit;background:#fff;outline:0}
+.sf input:focus{border-color:#aab4c4}
+.sf svg{position:absolute;left:18px;top:13px;width:18px;height:18px;stroke:var(--mut);fill:none;stroke-width:2}
+.circ{width:44px;height:44px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:18px}
+/* nav */
+.nv{background:#fff;border-top:1px solid var(--bd)}
+.nv .wrap{display:flex;align-items:center;gap:8px;height:56px;position:relative}
+.catbtn{height:40px;border:0;border-radius:8px;background:var(--bg);padding:0 22px;font:inherit;font-weight:500;cursor:pointer;display:flex;gap:10px;align-items:center;min-width:200px;justify-content:space-between}
+.nv a.l{padding:0 18px;font-weight:500;line-height:56px}
+.nv a.l:hover,.nv a.l.on{color:var(--red)}
+.mega{display:none;position:absolute;left:16px;top:52px;width:260px;background:#fff;border-radius:10px;box-shadow:0 10px 36px rgba(20,30,60,.18);padding:8px;z-index:40}
+.mega.open{display:block}
+.mega a{display:flex;justify-content:space-between;padding:10px 14px;border-radius:6px;cursor:pointer}
+.mega a:hover{background:var(--bg);color:var(--red)}
+.mega small{color:var(--mut)}
+/* banner */
+.bn{position:relative;margin-top:20px;border-radius:12px;overflow:hidden;background:#111}
+.bn .sl{display:none}.bn .sl.on{display:block}
+.bn img.full{width:100%;display:block}
+.bn .cap{position:absolute;left:0;right:0;bottom:0;color:#fff;padding:40px 5% 36px;background:linear-gradient(0deg,#000d,transparent)}
+.bn .cap h1{margin:0 0 6px;font-size:clamp(22px,3vw,38px);line-height:1.15}
+.bn .cap p{margin:0 0 16px;opacity:.9}
+.bn .dots{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.bn .dots i{width:8px;height:8px;border-radius:50%;background:#fff6;cursor:pointer}
+.bn .dots i.on{background:#fff;width:22px;border-radius:5px}
+.bn .ar{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:0;background:#fffd;cursor:pointer;font-size:18px}
+.bn .ar.l{left:12px}.bn .ar.r{right:12px}
+.pic2{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:#fff}
+.pic2 img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer}
+.bn .sl.mos{display:none}.bn .sl.mos.on{display:grid}
+.sl.mos{grid-template-columns:1fr 2fr;background:linear-gradient(120deg,#151515,#2a2a2a);align-items:center}
+.sl.mos .cap{position:static;background:none;padding:30px 40px}
+.sl.mos .pic2{grid-template-columns:repeat(4,1fr)}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:5px;padding:11px 24px;font:inherit;font-weight:500;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.o{background:#fff;color:var(--tx2);border:1px solid var(--bd)}
+/* sections */
+.sec{margin-top:36px}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sh h2{margin:0;font-size:18px;font-weight:700;color:var(--tx)}
+.sh a{color:var(--red);cursor:pointer;font-size:13px}
+.brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.bb{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:.15s}
+.bb:hover{border-color:var(--red);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.bb img{width:100%;aspect-ratio:1.4;object-fit:cover;border-radius:6px;background:#fff}
+.bb b{display:block;margin-top:8px;font-size:14px}
+.bb small{color:var(--mut)}
+.pg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.pc{background:#fff;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid transparent;transition:.15s;display:flex;flex-direction:column}
+.pc:hover{border-color:var(--red);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.pc .im{aspect-ratio:1;background:#fff;position:relative}
+.pc .im img{width:100%;height:100%;object-fit:contain;display:block}
+.pc .bd{position:absolute;left:8px;top:8px;background:var(--red);color:#fff;font-size:11px;padding:1px 8px;border-radius:4px}
+.pc .nm{padding:10px 12px 2px;font-size:13px;font-weight:700;color:var(--tx2);line-height:1.35;min-height:44px}
+.pc .nm small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+.pc .ft{padding:6px 12px 12px;margin-top:auto;color:var(--red);font-weight:500;font-size:13px}
+.deal{background:linear-gradient(120deg,#d3202c,#8f0f19);border-radius:12px;padding:18px}
+.deal .sh h2,.deal .sh a{color:#fff}
+.deal .pc{border:0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border:1px solid var(--bd);background:#fff;border-radius:999px;padding:6px 16px;cursor:pointer}
+.tab.on{background:var(--red);color:#fff;border-color:var(--red)}
+.crumb{margin:18px 0 6px;color:var(--mut)}
+.crumb a{color:var(--red);cursor:pointer}
+.more{display:block;margin:22px auto}
+.empty{text-align:center;padding:60px;color:var(--mut)}
+/* footer */
+footer{background:#fff;margin-top:50px;border-top:1px solid var(--bd)}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;padding:36px 16px}
+.fg h4{margin:0 0 10px;font-size:15px}
+.fg a{display:block;color:var(--mut);padding:3px 0;cursor:pointer}
+.fg a:hover{color:var(--red)}
+.fg p{color:var(--mut);max-width:360px}
+.cp{background:var(--dark);color:#bbb;text-align:center;padding:14px;font-size:13px}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(10,14,25,.7);display:none;z-index:60;overflow:auto}
+#modal.open{display:block}
+.box{position:relative;max-width:980px;margin:4vh auto;background:#fff;border-radius:14px;padding:24px}
+.x{position:absolute;right:14px;top:6px;font-size:32px;border:0;background:none;cursor:pointer;color:var(--mut)}
+.box h2{margin:0;font-size:24px;color:var(--tx2)}
+.box .br{color:var(--mut);margin-bottom:12px}
+.mw{background:#fff;border:1px solid var(--bd);border-radius:10px;text-align:center}
+.main{max-width:100%;max-height:66vh;display:block;margin:auto;object-fit:contain}
+.th{display:flex;gap:8px;overflow-x:auto;padding:12px 0}
+.th img,.th .vd{height:64px;width:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid var(--bd);flex:none;background:#fff}
+.th .vd{display:flex;align-items:center;justify-content:center;background:#222;color:#fff;font-size:20px}
+.th .sel{border-color:var(--red)}
+.sw{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.sw figure{margin:0;width:70px;text-align:center;font-size:11px;cursor:pointer}
+.sw img{width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid var(--bd);background:#fff}
+.sw figure:hover img{border-color:var(--red)}
+h4.sub{margin:16px 0 0}
+@media(max-width:1000px){.pg{grid-template-columns:repeat(3,1fr)}.fg{grid-template-columns:1fr 1fr}.sl.mos{grid-template-columns:1fr}}
+@media(max-width:600px){.pg{grid-template-columns:repeat(2,1fr)}.nv a.l,.circ{display:none}.logo{font-size:22px}}
+
+.pd{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;margin-top:8px;background:#fff;border-radius:12px;padding:24px}
+.gal .big{aspect-ratio:1;background:#fff;border:1px solid var(--bd);border-radius:10px;display:grid;place-items:center;overflow:hidden;position:relative}
+.gal .big img,.gal .big video{max-width:100%;max-height:100%;object-fit:contain;display:block;width:100%;height:100%}
+.gal .gar{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:#0008;color:#fff;font-size:18px;cursor:pointer}
+.gal .gar.l{left:8px}.gal .gar.r{right:8px}
+.gth{display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:4px}
+.gth img,.gth .vd{width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--bd);cursor:pointer;flex:none;background:#fff}
+.gth .vd{display:grid;place-items:center;background:#222;color:#fff;font-size:20px}
+.gth .sel{border-color:var(--red)}
+.info .stock{display:inline-block;background:#e6f7ee;color:#10823d;padding:2px 12px;border-radius:5px;font-size:12px;font-weight:500}
+.info h1{font-size:22px;line-height:1.35;margin:8px 0;color:var(--tx2)}
+.meta{color:var(--mut);margin-bottom:14px}
+.meta b{color:var(--tx2);font-weight:500}
+.meta i{margin:0 10px;font-style:normal}
+.box2{background:var(--bg);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.box2 .lab{font-weight:700;color:var(--tx2);margin-bottom:10px}
+.sw{display:flex;flex-wrap:wrap;gap:10px}
+.sw figure{margin:0;width:64px;text-align:center;font-size:11px;cursor:pointer}
+.sw img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:2px solid var(--bd);background:#fff}
+.sw figure:hover img,.sw figure.sel img{border-color:var(--red)}
+.acts{display:flex;gap:12px;margin:6px 0 14px;flex-wrap:wrap}
+.acts .btn{flex:1;min-width:150px;text-align:center;padding:13px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tags span{background:var(--bg);padding:2px 12px;border-radius:999px;color:var(--mut);font-size:12px}
+.perk{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.perk div{border:1px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mut)}
+.perk b{display:block;color:var(--tx2)}
+.tabs2{display:flex;gap:8px;margin:26px 0 0;border-bottom:1px solid var(--bd);background:#fff;border-radius:12px 12px 0 0;padding:8px 14px 0}
+.tabs2 span{padding:10px 18px;cursor:pointer;border-bottom:3px solid transparent;font-weight:500}
+.tabs2 span.on{color:var(--red);border-color:var(--red)}
+.pane{background:#fff;border-radius:0 0 12px 12px;padding:22px 24px}
+.pane h2{margin:0 0 12px;font-size:16px;padding-left:10px;border-left:3px solid var(--red)}
+table.sp{width:100%;border-collapse:collapse;margin-bottom:24px}
+table.sp td{padding:10px 14px;border-bottom:1px solid var(--bd)}
+table.sp td:first-child{width:220px;color:var(--mut);background:var(--bg)}
+.gridimgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.gridimgs img,.gridimgs video{width:100%;border-radius:8px;border:1px solid var(--bd);cursor:pointer;background:#fff;display:block}
+.crumb2{margin:16px 0 10px;color:var(--mut)}.crumb2 a{color:var(--red)}
+.rel{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.rel .pc{flex:0 0 210px}
+@media(max-width:900px){.pd{grid-template-columns:1fr}}
+#lb{position:fixed;inset:0;background:#000d;display:none;z-index:80;align-items:center;justify-content:center;cursor:zoom-out}
+#lb.open{display:flex}#lb img{max-width:94vw;max-height:94vh}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><span data-ct="topbar1">แคตตาล็อกสินค้า — รวมทุกแบรนด์ในที่เดียว</span><span data-ct="topbar2">ค้นหาด้วยรหัสรุ่น · ดูรูป วิดีโอ และสีสินค้า</span></div></div>
+<header>
+  <div class="wrap hd">
+    <a class="logo" href="index.html">ร่ำรวย<b>2024</b></a>
+    <div class="sf"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="ค้นหารหัสรุ่น..."></div>
+    <div class="circ">🏷</div><div class="circ">🎨</div>
+  </div>
+  <div class="nv"><div class="wrap">
+    <button class="catbtn" id="catbtn"><span>☰ &nbsp;หมวดหมู่สินค้า</span><span>›</span></button>
+    <div class="mega" id="mega"></div>
+    <a class="l on" href="index.html">หน้าแรก</a><a class="l" href="index.html#brands">แบรนด์</a><a class="l" href="index.html#news">สินค้ามาใหม่</a><a class="l" href="#foot">ติดต่อเรา</a>
+  </div></div>
+</header>
+<div class="wrap" id="app"></div>
+<footer id="foot">
+  <div class="wrap fg">
+    <div><a class="logo" href="index.html">ร่ำรวย<b>2024</b></a><p data-ct="footerText">เว็บไซต์แคตตาล็อกสินค้า รวมรูปภาพ รุ่น และสีของสินค้าทุกแบรนด์ ค้นหาง่าย ดูครบในที่เดียว</p></div>
+    <div><h4>เมนู</h4><a href="index.html">หน้าแรก</a><a href="#brands">แบรนด์</a><a href="#news">สินค้ามาใหม่</a></div>
+    <div><h4>แบรนด์</h4><span id="fb1"></span></div>
+    <div><h4>แบรนด์</h4><span id="fb2"></span></div>
+  </div>
+  <div class="cp" data-ct="copyright">© 2024 ร่ำรวย แคตตาล็อก. All rights reserved.</div>
+</footer>
+<div id="lb"><img alt=""></div>
+<script src="data.js"></script>
+<script src="content.js"></script>
+<script src="common.js"></script>
+<script>
+const U=p=>encodeURI(p).replace(/#/g,"%23");
+const $=id=>document.getElementById(id);
+const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand})));
+const card=i=>`<a class="pc" href="product.html?k=${encodeURIComponent(i.brand+"|"+i.sku)}"><div class="im"><span class="bd">${i.brand}</span><img loading="lazy" src="${U(i.cover)}" alt=""></div><div class="nm">${esc(i.title||(i.brand+" "+i.sku))}<small>${i.imgs.length} รูป${i.colors.length?" · "+i.colors.length+" สี":""}</small></div><div class="ft">ดูรายละเอียด</div></a>`;
+// header search / menus -> index
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter")location.href="index.html"});
+$("mega").innerHTML=CATALOG.map(b=>`<a href="index.html">${b.brand}<small>${b.items.length} รุ่น</small></a>`).join("");
+$("catbtn").onclick=()=>$("mega").classList.toggle("open");
+const h=Math.ceil(CATALOG.length/2),fl=a=>a.map(b=>`<a href="index.html">${b.brand}</a>`).join("");
+$("fb1").innerHTML=fl(CATALOG.slice(0,h));$("fb2").innerHTML=fl(CATALOG.slice(h));
+
+const k=(new URLSearchParams(location.search).get("k")||"").split("|");
+const it=all.find(i=>i.brand===k[0]&&i.sku===k[1])||all[0];
+applySite();document.title=(it.title||(it.brand+" "+it.sku))+(C.site.title?" | "+C.site.title:"");
+const media=[...it.imgs,...it.vids];
+let cur=0;
+const rel=all.filter(i=>i.brand===it.brand&&i.sku!==it.sku).slice(0,14);
+$("app").innerHTML=`
+<div class="crumb2"><a href="index.html">หน้าแรก</a> › ${it.brand} › ${it.sku}</div>
+<div class="pd">
+  <div class="gal"><div class="big" id="big"></div><div class="gth" id="gth"></div></div>
+  <div class="info">
+    <span class="stock">สินค้าในแคตตาล็อก</span>
+    <h1>${esc(it.title||(it.brand+" "+it.sku))}</h1>
+    <div class="meta">แบรนด์: <b>${it.brand}</b><i>|</i>รหัสสินค้า: <b>${it.sku}</b></div>
+    ${it.colors.length?`<div class="box2"><div class="lab">สีสินค้า (${it.colors.length} สี) <span id="cn" style="font-weight:400;color:var(--mut)"></span></div><div class="sw" id="sw">${it.colors.map((c,n)=>`<figure data-c="${n}"><img loading="lazy" src="${U(c.t)}" alt="">${c.n}</figure>`).join("")}</div></div>`:""}
+    <div class="acts"><a class="btn" href="index.html">ดูสินค้าอื่น</a><a class="btn o" href="#rel">สินค้าจากแบรนด์เดียวกัน</a></div>
+    <div class="tags"><span>#${it.brand}</span><span>#${it.sku}</span></div>
+    <div class="perk"><div><b>📷 ${it.imgs.length} รูป</b>ภาพสินค้า</div><div><b>🎨 ${it.colors.length||"-"} สี</b>ตัวเลือกสี</div><div><b>🎬 ${it.vids.length||"-"} วิดีโอ</b>คลิปสินค้า</div><div><b>🏷 ${it.brand}</b>แบรนด์</div></div>
+  </div>
+</div>
+<div class="tabs2" id="tabs"><span class="on" data-t="all">ทั้งหมด</span><span data-t="spec">ข้อมูลสินค้า</span><span data-t="img">ภาพสินค้า</span>${it.colors.length?'<span data-t="col">สี</span>':""}${it.vids.length?'<span data-t="vid">วิดีโอ</span>':""}</div>
+<div class="pane" id="pane"></div>
+<div class="sec" id="rel"><div class="sh"><h2>จากแบรนด์เดียวกัน</h2></div><div class="rel">${rel.map(card).join("")}</div></div>`;
+
+function big(n){cur=(n+media.length)%media.length;const m=media[cur];
+  $("big").innerHTML=(m.endsWith(".mp4")?`<video controls autoplay src="${U(m)}"></video>`:`<img src="${U(m)}" alt="" data-zoom>`)+(media.length>1?'<button class="gar l" data-g="-1">‹</button><button class="gar r" data-g="1">›</button>':"");
+  document.querySelectorAll("#gth [data-i]").forEach(x=>x.classList.toggle("sel",+x.dataset.i===cur));}
+$("gth").innerHTML=media.map((m,n)=>m.endsWith(".mp4")?`<div class="vd" data-i="${n}">▶</div>`:`<img loading="lazy" data-i="${n}" src="${U(m)}" alt="">`).join("");
+big(0);
+
+const rows=[...(it.specs||[]),["แบรนด์",it.brand],["รหัสรุ่น",it.sku],["จำนวนรูปภาพ",it.imgs.length+" รูป"],["จำนวนสี",it.colors.length?it.colors.length+" สี":"-"],["วิดีโอ",it.vids.length?it.vids.length+" คลิป":"-"]];
+const spec=(it.desc?`<h2>รายละเอียดสินค้า</h2><p style="white-space:pre-line;line-height:1.8;margin:0 0 24px">${esc(it.desc)}</p>`:"")+`<h2>ข้อมูลสินค้า</h2><table class="sp">${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("")}</table>`;
+const imgs=`<h2>ภาพสินค้า</h2><div class="gridimgs">${it.imgs.map(m=>`<img loading="lazy" src="${U(m)}" data-zoom alt="">`).join("")}</div>`;
+const cols=`<h2>สีสินค้า</h2><div class="gridimgs">${it.colors.map(c=>`<figure style="margin:0;text-align:center"><img loading="lazy" src="${U(c.f)}" data-zoom alt="">${c.n}</figure>`).join("")}</div>`;
+const vids=`<h2>วิดีโอ</h2><div class="gridimgs">${it.vids.map(v=>`<video controls preload="none" src="${U(v)}"></video>`).join("")}</div>`;
+function tab(t){document.querySelectorAll("#tabs span").forEach(s=>s.classList.toggle("on",s.dataset.t===t));
+  $("pane").innerHTML=t==="spec"?spec:t==="img"?imgs:t==="col"?cols:t==="vid"?vids:spec+imgs+(it.colors.length?cols:"")+(it.vids.length?vids:"");}
+tab("all");
+
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#catbtn")&&!e.target.closest("#mega"))$("mega").classList.remove("open");
+  const g=e.target.closest("[data-g]");if(g){big(cur+ +g.dataset.g);return}
+  const i=e.target.closest("#gth [data-i]");if(i){big(+i.dataset.i);return}
+  const c=e.target.closest("[data-c]");if(c){const cc=it.colors[+c.dataset.c];document.querySelectorAll("#sw figure").forEach(x=>x.classList.toggle("sel",x===c));$("cn").textContent="— "+cc.n;$("big").innerHTML=`<img src="${U(cc.f)}" alt="" data-zoom>`;return}
+  const t=e.target.closest("#tabs [data-t]");if(t){tab(t.dataset.t);return}
+  const z=e.target.closest("[data-zoom]");if(z){$("lb").querySelector("img").src=z.src;$("lb").classList.add("open");return}
+  if(e.target.closest("#lb"))$("lb").classList.remove("open");
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("lb").classList.remove("open")});
+</script>
+</body>
+</html>

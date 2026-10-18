@@ -1,0 +1,279 @@
+﻿<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — แคตตาล็อกสินค้า</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f4f8;--tx:#222b3a;--mut:#7a8499;--bd:#dfe5ec;--red:#d3202c;--ok:#10823d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 "Noto Sans Thai",sans-serif}
+header{background:#111;color:#fff;position:sticky;top:0;z-index:10}
+.hd{max-width:1320px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hd h1{font-size:18px;margin:0;font-weight:700}
+.hd .sp{flex:1}
+.tabs{display:flex;gap:4px}
+.tab{padding:8px 18px;border-radius:8px;cursor:pointer;color:#ccc}
+.tab.on{background:var(--red);color:#fff}
+.btn{border:0;border-radius:8px;padding:9px 20px;font:inherit;font-weight:500;cursor:pointer;background:var(--red);color:#fff}
+.btn.g{background:#fff;color:var(--tx);border:1px solid var(--bd)}
+.btn.sm{padding:4px 12px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:default}
+#st{font-size:13px;color:#bbb}
+#st.dirty{color:#ffd166}#st.ok{color:#7be0a0}#st.err{color:#ff8a8a}
+main{max-width:1320px;margin:16px auto;padding:0 16px}
+.card{background:#fff;border-radius:12px;padding:20px;border:1px solid var(--bd)}
+label{display:block;margin:12px 0 4px;font-weight:500}
+label small{color:var(--mut);font-weight:400}
+input[type=text],textarea,select{width:100%;border:1px solid var(--bd);border-radius:8px;padding:9px 12px;font:inherit;background:#fff}
+input:focus,textarea:focus,select:focus{outline:2px solid #f3b1b6;border-color:var(--red)}
+textarea{resize:vertical;min-height:90px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.split{display:grid;grid-template-columns:380px 1fr;gap:16px;align-items:start}
+.list{max-height:78vh;overflow:auto;padding:0}
+.lt{padding:12px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:#fff;z-index:2;display:grid;gap:8px}
+.it{display:flex;gap:10px;align-items:center;padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f3f6}
+.it:hover{background:#f7f9fb}.it.on{background:#fdeced}
+.it img{width:44px;height:44px;object-fit:cover;border-radius:6px;background:#fff;border:1px solid var(--bd)}
+.it .n{flex:1;min-width:0}.it .n b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.it .n small{color:var(--mut)}
+.tag{font-size:11px;padding:1px 8px;border-radius:999px;background:#e8eef5;color:#52617a;margin-left:4px}
+.tag.h{background:#ffe3e3;color:#b11}.tag.f{background:#fff1c9;color:#8a6200}.tag.e{background:#dff5e8;color:var(--ok)}
+.srow{display:grid;grid-template-columns:1fr 1.6fr auto;gap:8px;margin-bottom:8px}
+.chk{display:flex;gap:8px;align-items:center;margin:10px 0;font-weight:400}
+.chk input{width:18px;height:18px}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.bi{border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:center}
+.bi img{width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid var(--bd)}
+.pv{max-width:320px;border-radius:10px;border:1px solid var(--bd);margin-top:8px;display:block}
+.hint{color:var(--mut);font-size:13px}
+.empty{padding:60px;text-align:center;color:var(--mut)}
+.ph{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.ph img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--bd)}
+.ph h2{margin:0;font-size:18px}
+@media(max-width:900px){.split,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="hd">
+  <h1>⚙ Admin แคตตาล็อก</h1>
+  <div class="tabs" id="tabs"><span class="tab on" data-t="site">ตั้งค่าเว็บ</span><span class="tab" data-t="brands">แบรนด์</span><span class="tab" data-t="prods">สินค้า</span><span class="tab" data-t="drive">Google Drive</span></div>
+  <span class="sp"></span><span id="st">โหลดแล้ว</span>
+  <a class="btn g" href="index.html" target="_blank">ดูหน้าเว็บ ↗</a>
+  <button class="btn" id="save">บันทึก</button>
+</div></header>
+<main id="m"></main>
+
+<script src="data.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const U=p=>encodeURI(p).replace(/#/g,"%23");
+const DEF={title:"แคตตาล็อกสินค้า — ร่ำรวย 2024",logoA:"ร่ำรวย",logoB:"2024",topbar1:"แคตตาล็อกสินค้า — รวมทุกแบรนด์ในที่เดียว",topbar2:"ค้นหาด้วยรหัสรุ่น · ดูรูป วิดีโอ และสีสินค้า",heroTitle:"ร่ำรวย 2024\nแคตตาล็อกสินค้า",heroSub:"รวมทุกแบรนด์ ดูรูปและสีได้ครบ",footerText:"เว็บไซต์แคตตาล็อกสินค้า รวมรูปภาพ รุ่น และสีของสินค้าทุกแบรนด์ ค้นหาง่าย ดูครบในที่เดียว",copyright:"© 2024 ร่ำรวย แคตตาล็อก. All rights reserved.",banner:""};
+let C={site:{...DEF},brands:{},products:{}},tab="site",sel=null,fq="",fb="",dirty=false,server=false;
+const all=[];CATALOG.forEach(b=>b.items.forEach(i=>all.push({...i,brand:b.brand,key:b.brand+"|"+i.sku})));
+
+function setSt(t,c){const s=$("st");s.textContent=t;s.className=c||""}
+function touch(){dirty=true;setSt("● มีการแก้ไขที่ยังไม่บันทึก","dirty")}
+async function load(){
+  try{
+    const r=await fetch("content.js?t="+Date.now(),{cache:"no-store"});const t=await r.text();
+    const m=t.match(/window\.CONTENT\s*=\s*([\s\S]*?);\s*$/);
+    if(m){const o=JSON.parse(m[1]);C={site:{...DEF,...(o.site||{})},brands:o.brands||{},products:o.products||{}}}
+  }catch(e){}
+  try{server=(await fetch("/api/ping")).ok}catch(e){server=false}
+  if(!server)setSt("⚠ ไม่ได้เปิดผ่านเซิร์ฟเวอร์ — จะบันทึกเป็นไฟล์ดาวน์โหลด","err");
+  render();
+}
+function prod(k){return C.products[k]||(C.products[k]={})}
+function clean(){ // ตัดข้อมูลว่างออกก่อนบันทึก
+  const o={site:{},brands:{},products:{}};
+  Object.keys(C.site).forEach(k=>{if(C.site[k]!=="")o.site[k]=C.site[k]});
+  Object.keys(C.brands).forEach(k=>{if(C.brands[k].hidden)o.brands[k]={hidden:true}});
+  Object.keys(C.products).forEach(k=>{const p=C.products[k],q={};
+    if(p.title)q.title=p.title;if(p.desc)q.desc=p.desc;
+    const sp=(p.specs||[]).filter(r=>r[0]||r[1]);if(sp.length)q.specs=sp;
+    if(p.hidden)q.hidden=true;if(p.featured)q.featured=true;
+    if(Object.keys(q).length)o.products[k]=q});
+  return o;
+}
+async function save(){
+  const data=clean();
+  if(server){
+    try{const r=await fetch("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+      if(!r.ok)throw new Error(r.status);dirty=false;setSt("✓ บันทึกแล้ว "+new Date().toLocaleTimeString("th-TH"),"ok");return}
+    catch(e){setSt("✗ บันทึกไม่สำเร็จ: "+e.message,"err");return}
+  }
+  const blob=new Blob(["window.CONTENT = "+JSON.stringify(data,null,2)+";\n"],{type:"text/javascript"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="content.js";a.click();
+  dirty=false;setSt("ดาวน์โหลด content.js แล้ว — นำไปวางทับไฟล์ในโฟลเดอร์ catalog","ok");
+}
+function render(){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.t===tab));
+  if(tab==="drive"){drender();return}
+  $("m").innerHTML=tab==="site"?siteView():tab==="brands"?brandView():prodView();
+}
+const F=(k,l,hint,ta)=>`<label>${l} ${hint?`<small>${hint}</small>`:""}</label>${ta?`<textarea data-s="${k}">${esc(C.site[k]||"")}</textarea>`:`<input type="text" data-s="${k}" value="${esc(C.site[k]||"")}">`}`;
+function siteView(){
+  return `<div class="card"><div class="two"><div>
+  <h2 style="margin-top:0">ข้อมูลทั่วไป</h2>
+  ${F("title","ชื่อเว็บ (แท็บเบราว์เซอร์)")}
+  <div class="two">${F("logoA","โลโก้ — ข้อความหลัก")}${F("logoB","โลโก้ — ข้อความสีแดง")}</div>
+  ${F("topbar1","แถบดำด้านบน (ซ้าย)")}${F("topbar2","แถบดำด้านบน (ขวา)")}
+  </div><div>
+  <h2 style="margin-top:0">แบนเนอร์และส่วนท้าย</h2>
+  ${F("heroTitle","หัวข้อแบนเนอร์","(ขึ้นบรรทัดใหม่ได้)",true)}
+  ${F("heroSub","ข้อความใต้หัวข้อแบนเนอร์")}
+  <label>รูปแบนเนอร์ <small>(ว่าง = ใช้รูปเดิม)</small></label>
+  <input type="text" data-s="banner" value="${esc(C.site.banner||"")}" placeholder="assets/banner.jpg">
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><input type="file" id="bf" accept="image/*" style="display:none"><button class="btn g sm" id="bu">อัปโหลดรูปใหม่…</button><span class="hint" id="bm"></span></div>
+  <img class="pv" id="bp" src="${U(C.site.banner||"assets/banner.jpg")}" alt="">
+  ${F("footerText","ข้อความส่วนท้ายเว็บ","",true)}
+  ${F("copyright","ลิขสิทธิ์ (แถบดำล่างสุด)")}
+  </div></div>
+  <p class="hint">หมายเหตุ: ค่าที่แก้จะแสดงบนหน้า index.html และ product.html หลังกด "บันทึก" แล้วรีเฟรชหน้าเว็บ</p></div>`;
+}
+function brandView(){
+  return `<div class="card"><h2 style="margin-top:0">แบรนด์</h2><p class="hint">ติ๊กออก = ซ่อนแบรนด์นี้ (และสินค้าทั้งหมดของแบรนด์) จากหน้าเว็บ</p><div class="bgrid">${CATALOG.map(b=>{
+    const on=!(C.brands[b.brand]&&C.brands[b.brand].hidden);
+    return `<label class="bi chk" style="margin:0"><input type="checkbox" data-b="${esc(b.brand)}" ${on?"checked":""}><img src="${U(b.items[0].cover)}" alt=""><span><b>${esc(b.brand)}</b><br><small class="hint">${b.items.length} รุ่น</small></span></label>`}).join("")}</div></div>`;
+}
+function badges(k){const p=C.products[k]||{};return (p.hidden?'<span class="tag h">ซ่อน</span>':"")+(p.featured?'<span class="tag f">แนะนำ</span>':"")+((p.title||p.desc||(p.specs&&p.specs.length))?'<span class="tag e">แก้แล้ว</span>':"")}
+function listHtml(){
+  const l=all.filter(i=>(!fb||i.brand===fb)&&(i.sku.toLowerCase().includes(fq)||((C.products[i.key]||{}).title||"").toLowerCase().includes(fq)));
+  return `<div class="lt"><input type="text" id="fq" placeholder="ค้นหารหัสรุ่น / ชื่อ..." value="${esc(fq)}"><select id="fb"><option value="">ทุกแบรนด์</option>${CATALOG.map(b=>`<option ${fb===b.brand?"selected":""}>${esc(b.brand)}</option>`).join("")}</select><span class="hint">${l.length} รุ่น (แสดง 150 แรก)</span></div>`+
+   l.slice(0,150).map(i=>`<div class="it ${sel===i.key?"on":""}" data-k="${esc(i.key)}"><img loading="lazy" src="${U(i.cover)}" alt=""><div class="n"><b>${esc((C.products[i.key]||{}).title||i.sku)}</b><small>${esc(i.brand)} · ${esc(i.sku)}</small></div><span>${badges(i.key)}</span></div>`).join("");
+}
+function editHtml(){
+  const i=all.find(x=>x.key===sel);if(!i)return `<div class="empty">เลือกสินค้าจากรายการด้านซ้ายเพื่อแก้ไข</div>`;
+  const p=C.products[i.key]||{},sp=p.specs||[];
+  return `<div class="ph"><img src="${U(i.cover)}" alt=""><div><h2>${esc(i.brand)} ${esc(i.sku)}</h2><span class="hint">${i.imgs.length} รูป · ${i.colors.length} สี · ${i.vids.length} วิดีโอ</span></div></div>
+  <label>ชื่อสินค้าที่แสดง <small>(ว่าง = ใช้ "${esc(i.brand)} ${esc(i.sku)}")</small></label>
+  <input type="text" data-p="title" value="${esc(p.title||"")}">
+  <label>คำอธิบาย / รายละเอียดสินค้า</label>
+  <textarea data-p="desc" style="min-height:140px">${esc(p.desc||"")}</textarea>
+  <label>ข้อมูลจำเพาะ <small>(เช่น ขนาด วัสดุ น้ำหนัก)</small></label>
+  <div id="specs">${sp.map((r,n)=>`<div class="srow"><input type="text" data-sk="${n}" value="${esc(r[0])}" placeholder="หัวข้อ"><input type="text" data-sv="${n}" value="${esc(r[1])}" placeholder="ค่า"><button class="btn g sm" data-sd="${n}">ลบ</button></div>`).join("")}</div>
+  <button class="btn g sm" id="sa">+ เพิ่มแถว</button>
+  <label class="chk"><input type="checkbox" data-p="featured" ${p.featured?"checked":""}> แสดงในกรอบ "Special deals" หน้าแรก</label>
+  <label class="chk"><input type="checkbox" data-p="hidden" ${p.hidden?"checked":""}> ซ่อนสินค้านี้จากหน้าเว็บ</label>
+  <div style="display:flex;gap:8px;margin-top:14px"><a class="btn g sm" target="_blank" href="product.html?k=${encodeURIComponent(i.key)}">เปิดหน้าสินค้า ↗</a><button class="btn g sm" id="rs">ล้างการแก้ไขสินค้านี้</button></div>`;
+}
+function prodView(){return `<div class="split"><div class="card list" id="lst">${listHtml()}</div><div class="card" id="ed">${editHtml()}</div></div>`}
+function refreshList(){const l=$("lst");if(l){const s=l.scrollTop,f=document.activeElement&&document.activeElement.id==="fq";l.innerHTML=listHtml();l.scrollTop=s;if(f){const q=$("fq");q.focus();q.setSelectionRange(q.value.length,q.value.length)}}}
+
+document.addEventListener("click",async e=>{
+  const t=e.target.closest(".tab");if(t){tab=t.dataset.t;render();return}
+  if(e.target.id==="save"){save();return}
+  const it=e.target.closest(".it");if(it){sel=it.dataset.k;refreshList();$("ed").innerHTML=editHtml();return}
+  if(e.target.id==="sa"){const p=prod(sel);(p.specs=p.specs||[]).push(["",""]);touch();$("ed").innerHTML=editHtml();return}
+  const sd=e.target.closest("[data-sd]");if(sd){prod(sel).specs.splice(+sd.dataset.sd,1);touch();$("ed").innerHTML=editHtml();return}
+  if(e.target.id==="rs"){if(confirm("ล้างการแก้ไขของสินค้านี้ทั้งหมด?")){delete C.products[sel];touch();refreshList();$("ed").innerHTML=editHtml()}return}
+  if(e.target.id==="bu"){$("bf").click();return}
+});
+document.addEventListener("change",async e=>{
+  const el=e.target;
+  if(el.id==="bf"&&el.files[0]){
+    if(!server){$("bm").textContent="ต้องเปิดผ่าน start-admin.bat จึงจะอัปโหลดได้";return}
+    const f=el.files[0];$("bm").textContent="กำลังอัปโหลด…";
+    try{const r=await fetch("/api/upload?name="+encodeURIComponent(f.name),{method:"POST",body:f});const j=await r.json();
+      if(!r.ok)throw new Error(j.error||r.status);C.site.banner=j.path;touch();$("bm").textContent="อัปโหลดแล้ว: "+j.path;render()}
+    catch(err){$("bm").textContent="ผิดพลาด: "+err.message}
+    return}
+  if(el.dataset.b!==undefined){(C.brands[el.dataset.b]=C.brands[el.dataset.b]||{}).hidden=!el.checked;touch();return}
+  if(el.dataset.p==="featured"||el.dataset.p==="hidden"){prod(sel)[el.dataset.p]=el.checked;touch();refreshList();return}
+  if(el.id==="fb"){fb=el.value;refreshList();return}
+});
+document.addEventListener("input",e=>{
+  const el=e.target;
+  if(el.id==="fq"){fq=el.value.trim().toLowerCase();refreshList();return}
+  if(el.dataset.s){C.site[el.dataset.s]=el.value;touch();if(el.dataset.s==="banner"){const b=$("bp");if(b)b.src=U(el.value||"assets/banner.jpg")}return}
+  if(el.dataset.p&&el.type!=="checkbox"){prod(sel)[el.dataset.p]=el.value;touch();refreshList();return}
+  if(el.dataset.sk!==undefined){prod(sel).specs[+el.dataset.sk][0]=el.value;touch();return}
+  if(el.dataset.sv!==undefined){prod(sel).specs[+el.dataset.sv][1]=el.value;touch()}
+});
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+
+/* ===================== Google Drive (ผ่าน Apps Script) ===================== */
+const DK="adminDriveGAS";
+const D={url:"",key:"",path:[],items:[],msg:"",busy:"",ok:false};
+try{const s=JSON.parse(localStorage.getItem(DK)||"{}");D.url=s.url||"";D.key=s.key||""}catch(e){}
+const dsave=()=>{try{localStorage.setItem(DK,JSON.stringify({url:D.url,key:D.key}))}catch(e){}};
+async function dcall(action,p){
+  const r=await fetch(D.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:D.key,action,...p})});
+  let j;try{j=await r.json()}catch(e){throw new Error("ตอบกลับไม่ถูกต้อง — ตรวจว่า URL เป็นลิงก์ Web app (/exec) และ Deploy แบบ Anyone")}
+  if(j.error)throw new Error(j.error);return j;
+}
+const cur=()=>D.path[D.path.length-1].id;
+async function dlist(){const j=await dcall("list",{folderId:D.path.length?cur():""});if(!D.path.length)D.path=[j.folder];D.items=j.items}
+async function dconnect(){
+  D.url=($("gurl")||{}).value?.trim()||D.url;D.key=($("gkey")||{}).value||D.key;dsave();
+  if(!D.url){D.msg="กรอก Web app URL ก่อน";return drender()}
+  D.busy="กำลังเชื่อมต่อ…";D.msg="";D.path=[];drender();
+  try{await dlist();D.ok=true}catch(e){D.msg=e.message;D.ok=false}
+  D.busy="";drender();
+}
+function dsize(n){n=+n;if(!n)return"";return n>1048576?(n/1048576).toFixed(1)+" MB":Math.ceil(n/1024)+" KB"}
+function drender(){
+  if(tab!=="drive")return;
+  const setup=`<div class="card" style="max-width:760px"><h2 style="margin-top:0">เชื่อมต่อ Google Drive (Apps Script)</h2>
+  <p class="hint">1) ไปที่ <b>script.google.com</b> ด้วยบัญชีเจ้าของโฟลเดอร์ DATA → โปรเจกต์ใหม่ → วางโค้ดจากไฟล์ <b>Code.gs</b> (ในโฟลเดอร์ catalog) แล้วเปลี่ยน <b>SECRET</b> เป็นรหัสของคุณ<br>
+  2) Deploy → New deployment → ชนิด <b>Web app</b> → Execute as: <b>Me</b> → Who has access: <b>Anyone</b> → กดอนุญาตสิทธิ์ Drive<br>
+  3) คัดลอก <b>Web app URL</b> (ลงท้าย /exec) มาวางด้านล่าง พร้อมรหัสลับเดียวกับในโค้ด<br>
+  * ทุกครั้งที่แก้โค้ด ต้อง Deploy → Manage deployments → New version</p>
+  <label>Web app URL</label><input type="text" id="gurl" value="${esc(D.url)}" placeholder="https://script.google.com/macros/s/.../exec">
+  <label>รหัสลับ (SECRET) <small>(ไม่บังคับ — เว้นว่างได้ถ้าในโค้ดตั้ง SECRET = '')</small></label><input type="text" id="gkey" value="${esc(D.key)}">
+  ${D.busy?`<p style="color:var(--ok)">${esc(D.busy)}</p>`:""}${D.msg?`<p style="color:var(--red)">${esc(D.msg)}</p>`:""}
+  <p><button class="btn" data-d="connect">เชื่อมต่อ</button></p></div>`;
+  if(!D.ok){$("m").innerHTML=setup;return}
+  const crumb=D.path.map((p,n)=>`<a href="#" data-d="go" data-n="${n}" style="color:var(--red)">${esc(p.name)}</a>`).join(" › ");
+  $("m").innerHTML=`<div class="card"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+    <b style="flex:1;min-width:200px">${crumb}</b>
+    <button class="btn g sm" data-d="mk">+ โฟลเดอร์ใหม่</button>
+    <button class="btn sm" data-d="up">⬆ อัปโหลดไฟล์</button><input type="file" id="dup" multiple style="display:none">
+    <button class="btn g sm" data-d="re">รีเฟรช</button><button class="btn g sm" data-d="out">ตัดการเชื่อมต่อ</button></div>
+  ${D.busy?`<p style="color:var(--ok)">${esc(D.busy)}</p>`:""}${D.msg?`<p style="color:var(--red)">${esc(D.msg)}</p>`:""}
+  <div id="dz" style="border:2px dashed var(--bd);border-radius:10px;padding:10px 14px;margin-bottom:12px;color:var(--mut);text-align:center">ลากไฟล์มาวางที่นี่เพื่ออัปโหลดเข้าโฟลเดอร์นี้ (ไฟล์ละไม่เกิน 25 MB)</div>
+  <div>${D.items.length?D.items.map(f=>{const m=f.mime||"";
+    return `<div class="it" style="cursor:default"><span style="font-size:26px;width:44px;text-align:center">${f.folder?"📁":m.startsWith("image/")?"🖼":m.startsWith("video/")?"🎬":"📄"}</span>
+    <div class="n">${f.folder?`<a href="#" data-d="open" data-id="${f.id}" data-name="${esc(f.name)}" style="color:inherit"><b>${esc(f.name)}</b></a>`:`<b>${esc(f.name)}</b>`}<small>${f.folder?"โฟลเดอร์":esc(dsize(f.size))}</small></div>
+    <a class="btn g sm" target="_blank" href="${esc(f.url)}">เปิด ↗</a>
+    <button class="btn g sm" data-d="ren" data-id="${f.id}" data-name="${esc(f.name)}">เปลี่ยนชื่อ</button>
+    <button class="btn g sm" data-d="del" data-id="${f.id}" data-name="${esc(f.name)}" style="color:#b11">ลบ</button></div>`}).join(""):'<div class="empty">โฟลเดอร์ว่าง</div>'}</div></div>`;
+  const dz=$("dz");
+  dz.ondragover=e=>{e.preventDefault();dz.style.borderColor="var(--red)"};dz.ondragleave=()=>dz.style.borderColor="";
+  dz.ondrop=e=>{e.preventDefault();dz.style.borderColor="";dupload(e.dataTransfer.files)};
+  $("dup").onchange=e=>dupload(e.target.files);
+}
+const b64=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]||"");r.onerror=()=>no(new Error("อ่านไฟล์ไม่ได้"));r.readAsDataURL(f)});
+async function dupload(files){
+  const arr=[...files];let n=0;
+  for(const f of arr){
+    n++;D.msg="";
+    if(f.size>25*1048576){D.msg=f.name+" ใหญ่เกิน 25 MB";break}
+    D.busy=`กำลังอัปโหลด ${n}/${arr.length}: ${f.name}`;drender();
+    try{await dcall("upload",{parentId:cur(),name:f.name,mime:f.type,data:await b64(f)})}
+    catch(e){D.msg="อัปโหลด "+f.name+" ไม่สำเร็จ: "+e.message;break}
+  }
+  D.busy="";try{await dlist()}catch(e){D.msg=e.message}drender();
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-d]");if(!b)return;e.preventDefault();
+  const a=b.dataset.d;D.msg="";
+  try{
+    if(a==="connect")return dconnect();
+    if(a==="out"){D.ok=false;D.items=[];D.path=[];return drender()}
+    if(a==="go"){D.path=D.path.slice(0,+b.dataset.n+1);await dlist()}
+    else if(a==="open"){D.path.push({id:b.dataset.id,name:b.dataset.name});await dlist()}
+    else if(a==="re"){await dlist()}
+    else if(a==="up"){$("dup").click();return}
+    else if(a==="mk"){const n=prompt("ชื่อโฟลเดอร์ใหม่");if(!n)return;await dcall("mkdir",{parentId:cur(),name:n});await dlist()}
+    else if(a==="ren"){const n=prompt("ชื่อใหม่",b.dataset.name);if(!n||n===b.dataset.name)return;await dcall("rename",{id:b.dataset.id,name:n});await dlist()}
+    else if(a==="del"){if(!confirm("ย้าย “"+b.dataset.name+"” ไปถังขยะของ Drive?\n(กู้คืนได้จากถังขยะใน Google Drive)"))return;await dcall("trash",{id:b.dataset.id});await dlist()}
+  }catch(err){D.msg=err.message}
+  drender();
+});
+load();
+</script>
+</body>
+</html>
