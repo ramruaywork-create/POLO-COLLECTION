@@ -225,7 +225,7 @@ $("app").innerHTML=`
     <div class="perk"><div><b>📷 ${it.imgs.length} รูป</b>ภาพสินค้า</div><div><b>🎨 ${it.colors.length||"-"} สี</b>ตัวเลือกสี</div><div><b>🎬 ${it.vids.length||"-"} วิดีโอ</b>คลิปสินค้า</div><div><b>🏷 ${it.brand}</b>แบรนด์</div></div>
   </div>
 </div>
-<div class="tabs2" id="tabs"><span class="on" data-t="all">ทั้งหมด</span><span data-t="spec">ข้อมูลสินค้า</span><span data-t="img">ภาพสินค้า</span>${it.colors.length?'<span data-t="col">สี</span>':""}${it.vids.length?'<span data-t="vid">วิดีโอ</span>':""}</div>
+<div class="tabs2" id="tabs"><span class="on" data-t="all">ทั้งหมด</span><span data-t="spec">ข้อมูลสินค้า</span><span data-t="img">ภาพสินค้า</span>${(it.sizes||[]).length?'<span data-t="size">ตารางไซส์</span>':""}${it.colors.length?'<span data-t="col">สี</span>':""}${it.vids.length?'<span data-t="vid">วิดีโอ</span>':""}</div>
 <div class="pane" id="pane"></div>
 <div class="sec" id="rel"><div class="sh"><h2>จากแบรนด์เดียวกัน</h2></div><div class="rel">${rel.map(card).join("")}</div></div>`;
 
@@ -237,11 +237,12 @@ big(0);
 
 const rows=[...(it.specs||[]),["แบรนด์",it.brand],["รหัสรุ่น",it.sku],["จำนวนรูปภาพ",it.imgs.length+" รูป"],["จำนวนสี",it.colors.length?it.colors.length+" สี":"-"],["วิดีโอ",it.vids.length?it.vids.length+" คลิป":"-"]];
 const spec=(it.desc?`<h2>รายละเอียดสินค้า</h2><p style="white-space:pre-line;line-height:1.8;margin:0 0 24px">${esc(it.desc)}</p>`:"")+`<h2>ข้อมูลสินค้า</h2><table class="sp">${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("")}</table>`;
+const sz=(it.sizes||[]).length?`<h2>ตารางไซส์</h2><div class="gridimgs" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${it.sizes.map(m=>`<img loading="lazy" src="${U(m)}" data-zoom alt="">`).join("")}</div>`:"";
 const imgs=`<h2>ภาพสินค้า</h2><div class="gridimgs">${it.imgs.map(m=>`<img loading="lazy" src="${U(m)}" data-zoom alt="">`).join("")}</div>`;
 const cols=`<h2>สีสินค้า</h2><div class="gridimgs">${it.colors.map(c=>`<figure style="margin:0;text-align:center"><img loading="lazy" src="${U(c.f)}" data-zoom alt="">${c.n}</figure>`).join("")}</div>`;
 const vids=`<h2>วิดีโอ</h2><div class="gridimgs">${it.vids.map(v=>v.endsWith(".mp4")?`<video controls preload="none" src="${U(v)}"></video>`:`<iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" allow="autoplay" src="${U(v)}"></iframe>`).join("")}</div>`;
 function tab(t){document.querySelectorAll("#tabs span").forEach(s=>s.classList.toggle("on",s.dataset.t===t));
-  $("pane").innerHTML=t==="spec"?spec:t==="img"?imgs:t==="col"?cols:t==="vid"?vids:spec+imgs+(it.colors.length?cols:"")+(it.vids.length?vids:"");}
+  $("pane").innerHTML=t==="spec"?spec:t==="size"?sz:t==="img"?imgs:t==="col"?cols:t==="vid"?vids:spec+sz+imgs+(it.colors.length?cols:"")+(it.vids.length?vids:"");}
 tab("all");
 
 document.addEventListener("click",e=>{

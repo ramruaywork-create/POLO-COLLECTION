@@ -164,6 +164,8 @@ function nat_(a, b) {
 function isFolder_(f) { return f.mimeType === 'application/vnd.google-apps.folder'; }
 function isImg_(f) { return (f.mimeType || '').indexOf('image/') === 0; }
 function isVid_(f) { return (f.mimeType || '').indexOf('video/') === 0; }
+// ไฟล์ตารางไซส์: ชื่อ (ไม่รวมนามสกุล) ลงท้ายด้วย _size / -size / ช่องว่าง+size เช่น 3528_size.jpg
+function isSize_(f) { return /(^|[_\-\s])size$/i.test(String(f.name).replace(/\.[^.]+$/, '')); }
 function group_(files) {
   var g = {};
   files.forEach(function (f) { (f.parents || []).forEach(function (p) { (g[p] = g[p] || []).push(f); }); });
@@ -217,12 +219,17 @@ function rebuild_() {
       var imd = k.filter(function (f) { return isFolder_(f) && f.name.toLowerCase() === 'image'; })[0];
       var cold = k.filter(function (f) { return isFolder_(f) && f.name === 'สี'; })[0];
       var alt = imd ? (subKids[imd.id] || []).filter(isImg_).sort(nat_) : [];
-      var main = rootImgs.length ? rootImgs : alt;
+      var sizes = rootImgs.filter(isSize_).concat(alt.filter(isSize_));
+      var rootMain = rootImgs.filter(function (f) { return !isSize_(f); });
+      var altMain = alt.filter(function (f) { return !isSize_(f); });
+      var main = rootMain.length ? rootMain : altMain;
+      if (!main.length) main = sizes;
       if (!main.length) return;
       var cols = cold ? (subKids[cold.id] || []).filter(isImg_).sort(nat_) : [];
       items.push({
         sku: s.name,
         imgs: main.map(function (f) { return f.id; }),
+        sizes: sizes.map(function (f) { return f.id; }),
         vids: vids.map(function (f) { return f.id; }),
         colors: cols.map(function (f) { return { n: f.name.replace(/\.[^.]+$/, ''), id: f.id }; })
       });

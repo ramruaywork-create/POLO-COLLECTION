@@ -25,6 +25,7 @@
             sku: i.sku,
             cover: lh(i.imgs[0], 520),
             imgs: i.imgs.map(function (id) { return lh(id, 1100); }),
+            sizes: (i.sizes || []).map(function (id) { return lh(id, 1400); }),
             vids: (i.vids || []).map(function (id) { return "https://drive.google.com/file/d/" + id + "/preview"; }),
             colors: (i.colors || []).map(function (c) { return { n: c.n, t: lh(c.id, 160), f: lh(c.id, 1100) }; })
           };
