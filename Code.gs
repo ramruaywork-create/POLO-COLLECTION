@@ -188,8 +188,8 @@ function saveContent_(data) {
   return { ok: true };
 }
 
-// โฟลเดอร์มาตรฐานในแต่ละรหัสสินค้า: รูปหลัก(Image) / วิดีโอ(video) / ตารางไซส์ / สี
-const STD_FOLDERS = ['Image', 'video', 'ตารางไซส์', 'สี'];
+// โฟลเดอร์มาตรฐานในแต่ละรหัสสินค้า: รูปปก(ปก) / รูปหลัก(Image) / วิดีโอ(video) / ตารางไซส์ / สี
+const STD_FOLDERS = ['ปก', 'Image', 'video', 'ตารางไซส์', 'สี'];
 
 // รายการแบรนด์ -> รหัสสินค้า (ข้ามโฟลเดอร์ที่ขึ้นต้น _ และ SKIP_BRANDS)
 function skuTree_() {
@@ -246,7 +246,7 @@ function rebuild_() {
   Object.keys(kids).forEach(function (k) {
     kids[k].forEach(function (f) {
       var n = f.name.toLowerCase();
-      if (isFolder_(f) && (n === 'image' || n === 'video' || n === 'สี' || n === 'ตารางไซส์')) subIds.push(f.id);
+      if (isFolder_(f) && (n === 'image' || n === 'video' || n === 'สี' || n === 'ตารางไซส์' || n === 'ปก')) subIds.push(f.id);
     });
   });
   var subKids = group_(children_(subIds));
@@ -261,12 +261,13 @@ function rebuild_() {
       var rootImgs = k.filter(isImg_).sort(nat_);
       var alt = inFolder_(sub_(k, 'image'), isImg_);
       var cols = inFolder_(sub_(k, 'สี'), isImg_);
+      var covers = inFolder_(sub_(k, 'ปก'), isImg_);
       var sizeFolderImgs = inFolder_(sub_(k, 'ตารางไซส์'), isImg_);
       var vids = k.filter(isVid_).sort(nat_).concat(inFolder_(sub_(k, 'video'), isVid_));
 
       var all = rootImgs.concat(alt);
       var sizes = sizeFolderImgs.concat(all.filter(isSize_));
-      var main = all.filter(function (f) { return !isSize_(f); });
+      var main = covers.concat(all.filter(function (f) { return !isSize_(f); })); // รูปในโฟลเดอร์ ปก มาเป็นรูปแรก/รูปปก
       if (!main.length) main = sizes;
       if (!main.length) main = cols; // ไม่มีรูปหลักเลย ใช้รูปสีแทน
       if (!main.length) return;
