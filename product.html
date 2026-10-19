@@ -255,7 +255,7 @@ $("fb1").innerHTML=fl(CATALOG.slice(0,h));$("fb2").innerHTML=fl(CATALOG.slice(h)
 const k=(new URLSearchParams(location.search).get("k")||"").split("|");
 const it=all.find(i=>i.brand===k[0]&&i.sku===k[1])||all[0];
 applySite();document.title=(it.title||(it.brand+" "+it.sku))+(C.site.title?" | "+C.site.title:"");
-const media=[...it.imgs.slice(0,1),...it.vids,...it.imgs.slice(1)]; // วิดีโอขึ้นอันดับ 2
+const media=[...it.imgs.slice(0,1),...it.vids,...it.imgs.slice(1)].slice(0,10); // วิดีโอขึ้นอันดับ 2 และแสดงในแถบรูปย่อไม่เกิน 10
 let cur=0;
 const rel=all.filter(i=>i.brand===it.brand&&i.sku!==it.sku).slice(0,14);
 $("app").innerHTML=`
