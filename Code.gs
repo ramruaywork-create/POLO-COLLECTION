@@ -267,7 +267,8 @@ function rebuild_() {
 
       var all = rootImgs.concat(alt);
       var sizes = sizeFolderImgs.concat(all.filter(isSize_));
-      var main = covers.concat(all.filter(function (f) { return !isSize_(f); })); // รูปในโฟลเดอร์ ปก มาเป็นรูปแรก/รูปปก
+      // ถ้ามีรูปในโฟลเดอร์ ปก ให้โชว์เฉพาะรูปในปก (ไม่มีค่อยใช้รูปจาก Image/รูปหลัก)
+      var main = covers.length ? covers : all.filter(function (f) { return !isSize_(f); });
       if (!main.length) main = sizes;
       if (!main.length) main = cols; // ไม่มีรูปหลักเลย ใช้รูปสีแทน
       if (!main.length) return;
