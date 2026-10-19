@@ -53,6 +53,7 @@ function doPost(e) {
       case 'trash':   return out(trash_(r.id));
       case 'upload':  return out(upload_(r.parentId, r.name, r.mime, r.data));
       case 'rebuild': return out(rebuild_());
+      case 'scaffold': return out(scaffold_());
       case 'saveContent': return out(saveContent_(r.data));
       default:        return out({ error: 'ไม่รู้จักคำสั่ง' });
     }
@@ -187,27 +188,70 @@ function saveContent_(data) {
   return { ok: true };
 }
 
-// สแกน Drive แล้วเขียนรายการสินค้าลงไฟล์ _catalog.json (เว็บอ่านไฟล์นี้)
-function rebuild_() {
+// โฟลเดอร์มาตรฐานในแต่ละรหัสสินค้า: รูปหลัก(Image) / วิดีโอ(video) / ตารางไซส์ / สี
+const STD_FOLDERS = ['Image', 'video', 'ตารางไซส์', 'สี'];
+
+// รายการแบรนด์ -> รหัสสินค้า (ข้ามโฟลเดอร์ที่ขึ้นต้น _ และ SKIP_BRANDS)
+function skuTree_() {
   var brands = children_([ROOT_ID]).filter(function (f) {
     return isFolder_(f) && f.name.charAt(0) !== '_' && SKIP_BRANDS.indexOf(f.name) < 0;
   }).sort(nat_);
-
   var skusByBrand = group_(children_(brands.map(function (b) { return b.id; })).filter(function (f) {
     return isFolder_(f) && f.name.charAt(0) !== '_';
   }));
   var skuIds = [];
   Object.keys(skusByBrand).forEach(function (k) { skusByBrand[k].forEach(function (s) { skuIds.push(s.id); }); });
+  return { brands: brands, skusByBrand: skusByBrand, skuIds: skuIds };
+}
 
-  var kids = group_(children_(skuIds));
+function stdKey_(name) { return String(name).toLowerCase(); }
+
+// สร้างโฟลเดอร์มาตรฐานที่ยังไม่มีในทุกรหัสสินค้า (ไม่แตะของเดิม) — ทำเป็นรอบ ถ้ายังไม่หมดให้เรียกซ้ำ
+function scaffold_() {
+  var t0 = Date.now();
+  var tree = skuTree_();
+  var kids = group_(children_(tree.skuIds));
+  var missing = [];
+  tree.skuIds.forEach(function (id) {
+    var have = {};
+    (kids[id] || []).forEach(function (f) { if (isFolder_(f)) have[stdKey_(f.name)] = true; });
+    STD_FOLDERS.forEach(function (n) { if (!have[stdKey_(n)]) missing.push({ name: n, parent: id }); });
+  });
+  var created = 0, failed = 0, i = 0;
+  while (i < missing.length && Date.now() - t0 < 270000) {
+    var chunk = missing.slice(i, i + 10);
+    var reqs = chunk.map(function (m) {
+      return {
+        url: 'https://www.googleapis.com/drive/v3/files?supportsAllDrives=true&fields=id',
+        method: 'post', contentType: 'application/json',
+        headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+        payload: JSON.stringify({ name: m.name, mimeType: 'application/vnd.google-apps.folder', parents: [m.parent] }),
+        muteHttpExceptions: true
+      };
+    });
+    UrlFetchApp.fetchAll(reqs).forEach(function (r) { if (r.getResponseCode() === 200) created++; else failed++; });
+    i += 10;
+    Utilities.sleep(250);
+  }
+  return { ok: true, skus: tree.skuIds.length, missingBefore: missing.length, created: created, failed: failed, remaining: Math.max(0, missing.length - created) };
+}
+
+// สแกน Drive แล้วเขียนรายการสินค้าลงไฟล์ _catalog.json (เว็บอ่านไฟล์นี้)
+function rebuild_() {
+  var tree = skuTree_();
+  var brands = tree.brands, skusByBrand = tree.skusByBrand;
+
+  var kids = group_(children_(tree.skuIds));
   var subIds = [];
   Object.keys(kids).forEach(function (k) {
     kids[k].forEach(function (f) {
       var n = f.name.toLowerCase();
-      if (isFolder_(f) && (n === 'image' || n === 'สี')) subIds.push(f.id);
+      if (isFolder_(f) && (n === 'image' || n === 'video' || n === 'สี' || n === 'ตารางไซส์')) subIds.push(f.id);
     });
   });
   var subKids = group_(children_(subIds));
+  function sub_(list, name) { return list.filter(function (f) { return isFolder_(f) && f.name.toLowerCase() === name; })[0]; }
+  function inFolder_(f, pred) { return f ? (subKids[f.id] || []).filter(pred).sort(nat_) : []; }
 
   var data = [];
   brands.forEach(function (b) {
@@ -215,17 +259,17 @@ function rebuild_() {
     (skusByBrand[b.id] || []).sort(nat_).forEach(function (s) {
       var k = kids[s.id] || [];
       var rootImgs = k.filter(isImg_).sort(nat_);
-      var vids = k.filter(isVid_).sort(nat_);
-      var imd = k.filter(function (f) { return isFolder_(f) && f.name.toLowerCase() === 'image'; })[0];
-      var cold = k.filter(function (f) { return isFolder_(f) && f.name === 'สี'; })[0];
-      var alt = imd ? (subKids[imd.id] || []).filter(isImg_).sort(nat_) : [];
-      var sizes = rootImgs.filter(isSize_).concat(alt.filter(isSize_));
-      var rootMain = rootImgs.filter(function (f) { return !isSize_(f); });
-      var altMain = alt.filter(function (f) { return !isSize_(f); });
-      var main = rootMain.length ? rootMain : altMain;
+      var alt = inFolder_(sub_(k, 'image'), isImg_);
+      var cols = inFolder_(sub_(k, 'สี'), isImg_);
+      var sizeFolderImgs = inFolder_(sub_(k, 'ตารางไซส์'), isImg_);
+      var vids = k.filter(isVid_).sort(nat_).concat(inFolder_(sub_(k, 'video'), isVid_));
+
+      var all = rootImgs.concat(alt);
+      var sizes = sizeFolderImgs.concat(all.filter(isSize_));
+      var main = all.filter(function (f) { return !isSize_(f); });
       if (!main.length) main = sizes;
+      if (!main.length) main = cols; // ไม่มีรูปหลักเลย ใช้รูปสีแทน
       if (!main.length) return;
-      var cols = cold ? (subKids[cold.id] || []).filter(isImg_).sort(nat_) : [];
       items.push({
         sku: s.name,
         imgs: main.map(function (f) { return f.id; }),
