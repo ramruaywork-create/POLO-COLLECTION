@@ -83,12 +83,12 @@
       if (v) el.innerHTML = window.esc(v).replace(/\n/g, "<br>");
     });
     if (s.logoA || s.logoB) {
-      document.querySelectorAll(".logo").forEach(function (l) {
+      document.querySelectorAll(".logo:not([data-img])").forEach(function (l) {
         l.textContent = s.logoA || "";
         var b = document.createElement("b"); b.textContent = s.logoB || ""; l.appendChild(b);
       });
     }
     if (s.title) document.title = s.title;
-    if (s.banner) { var im = document.querySelector(".bn img.full"); if (im) im.src = s.banner; }
+    if (s.banner) { var h = document.querySelector(".bn .himg"); if (h) h.style.backgroundImage = 'url("' + s.banner + '")'; }
   };
 })();

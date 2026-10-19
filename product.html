@@ -160,13 +160,61 @@ table.sp td:first-child{width:220px;color:var(--mut);background:var(--bg)}
 #lb{position:fixed;inset:0;background:#000d;display:none;z-index:80;align-items:center;justify-content:center;cursor:zoom-out}
 #lb.open{display:flex}#lb img{max-width:94vw;max-height:94vh}
 .pr{padding:0 12px 4px;color:var(--red);font-weight:700}.pr s{color:var(--mut);font-weight:400;font-size:12px;margin-left:6px}.price{margin:0 0 14px;font-size:30px;line-height:1.2;color:var(--red);font-weight:700}.price s{font-size:16px;color:var(--mut);font-weight:400;margin-left:10px}
+
+/* ===== ธีมทอง-ครีม ===== */
+:root{--red:#b8923f;--bg:#fbf9f5;--tx:#2b2418;--tx2:#1f1a10;--mut:#8a7f69;--bd:#ece4d3;--dark:#3b2f17;--gold:#b8923f;--gold2:#dcc17f;--goldgrad:linear-gradient(180deg,#d9bb70,#b8923f)}
+body{background:#fbf9f5}
+.top{background:#f4eddc;color:#8a6a2a}
+.top .wrap{height:30px;font-size:12px}
+header{box-shadow:none;border-bottom:1px solid var(--bd)}
+.hd{height:104px}
+.logo{display:flex;align-items:center}
+.logo[data-img]{padding:0}
+.logo img{height:88px;width:auto;display:block}
+.sf input{border-color:var(--gold2);background:#fffdf8}
+.sf input:focus{border-color:var(--gold)}
+.circ{display:none}
+.nv{border-top:1px solid var(--bd)}
+.catbtn{background:var(--goldgrad);color:#fff;border-radius:999px;font-weight:600;box-shadow:0 3px 10px rgba(184,146,63,.3)}
+.nv a.l{font-weight:500}
+.nv a.l.on{color:var(--gold);box-shadow:inset 0 -3px 0 var(--gold)}
+.btn{background:var(--goldgrad);border-radius:999px;padding:11px 30px;box-shadow:0 4px 12px rgba(184,146,63,.3)}
+.btn.o{background:#fff;color:var(--tx2);border:1px solid var(--bd);box-shadow:none}
+.bn{background:#f6f4ef;border:1px solid var(--bd);border-radius:16px}
+.bn .sl.hero{display:none}
+.bn .sl.hero.on{display:block;position:relative;min-height:260px}
+.himg{position:absolute;right:0;top:0;bottom:0;width:70%;background:url(assets/hero-gold.jpg) right center/cover no-repeat;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24%);mask-image:linear-gradient(90deg,transparent,#000 24%)}
+.cap2{position:relative;z-index:2;padding:36px 44px;max-width:46%}
+.cap2 small{letter-spacing:3px;color:var(--gold);font-size:12px}
+.cap2 h1{margin:6px 0 0;font-size:clamp(26px,3.4vw,44px);line-height:1.2;color:var(--gold);font-weight:500}
+.cap2 h1::first-line{color:var(--tx2)}
+.cap2 .gl{display:block;width:44px;height:2px;background:var(--gold2);margin:14px 0}
+.cap2 p{margin:0 0 18px;color:var(--mut)}
+.bn .sl.mos{background:linear-gradient(120deg,#f6efe0,#efe3c6)}
+.sl.mos .cap{color:var(--tx2)}
+.bn .dots i{background:#d9cdb2}.bn .dots i.on{background:var(--gold)}
+.bn .ar{background:#fff;border:1px solid var(--bd);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.sh h2{border-left:3px solid var(--gold);padding-left:12px;font-weight:500}
+.sh a{color:var(--gold)}
+.bb{border-radius:12px;border-color:var(--bd)}
+.bb img{border-radius:10px}
+.pc{border-radius:12px;border:1px solid var(--bd)}
+.pr,.price{color:#9a7428}
+.deal{background:linear-gradient(120deg,#cfa84f,#9a7428)}
+.tab{border-color:var(--bd)}
+.cp{background:#3b2f17;color:#e9dcb8}
+footer{border-top:1px solid var(--bd)}
+.crumb a,.crumb2 a{color:var(--gold)}
+.pd,.pane,.tabs2{border:1px solid var(--bd)}
+.stock{background:#f4eddc!important;color:#8a6a2a!important}
+@media(max-width:700px){.cap2{max-width:100%;padding:24px}.himg{width:100%;opacity:.35}.logo img{height:64px}.hd{height:84px}}
 </style>
 </head>
 <body>
 <div class="top"><div class="wrap"><span data-ct="topbar1">แคตตาล็อกสินค้า — รวมทุกแบรนด์ในที่เดียว</span><span data-ct="topbar2">ค้นหาด้วยรหัสรุ่น · ดูรูป วิดีโอ และสีสินค้า</span></div></div>
 <header>
   <div class="wrap hd">
-    <a class="logo" href="index.html">ร่ำรวย<b>2024</b></a>
+    <a class="logo" href="index.html" data-img><img src="assets/logo-gold.png" alt="ร่ำรวย 2024"></a>
     <div class="sf"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="ค้นหารหัสรุ่น..."></div>
     <div class="circ">🏷</div><div class="circ">🎨</div>
   </div>
